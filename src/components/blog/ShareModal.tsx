@@ -10,6 +10,17 @@ interface ShareModalProps {
   slug?: string;
 }
 
+
+declare global {
+  interface Window {
+    FB?: {
+      XFBML: {
+        parse: (element?: HTMLElement) => void;
+      };
+    };
+  }
+}
+
 export default function ShareModal({ isOpen, onClose, blogTitle, blogUrl, slug }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
   const fbDivRef = useRef<HTMLDivElement>(null);
@@ -19,18 +30,17 @@ export default function ShareModal({ isOpen, onClose, blogTitle, blogUrl, slug }
 
   useEffect(() => {
     if (!isOpen) return;
-    const w = window as any;
-    if (!w.FB) {
+    if (!window.FB) {
       const script = document.createElement("script");
       script.async = true;
       script.defer = true;
       script.crossOrigin = "anonymous";
       script.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
       document.body.appendChild(script);
-    } else if (w.FB.XFBML && fbDivRef.current) {
-      w.FB.XFBML.parse(fbDivRef.current);
+    } else if (window.FB.XFBML && fbDivRef.current) {
+      window.FB.XFBML.parse(fbDivRef.current);
     }
-  }, [isOpen, shareUrl]);
+  }, [isOpen, safeShareUrl]);
 
   const handleCopyLink = async () => {
     try {
