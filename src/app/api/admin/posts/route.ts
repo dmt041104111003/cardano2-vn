@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
           status: true,
           author: { select: { name: true } },
           media: { select: { url: true, type: true, id: true } },
+          tags: { select: { tag: { select: { id: true, name: true } } } },
         },
       });
       const mapped = posts.map(p => ({
@@ -35,6 +36,7 @@ export async function GET(request: NextRequest) {
                 : m
             )
           : [],
+        tags: p.tags?.map((t: { tag: { id: string; name: string } }) => t.tag) || [],
       }));
       return NextResponse.json({ posts: mapped });
     }

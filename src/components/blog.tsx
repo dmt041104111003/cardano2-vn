@@ -8,6 +8,7 @@ export default function Blog({
   author,
   datetime,
   slug,
+  tags = [],
 }: {
   title: string;
   image: string | StaticImageData;
@@ -15,6 +16,7 @@ export default function Blog({
   author: string;
   datetime: string;
   slug: string;
+  tags?: Array<{ id: string; name: string }>;
 }) {
 
   function cleanYoutubeUrl(url: string) {
@@ -83,18 +85,31 @@ export default function Blog({
                 data-nimg="1"
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 style={{ color: "transparent" }}
-                src={"/images/landings/01.png"}
+                src={"/images/common/logo.png"}
               />
             )
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent"></div>
         </div>
-        <div className="p-6">
-          <div className="mb-3">
-            <span className="inline-block rounded-full bg-blue-600/20 px-3 py-1 text-xs font-medium text-blue-400 border border-blue-500/30">
-              {action}
-            </span>
+
+        {Array.isArray(tags) && tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-3 mb-2">
+            {tags.map((tag) => (
+              <span
+                key={tag.id}
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+              >
+                {tag.name}
+              </span>
+            ))}
           </div>
+        )}
+        {/* <div className="mb-3">
+          <span className="inline-block rounded-full bg-blue-600/20 px-3 py-1 text-xs font-medium text-blue-400 border border-blue-500/30">
+            {action}
+          </span>
+        </div> */}
+        <div className="p-6">
           <h2 className="mb-4 text-xl font-bold text-white transition-colors duration-200 group-hover:text-blue-300 lg:text-2xl">{title}</h2>
           <div className="flex items-center justify-between text-sm text-gray-400">
             <div className="flex items-center gap-4">
