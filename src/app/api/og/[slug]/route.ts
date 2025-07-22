@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '~/lib/prisma';
 
 async function getPost(slug: string) {
@@ -14,13 +14,17 @@ async function getPost(slug: string) {
   return {
     title: post.title,
     description: post.content?.replace(/<[^>]+>/g, '').slice(0, 150) || post.title,
-    image: post.media && post.media.length > 0 ? post.media[0].url : 'https://your-domain.com/images/common/logo.png',
+    image: post.media && post.media.length > 0 ? post.media[0].url : 'https://cardano2-vn.vercel.app/images/common/logo.png',
     url: `https://cardano2-vn.vercel.app/blog/${slug}`,
   };
 }
 
-export async function GET(req: Request, { params }: { params: { slug: string } }) {
-  const post = await getPost(params.slug);
+export async function GET(
+  req: NextRequest,
+  context: { params: { slug: string } }
+) {
+  const { slug } = context.params;
+  const post = await getPost(slug);
   if (!post) {
     return new NextResponse('Not found', { status: 404 });
   }
