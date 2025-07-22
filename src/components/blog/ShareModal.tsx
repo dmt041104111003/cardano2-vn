@@ -1,20 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface ShareModalProps {
   isOpen: boolean;
   onClose: () => void;
   blogTitle: string;
-  blogUrl: string;
+  blogUrl?: string;
+  slug?: string;
 }
 
-export default function ShareModal({ isOpen, onClose, blogTitle, blogUrl }: ShareModalProps) {
+export default function ShareModal({ isOpen, onClose, blogTitle, blogUrl, slug }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
+  const fbDivRef = useRef<HTMLDivElement>(null);
+
+  const shareUrl = blogUrl || (typeof window !== 'undefined' && slug ? `${window.location.origin}/blog/${slug}` : '');
+  const safeShareUrl = shareUrl || '';
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const w = window as any;
+    if (!w.FB) {
+      const script = document.createElement("script");
+      script.async = true;
+      script.defer = true;
+      script.crossOrigin = "anonymous";
+      script.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+      document.body.appendChild(script);
+    } else if (w.FB.XFBML && fbDivRef.current) {
+      w.FB.XFBML.parse(fbDivRef.current);
+    }
+  }, [isOpen, shareUrl]);
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(blogUrl);
+      await navigator.clipboard.writeText(safeShareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -23,7 +43,7 @@ export default function ShareModal({ isOpen, onClose, blogTitle, blogUrl }: Shar
   };
 
   const handleFacebookShare = () => {
-    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(blogUrl)}`;
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(safeShareUrl)}`;
     window.open(url, '_blank', 'width=600,height=400');
     onClose();
   };
@@ -76,6 +96,15 @@ export default function ShareModal({ isOpen, onClose, blogTitle, blogUrl }: Shar
             </div>
             <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </button>
+
+          <div ref={fbDivRef} className="flex justify-center">
+            <div
+              className="fb-share-button"
+              data-href={safeShareUrl}
+              data-layout="button_count"
+              data-size="small"
+            ></div>
+          </div>
 
           <button 
             onClick={handleZaloShare}
