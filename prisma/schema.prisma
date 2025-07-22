@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum cho trạng thái bài viết
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// Enum cho vai trò người dùng
+enum RoleName {
+  ADMIN
+  USER
+}
+
+// Enum cho loại phản hồi
+enum ReactionType {
+  LIKE
+  HEART
+  HAHA
+  SAD
+  ANGRY
+  SHARE
+}
+
+// Enum cho loại media
+enum MediaType {
+  IMAGE
+  YOUTUBE
+  VIDEO
+}
+
+model User {
+  id        String    @id @default(cuid())
+  wallet    String    @unique
+  name      String?
+  image     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  roleId    String
+  role      Role      @relation(fields: [roleId], references: [id])
+
+  posts     Post[]    @relation("UserPosts")
+  comments  Comment[] @relation("UserComments")
+  reactions Reaction[]
+  sessions  Session[]
+  media     Media[]   @relation("UserMedia")
+}
+
+model Role {
+  id          String    @id @default(uuid())
+  name        RoleName  @unique
+  description String?
+
+  users       User[]
+}
+
+model Post {
+  id            String      @id @default(uuid())
+  title         String
+  content       String      @db.Text 
+  status        PostStatus  @default(DRAFT)
+  views         Int         @default(0)
+  likes         Int         @default(0)
+  comments      Int         @default(0)
+  shares        Int         @default(0)
+  authorId      String 
+  author        User        @relation("UserPosts", fields: [authorId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  tags          PostTag[]
+  comments_rel  Comment[]   @relation("PostComments")
+  reactions     Reaction[]
+  media         Media[]     @relation("PostMedia")
+}
+
+model Comment {
+  id                String      @id @default(uuid())
+  postId            String
+  userId            String?
+  content           String      @db.Text
+  parentCommentId   String?
+
+  post              Post        @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade)
+  user              User?       @relation("UserComments", fields: [userId], references: [id])
+  parent            Comment?    @relation("CommentToReplies", fields: [parentCommentId], references: [id])
+  replies           Comment[]   @relation("CommentToReplies")
+
+  isApproved        Boolean     @default(false)
+  createdAt         DateTime    @default(now())
+  reactions         Reaction[]
+}
+
+model Reaction {
+  id          String       @id @default(uuid())
+  userId      String
+  postId      String?
+  commentId   String?
+  type        ReactionType
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post        Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment     Comment?     @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime     @default(now())
+
+  @@unique([userId, postId, type])
+  @@unique([userId, commentId, type])
+}
+
+model Media {
+  id          String    @id @default(uuid())
+  url         String
+  type        MediaType 
+  mediaId     String?
+  uploadedBy  String?   
+  uploadedAt  DateTime  @default(now())
+  postId      String?   
+  post        Post?     @relation("PostMedia", fields: [postId], references: [id], onDelete: SetNull)
+  user        User?     @relation("UserMedia", fields: [uploadedBy], references: [id], onDelete: SetNull)
+}
+
+model Tag {
+  id         String    @id @default(uuid())
+  name       String
+  createdAt  DateTime  @default(now())
+  posts      PostTag[]
+}
+
+model PostTag {
+  postId String
+  tagId  String
+
+  post   Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
+model Session {
+  id           String    @id @default(cuid())
+  userId       String
+  accessTime   DateTime?
+  lastAccess   DateTime?
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
