@@ -21,9 +21,10 @@ async function getPost(slug: string) {
 
 export async function GET(
   req: NextRequest,
-  context: { params: { slug: string } }
+  { params }: Promise<{ params: { slug: string } }>
 ) {
-  const { slug } = context.params;
+  const resolvedParams = await params;
+  const { slug } = resolvedParams.params;
   const post = await getPost(slug);
   if (!post) {
     return new NextResponse('Not found', { status: 404 });
