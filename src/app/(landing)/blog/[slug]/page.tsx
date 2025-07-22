@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import ShareModal from "~/components/blog/ShareModal";
 import CommentSection from "~/components/blog/CommentSection";
 import ReactionCount from "~/components/blog/ReactionCount";
+import BlogDetailSkeleton from "~/components/blog/BlogDetailSkeleton";
 
 interface Post {
   id: string;
@@ -41,7 +42,7 @@ export default function BlogDetailPage() {
       .then(data => setPost(data.post));
   }, [params.slug]);
 
-  if (!post) return <div className="text-center py-20 text-gray-400">Loading...</div>;
+  if (!post) return <BlogDetailSkeleton />;
 
   function getYoutubeIdFromUrl(url: string) {
     if (!url) return '';

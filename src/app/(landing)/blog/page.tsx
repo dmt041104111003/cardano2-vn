@@ -4,6 +4,7 @@ import Blog from "~/components/blog";
 import Title from "~/components/title";
 import { useEffect, useState } from "react";
 import BlogFilters from "~/components/blog/BlogFilters";
+import BlogCardSkeleton from "~/components/blog/BlogCardSkeleton";
 
 interface Media {
   id: string;
@@ -85,36 +86,40 @@ export default function BlogsPage() {
           allAddresses={allAddresses}
         />
         <section className="grid gap-8 lg:grid-cols-2">
-          {filteredPosts.filter(post => post.status === 'PUBLISHED').map((post) => {
-            let imageUrl = "/images/common/logo.png";
-            if (Array.isArray(post.media) && post.media.length > 0) {
-              const youtubeMedia = post.media.find((m: Media) => m.type === 'YOUTUBE');
-              if (youtubeMedia) {
-                const videoId = getYoutubeIdFromUrl(youtubeMedia.url);
-                if (videoId) {
-                  imageUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+          {posts.length === 0 ? (
+            Array.from({ length: 4 }).map((_, i) => <BlogCardSkeleton key={i} />)
+          ) : (
+            filteredPosts.filter(post => post.status === 'PUBLISHED').map((post) => {
+              let imageUrl = "/images/common/logo.png";
+              if (Array.isArray(post.media) && post.media.length > 0) {
+                const youtubeMedia = post.media.find((m: Media) => m.type === 'YOUTUBE');
+                if (youtubeMedia) {
+                  const videoId = getYoutubeIdFromUrl(youtubeMedia.url);
+                  if (videoId) {
+                    imageUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                  }
+                } else {
+                  imageUrl = post.media[0].url;
                 }
-              } else {
-                imageUrl = post.media[0].url;
               }
-            }
-            return (
-              <Blog
-                key={post.id}
-                image={imageUrl}
-                action={post.status}
-                title={post.title}
-                author={post.author || "Admin"}
-                slug={post.slug || post.id}
-                datetime={new Date(post.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-                tags={post.tags || []}
-              />
-            );
-          })}
+              return (
+                <Blog
+                  key={post.id}
+                  image={imageUrl}
+                  action={post.status}
+                  title={post.title}
+                  author={post.author || "Admin"}
+                  slug={post.slug || post.id}
+                  datetime={new Date(post.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                  tags={post.tags || []}
+                />
+              );
+            })
+          )}
         </section>
       </div>
     </main>
