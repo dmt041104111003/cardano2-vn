@@ -5,6 +5,7 @@ import Title from "~/components/title";
 import { useEffect, useState } from "react";
 import BlogFilters from "~/components/blog/BlogFilters";
 import BlogCardSkeleton from "~/components/blog/BlogCardSkeleton";
+import { Pagination } from "~/components/ui/pagination";
 
 interface Media {
   id: string;
@@ -34,10 +35,10 @@ function getYoutubeIdFromUrl(url: string) {
 export default function BlogsPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [search, setSearch] = useState("");
-  const [selectedAddress, setSelectedAddress] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [allTags, setAllTags] = useState<Tag[]>([]);
-  const [allAddresses, setAllAddresses] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
 
   useEffect(() => {
     fetch("/api/admin/posts?public=1")
@@ -51,22 +52,19 @@ export default function BlogsPage() {
       .then(data => setAllTags(Array.isArray(data.tags) ? data.tags : []));
   }, []);
 
-  useEffect(() => {
-    const addresses: string[] = [];
-    posts.forEach(post => {
-      if (post.author && !addresses.includes(post.author)) {
-        addresses.push(post.author);
-      }
-    });
-    setAllAddresses(addresses);
-  }, [posts]);
-
   const filteredPosts = posts.filter(post => {
     const matchTitle = post.title.toLowerCase().includes(search.toLowerCase());
-    const matchAddress = selectedAddress ? (post.author === selectedAddress) : true;
     const matchTags = selectedTags.length > 0 ? (Array.isArray(post.tags) && selectedTags.every(tagId => post.tags?.some(tag => tag.id === tagId))) : true;
-    return matchTitle && matchAddress && matchTags;
+    return matchTitle && matchTags;
   });
+
+  const publishedPosts = filteredPosts.filter(post => post.status === 'PUBLISHED');
+  const totalPages = Math.ceil(publishedPosts.length / pageSize);
+  const paginatedPosts = publishedPosts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedTags]);
 
   return (
     <main className="relative pt-20">
@@ -78,18 +76,15 @@ export default function BlogsPage() {
         <BlogFilters
           search={search}
           setSearch={setSearch}
-          selectedAddress={selectedAddress}
-          setSelectedAddress={setSelectedAddress}
           selectedTags={selectedTags}
           setSelectedTags={setSelectedTags}
           allTags={allTags}
-          allAddresses={allAddresses}
         />
         <section className="grid gap-8 lg:grid-cols-2">
           {posts.length === 0 ? (
             Array.from({ length: 4 }).map((_, i) => <BlogCardSkeleton key={i} />)
           ) : (
-            filteredPosts.filter(post => post.status === 'PUBLISHED').map((post) => {
+            paginatedPosts.map((post) => {
               let imageUrl = "/images/common/logo.png";
               if (Array.isArray(post.media) && post.media.length > 0) {
                 const youtubeMedia = post.media.find((m: Media) => m.type === 'YOUTUBE');
@@ -121,6 +116,13 @@ export default function BlogsPage() {
             })
           )}
         </section>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={publishedPosts.length}
+          itemsPerPage={pageSize}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </main>
   );

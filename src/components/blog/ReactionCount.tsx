@@ -1,29 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import ReactionPopup from './ReactionPopup';
 
 interface ReactionCountProps {
-  reactions: {
-    like: number;
-    love: number;
-    haha: number;
-    wow: number;
-    sad: number;
-    angry: number;
-  };
+  reactions: { [type: string]: number };
 }
+
+const ICONS: Record<string, string> = {
+  LIKE: "👍",
+  like: "👍",
+  HEART: "❤️",
+  heart: "❤️",
+  HAHA: "😂",
+  haha: "😂",
+  WOW: "😮",
+  wow: "😮",
+  SAD: "😢",
+  sad: "😢",
+  ANGRY: "😠",
+  angry: "😠"
+};
 
 export default function ReactionCount({ reactions }: ReactionCountProps) {
   const [showDetails, setShowDetails] = useState(false);
   const totalReactions = Object.values(reactions).reduce((sum, count) => sum + count, 0);
-  
-  const topReactions = Object.entries(reactions)
-    .filter(([, count]) => count > 0)
+
+  const topTypes = Object.entries(reactions)
+    .filter(([type, count]) => count > 0 && ICONS[type] !== undefined)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 3);
 
-  if (totalReactions === 0) return null;
+  if (totalReactions === 0 || topTypes.length === 0) return null;
 
   return (
     <div className="relative">
@@ -32,40 +39,20 @@ export default function ReactionCount({ reactions }: ReactionCountProps) {
         onClick={() => setShowDetails(!showDetails)}
       >
         <div className="flex -space-x-2">
-          {topReactions.map(([type], index) => {
-            const icons = {
-              like: "👍",
-              love: "❤️",
-              haha: "😂",
-              wow: "😮",
-              sad: "😢",
-              angry: "😠"
-            };
-
-            return (
-              <div
-                key={type}
-                className="h-12 w-12 rounded-full bg-transparent border border-gray-700 flex items-center justify-center hover:scale-110 transition-transform"
-                style={{ zIndex: topReactions.length - index }}
-              >
-                <span className="text-lg">{icons[type as keyof typeof icons]}</span>
-              </div>
-            );
-          })}
+          {topTypes.map(([type], index) => (
+            <div
+              key={type}
+              className="h-12 w-12 rounded-full bg-transparent border border-gray-700 flex items-center justify-center hover:scale-110 transition-transform"
+              style={{ zIndex: topTypes.length - index }}
+            >
+              <span className="text-lg">{ICONS[type]}</span>
+            </div>
+          ))}
         </div>
-        
         <span className="text-gray-400 font-medium text-lg">
           {totalReactions} {totalReactions === 1 ? 'person' : 'people'} like this
         </span>
       </div>
-
-
-      {showDetails && (
-        <ReactionPopup 
-          reactions={reactions}
-          onClose={() => setShowDetails(false)}
-        />
-      )}
     </div>
   );
 } 

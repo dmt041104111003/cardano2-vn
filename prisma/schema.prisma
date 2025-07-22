@@ -25,6 +25,7 @@ enum ReactionType {
   LIKE
   HEART
   HAHA
+  WOW
   SAD
   ANGRY
   SHARE

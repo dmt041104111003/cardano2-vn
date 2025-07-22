@@ -10,6 +10,7 @@ import ShareModal from "~/components/blog/ShareModal";
 import CommentSection from "~/components/blog/CommentSection";
 import ReactionCount from "~/components/blog/ReactionCount";
 import BlogDetailSkeleton from "~/components/blog/BlogDetailSkeleton";
+import { useSession } from "next-auth/react";
 
 interface Post {
   id: string;
@@ -21,6 +22,7 @@ interface Post {
   media: { type: string; url: string; id?: string }[];
   comments: { id: string; text: string; author: string; createdAt: string }[];
   shares: number;
+  reactions: { type: string }[];
 }
 
 interface Tag {
@@ -33,14 +35,61 @@ type RawComment = { id: string; text: string; author: string; createdAt: string 
 export default function BlogDetailPage() {
   const params = useParams();
   const [post, setPost] = useState<Post | null>(null);
+  const [reactions, setReactions] = useState<{ [type: string]: number }>({});
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
   const [showReactions, setShowReactions] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [currentUserReaction, setCurrentUserReaction] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/admin/posts/${params.slug}?public=1`)
       .then(res => res.json())
-      .then(data => setPost(data.post));
-  }, [params.slug]);
+      .then(data => {
+        setPost(data.post);
+      });
+
+    if (params.slug) {
+      fetch(`/api/blog/react?postId=${params.slug}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.reactions) setReactions(data.reactions);
+        });
+      if (isLoggedIn) {
+        fetch(`/api/blog/react?postId=${params.slug}&me=1`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.currentUserReaction) setCurrentUserReaction(data.currentUserReaction);
+            else setCurrentUserReaction(null);
+          });
+      } else {
+        setCurrentUserReaction(null);
+      }
+    }
+  }, [params.slug, isLoggedIn]);
+
+  const handleReact = async (type: string) => {
+    if (!isLoggedIn || !post) return;
+    setReactions(prev => ({ ...prev, [type]: (prev[type] || 0) + 1 }));
+    setCurrentUserReaction(type);
+    const res = await fetch("/api/blog/react", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ postId: post.id, type }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      console.error("Reaction API error:", data);
+      alert(data?.error || "Failed to react. Please login and try again.");
+      return;
+    }
+    fetch(`/api/blog/react?postId=${post.id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.reactions) setReactions(data.reactions);
+      });
+    setCurrentUserReaction(type);
+  };
 
   if (!post) return <BlogDetailSkeleton />;
 
@@ -50,9 +99,15 @@ export default function BlogDetailPage() {
     return match ? match[1] : '';
   }
 
-  function handleReactionClick(label: string) {
-    console.log('Reaction clicked:', label);
-  }
+
+  const REACTION_EMOJIS: Record<string, string> = {
+    LIKE: "👍",
+    HEART: "❤️",
+    HAHA: "😂",
+    WOW: "😮",
+    SAD: "😢",
+    ANGRY: "😠"
+  };
 
   return (
     <main className="relative min-h-screen bg-gradient-to-br from-gray-950 via-gray-950 to-gray-900">
@@ -135,14 +190,7 @@ export default function BlogDetailPage() {
           <div className="mt-12 border-t border-gray-800 pt-8">
             <div className="mb-6 flex items-center justify-between text-sm text-gray-400">
               <ReactionCount 
-                reactions={{
-                  like: 245,
-                  love: 156,
-                  haha: 89,
-                  wow: 24,
-                  sad: 0,
-                  angry: 0
-                }}
+                reactions={reactions}
               />
               <div className="flex items-center gap-4">
                 <span>{post.comments?.length || 0} comments</span>
@@ -156,26 +204,34 @@ export default function BlogDetailPage() {
                 onMouseLeave={() => setShowReactions(false)}
               >
                 <button 
-                  className="flex items-center justify-center gap-2 py-3 text-gray-400 hover:text-blue-400 transition-colors w-full"
+                  className={`flex items-center justify-center gap-2 py-3 text-gray-400 transition-colors w-full ${currentUserReaction ? 'text-blue-400' : 'hover:text-blue-400'}`}
                 >
-                  <ThumbsUp className="h-5 w-5 hover:scale-110 transition-transform" />
-                  <span className="font-medium">Like</span>
+                  <span className={`flex items-center justify-center text-2xl ${currentUserReaction ? 'scale-110' : 'hover:scale-110'}`} style={{ minWidth: 28, minHeight: 28 }}>
+                    {currentUserReaction ? REACTION_EMOJIS[currentUserReaction] || '👍' : <ThumbsUp className="h-5 w-5" />}
+                  </span>
+                  <span className={`font-medium ml-1 ${currentUserReaction ? 'text-blue-400' : ''}`} style={{ lineHeight: '28px', fontSize: '18px' }}>
+                    {currentUserReaction ? currentUserReaction.charAt(0) + currentUserReaction.slice(1).toLowerCase() : 'Like'}
+                  </span>
                 </button>
                 {showReactions && (
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 z-10 p-1">
                     <div className="flex items-center gap-3 bg-gray-800/95 backdrop-blur-xl border border-gray-700/50 rounded-full px-6 py-4 shadow-2xl">
                       {[
-                        { emoji: "👍", label: "Like", color: "bg-blue-500" },
-                        { emoji: "❤️", label: "Love", color: "bg-red-500" },
-                        { emoji: "😂", label: "Haha", color: "bg-yellow-500" },
-                        { emoji: "😮", label: "Wow", color: "bg-yellow-500" },
-                        { emoji: "😢", label: "Sad", color: "bg-yellow-500" },
-                        { emoji: "😠", label: "Angry", color: "bg-red-500" },
+                        { emoji: "👍", label: "Like", color: "bg-blue-500", type: "LIKE" },
+                        { emoji: "❤️", label: "Love", color: "bg-red-500", type: "HEART" },
+                        { emoji: "😂", label: "Haha", color: "bg-yellow-500", type: "HAHA" },
+                        { emoji: "😮", label: "Wow", color: "bg-yellow-500", type: "WOW" },
+                        { emoji: "😢", label: "Sad", color: "bg-yellow-500", type: "SAD" },
+                        { emoji: "😠", label: "Angry", color: "bg-red-500", type: "ANGRY" },
                       ].map((reaction, index) => (
                         <button
                           key={index}
-                          onClick={() => handleReactionClick(reaction.label)}
-                          className="w-14 h-14 rounded-full bg-transparent hover:bg-gray-700/50 hover:scale-125 transition-all duration-200 flex items-center justify-center text-white text-3xl group relative overflow-hidden"
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            await handleReact(reaction.type);
+                            setShowReactions(false);
+                          }}
+                          className={`w-14 h-14 rounded-full bg-transparent hover:bg-gray-700/50 transition-all duration-200 flex items-center justify-center text-white text-3xl group relative overflow-hidden ${currentUserReaction === reaction.type ? 'ring-4 ring-blue-400 scale-110' : 'hover:scale-125'}`}
                           aria-label={reaction.label}
                         >
                           <span className="group-hover:scale-110 transition-transform duration-200">
