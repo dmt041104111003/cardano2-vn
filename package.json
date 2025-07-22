@@ -52,6 +52,7 @@
     "ethereum-blockies-base64": "^1.0.2",
     "framer-motion": "^12.23.6",
     "highlight.js": "^11.11.1",
+    "lodash": "^4.17.21",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.525.0",
     "next": "15.3.5",

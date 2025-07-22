@@ -33,12 +33,13 @@ export default function BlogFilters({
   }, []);
 
   const handleTagToggle = (tagId: string) => {
-    setSelectedTags(prev =>
-      prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
-    );
+    const newTags = selectedTags.includes(tagId)
+      ? selectedTags.filter(id => id !== tagId)
+      : [...selectedTags, tagId];
+    setSelectedTags(newTags);
   };
   const handleRemoveTag = (tagId: string) => {
-    setSelectedTags(prev => prev.filter(id => id !== tagId));
+    setSelectedTags(selectedTags.filter(id => id !== tagId));
   };
 
   return (

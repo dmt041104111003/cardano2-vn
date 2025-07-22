@@ -19,6 +19,8 @@ export function UsersPageClient() {
   const [newUserAddress, setNewUserAddress] = useState('');
   const [newUserName, setNewUserName] = useState('');
   const [currentUserAddress, setCurrentUserAddress] = useState<string | null>(null);
+  const [editUser, setEditUser] = useState<User | null>(null);
+  const [editUserName, setEditUserName] = useState('');
   const { showSuccess, showError } = useToastContext();
 
   useEffect(() => {
@@ -109,6 +111,32 @@ export function UsersPageClient() {
       } catch {
         alert('Failed to promote user');
       }
+    }
+  };
+
+  const handleEdit = (user: User) => {
+    setEditUser(user);
+    setEditUserName(user.name || '');
+  };
+
+  const handleUpdateUserName = async () => {
+    if (!editUser) return;
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ address: editUser.address, name: editUserName })
+      });
+      if (!res.ok) {
+        showError('Failed to update user name');
+        return;
+      }
+      await fetchUsers();
+      setEditUser(null);
+      showSuccess('User updated', 'User name has been updated.');
+    } catch {
+      showError('Failed to update user name');
     }
   };
 
@@ -203,7 +231,7 @@ export function UsersPageClient() {
       <div className="bg-white rounded-lg shadow">
         <UserTable
           users={paginatedUsers}
-          onEdit={() => {}}
+          onEdit={handleEdit}
           onDelete={handleDelete}
           onRoleChange={handleRoleChange}
           currentUserAddress={currentUserAddress}
@@ -216,6 +244,23 @@ export function UsersPageClient() {
           onPageChange={setCurrentPage}
         />
       </div>
+      <Modal isOpen={!!editUser} onClose={() => setEditUser(null)} title="Edit User Name">
+        <input
+          className="w-full border rounded px-3 py-2 mb-4"
+          placeholder="User name"
+          value={editUserName}
+          onChange={e => setEditUserName(e.target.value)}
+          autoFocus
+        />
+        <div className="flex justify-end gap-2">
+          <button className="px-4 py-2 bg-gray-200 rounded" onClick={() => setEditUser(null)}>Cancel</button>
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+            onClick={handleUpdateUserName}
+            disabled={!editUserName.trim()}
+          >Save</button>
+        </div>
+      </Modal>
     </div>
   );
 }

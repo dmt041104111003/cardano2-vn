@@ -21,11 +21,23 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
         createdAt: true,
         updatedAt: true,
         status: true,
-        author: { select: { name: true } },
+        author: { select: { id: true, name: true, wallet: true } }, 
         media: { select: { url: true, type: true, id: true } },
         tags: { select: { tag: { select: { id: true, name: true } } } },
         shares: true,
       },
+    });
+    const comments = await prisma.comment.findMany({
+      where: { postId: params.id },
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        userId: true,
+        user: { select: { wallet: true, image: true } },
+        parentCommentId: true,
+      },
+      orderBy: { createdAt: 'asc' },
     });
     if (!post) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     const tags = post.tags?.map((t: { tag: { id: string; name: string } }) => t.tag) || [];
@@ -35,7 +47,7 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
         ? { ...m, id: m.id && m.id.length === 11 ? m.id : getYoutubeIdFromUrl(m.url) }
         : m
     );
-    return NextResponse.json({ post: { ...post, author: post.author?.name || 'Admin', tags, media } });
+    return NextResponse.json({ post: { ...post, author: post.author?.name || 'Admin', authorId: post.author?.id || '', authorWallet: post.author?.wallet || '', tags, media, comments } });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

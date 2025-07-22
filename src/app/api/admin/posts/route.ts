@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
         shares: true,
         createdAt: true,
         updatedAt: true,
-        comments_rel: { select: { id: true } },
-        reactions: { select: { type: true } },
+        comments_rel: { select: { id: true, userId: true } }, // thêm userId
+        reactions: { select: { type: true, userId: true } }, // thêm userId
         author: { select: { name: true } },
         tags: { select: { tag: { select: { id: true, name: true } } } },
       },
@@ -68,6 +68,8 @@ export async function GET(request: NextRequest) {
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
         comments: post.comments_rel.length,
+        comments_rel: post.comments_rel, // thêm dòng này
+        reactions: post.reactions,       // thêm dòng này
         author: post.author?.name || 'Admin',
         tags: post.tags?.map(t => t.tag) || [],
         ...reactionCount,

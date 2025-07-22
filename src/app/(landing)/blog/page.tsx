@@ -101,7 +101,6 @@ export default function BlogsPage() {
                 <Blog
                   key={post.id}
                   image={imageUrl}
-                  action={post.status}
                   title={post.title}
                   author={post.author || "Admin"}
                   slug={post.slug || post.id}

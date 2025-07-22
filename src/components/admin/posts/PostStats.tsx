@@ -9,7 +9,7 @@ interface PostStatsProps {
   year?: number;
 }
 
-const REACTION_TYPES = ['LIKE', 'HEART', 'HAHA', 'SAD', 'ANGRY'] as const;
+const REACTION_TYPES = ['LIKE', 'HEART', 'HAHA', 'SAD', 'ANGRY', 'WOW'] as const;
 
 export function PostStats({ posts, year: yearProp }: PostStatsProps) {
   const [filteredMonth, setFilteredMonth] = useState<number | null>(null);
@@ -30,34 +30,52 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
 
   let chartData = months.map(m => {
     const monthPosts = postsByMonth[m];
-    let LIKE = 0, HEART = 0, HAHA = 0, SAD = 0, ANGRY = 0, Comments = 0, Shares = 0;
+    let LIKE = 0, HEART = 0, HAHA = 0, SAD = 0, ANGRY = 0, WOW = 0, Comments = 0, Shares = 0;
+
+    const userSet = new Set<string>();
     monthPosts.forEach(p => {
       LIKE += p.LIKE || 0;
       HEART += p.HEART || 0;
       HAHA += p.HAHA || 0;
       SAD += p.SAD || 0;
       ANGRY += p.ANGRY || 0;
+      WOW += p.WOW || 0;
       Comments += p.comments || 0;
       Shares += p.shares || 0;
+      // Đếm user từ comments_rel
+      if (Array.isArray(p.comments_rel)) {
+        p.comments_rel.forEach((c) => {
+          if (c && c.userId) userSet.add(c.userId);
+        });
+      }
+      // Đếm user từ reactions
+      if (Array.isArray(p.reactions)) {
+        p.reactions.forEach((r) => {
+          if (r && r.userId) userSet.add(r.userId);
+        });
+      }
     });
     return {
       name: `${monthNames[m]} ${year}`,
       month: m,
-      LIKE, HEART, HAHA, SAD, ANGRY, Comments, Shares,
+      LIKE, HEART, HAHA, SAD, ANGRY, WOW, Comments, Shares,
+      USER: userSet.size,
     };
   });
   if (filteredMonth !== null) {
     chartData = [chartData[filteredMonth]];
   }
 
-  const colors: Record<typeof REACTION_TYPES[number] | 'Comments' | 'Shares', string> = {
+  const colors: Record<typeof REACTION_TYPES[number] | 'Comments' | 'Shares' | 'USER', string> = {
     LIKE: '#3B82F6',
     HEART: '#EF4444',
     HAHA: '#F59E0B',
     SAD: '#6366F1',
     ANGRY: '#F87171',
+    WOW: '#a78bfa',
     Comments: '#8B5CF6',
     Shares: '#10B981',
+    USER: '#0ea5e9',
   };
 
   return (
@@ -120,6 +138,7 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
                 ))}
                 <Bar dataKey="Comments" fill={colors.Comments} />
                 <Bar dataKey="Shares" fill={colors.Shares} />
+                <Bar dataKey="USER" fill={colors.USER} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -156,25 +175,38 @@ function PostMonthDetailTable({ posts, monthName, year }: { posts: Post[], month
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HAHA</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SAD</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ANGRY</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">WOW</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comments</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shares</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">USER_BLOG</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedPosts.map((p, idx) => (
-              <tr key={p.id || idx} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{p.title}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.LIKE || 0}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.HEART || 0}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.HAHA || 0}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.SAD || 0}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.ANGRY || 0}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.comments || 0}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.shares || 0}</td>
-              </tr>
-            ))}
+            {paginatedPosts.map((p, idx) => {
+              const userSet = new Set<string>();
+              if (Array.isArray(p.comments_rel)) {
+                p.comments_rel.forEach((c) => { if (c && c.userId) userSet.add(c.userId); });
+              }
+              if (Array.isArray(p.reactions)) {
+                p.reactions.forEach((r) => { if (r && r.userId) userSet.add(r.userId); });
+              }
+              return (
+                <tr key={p.id || idx} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{p.title}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.LIKE || 0}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.HEART || 0}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.HAHA || 0}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.SAD || 0}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.ANGRY || 0}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.WOW || 0}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.comments || 0}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.shares || 0}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-bold">{userSet.size}</td>
+                </tr>
+              );
+            })}
             {paginatedPosts.length === 0 && (
-              <tr><td colSpan={8} className="text-center text-gray-400 py-4">No posts in this month.</td></tr>
+              <tr><td colSpan={10} className="text-center text-gray-400 py-4">No posts in this month.</td></tr>
             )}
           </tbody>
         </table>

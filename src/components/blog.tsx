@@ -3,7 +3,6 @@ import Link from "next/link";
 
 export default function Blog({
   image,
-  action,
   title,
   author,
   datetime,
@@ -12,7 +11,6 @@ export default function Blog({
 }: {
   title: string;
   image: string | StaticImageData;
-  action: string;
   author: string;
   datetime: string;
   slug: string;

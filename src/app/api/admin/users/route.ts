@@ -127,7 +127,7 @@ export async function PATCH(request: NextRequest) {
     if (!currentUser || currentUser.role.name !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
-    const { address, promote } = await request.json();
+    const { address, name, promote } = await request.json();
     if (!address) {
       return NextResponse.json({ error: 'Missing address' }, { status: 400 });
     }
@@ -138,6 +138,15 @@ export async function PATCH(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+    if (name !== undefined) {
+      if (user.wallet === currentUser.wallet || user.role.name !== 'ADMIN') {
+        await prisma.user.update({ where: { wallet: address }, data: { name } });
+        return NextResponse.json({ success: true });
+      } else {
+        return NextResponse.json({ error: 'Cannot change name of another admin' }, { status: 403 });
+      }
+    }
+
     if (promote) {
       if (user.role.name === 'ADMIN') {
         return NextResponse.json({ error: 'User is already admin' }, { status: 400 });
@@ -152,7 +161,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Cannot demote admin' }, { status: 400 });
     }
   } catch (error) {
-    console.error('Error updating user role:', error);
+    console.error('Error updating user:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 } 

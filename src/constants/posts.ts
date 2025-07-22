@@ -8,15 +8,18 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   views: number;
-  // Thêm các trường reaction cụ thể
+
   LIKE: number;
   HEART: number;
   HAHA: number;
   SAD: number;
   ANGRY: number;
+  WOW?: number; 
   comments: number;
   shares: number;
   media: Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>;
+  comments_rel?: Array<{ id: string; userId: string }>;
+  reactions?: Array<{ type: string; userId: string }>;  
 }
 
 export const ITEMS_PER_PAGE = 6;

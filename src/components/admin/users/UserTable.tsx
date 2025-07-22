@@ -2,6 +2,7 @@ import { Edit, Trash2, Shield, User as UserIcon, Copy as CopyIcon } from 'lucide
 import { User } from '~/constants/users';
 import { WalletAvatar } from '~/components/WalletAvatar';
 import Image from 'next/image';
+import { useToastContext } from "../../toast-provider";
 
 interface UserTableProps {
   users: User[];
@@ -30,6 +31,7 @@ export function UserTable({
   onRoleChange,
   currentUserAddress,
 }: UserTableProps) {
+  const { showSuccess } = useToastContext();
   return (
     <div className="overflow-x-auto">
       <table className="min-w-[700px] md:min-w-full divide-y divide-gray-200">
@@ -83,7 +85,7 @@ export function UserTable({
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-900 font-mono" title={user.address}>{shortenAddress(user.address, 6)}</span>
                   <button
-                    onClick={() => navigator.clipboard.writeText(user.address)}
+                    onClick={() => {navigator.clipboard.writeText(user.address); showSuccess('Copied!');}}
                     className="p-1 hover:bg-gray-100 rounded"
                     title="Copy address"
                   >

@@ -18,9 +18,12 @@ interface Post {
   content: string;
   createdAt: string;
   author: string;
+  authorId?: string;
+  authorWallet?: string;
   tags: { id: string; name: string }[];
   media: { type: string; url: string; id?: string }[];
   comments: { id: string; text: string; author: string; createdAt: string }[];
+  comments_rel?: unknown[];
   shares: number;
   reactions: { type: string }[];
 }
@@ -30,10 +33,28 @@ interface Tag {
   name: string;
 }
 
-type RawComment = { id: string; text: string; author: string; createdAt: string };
+interface Comment {
+  id: string;
+  content: string;
+  createdAt: string;
+  userId: string;
+  user?: {
+    wallet?: string;
+    image?: string;
+  } | null;
+  parentCommentId?: string | null;
+  replies?: Comment[];
+  parentUserId?: string;
+  parentAuthor?: string;
+  author?: string;
+  time?: string;
+  avatar?: string;
+  isPostAuthor?: boolean;
+}
+
 
 export default function BlogDetailPage() {
-  const params = useParams();
+  const params: Record<string, string> = useParams();
   const [post, setPost] = useState<Post | null>(null);
   const [reactions, setReactions] = useState<{ [type: string]: number }>({});
   const { data: session } = useSession();
@@ -41,30 +62,30 @@ export default function BlogDetailPage() {
   const [showReactions, setShowReactions] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [currentUserReaction, setCurrentUserReaction] = useState<string | null>(null);
+  const [showAllComments, setShowAllComments] = useState(true);
 
+ 
   useEffect(() => {
+    if (!params.slug) return;
     fetch(`/api/admin/posts/${params.slug}?public=1`)
       .then(res => res.json())
       .then(data => {
         setPost(data.post);
       });
-
-    if (params.slug) {
-      fetch(`/api/blog/react?postId=${params.slug}`)
+    fetch(`/api/blog/react?postId=${params.slug}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.reactions) setReactions(data.reactions);
+      });
+    if (isLoggedIn) {
+      fetch(`/api/blog/react?postId=${params.slug}&me=1`)
         .then(res => res.json())
         .then(data => {
-          if (data && data.reactions) setReactions(data.reactions);
+          if (data && data.currentUserReaction) setCurrentUserReaction(data.currentUserReaction);
+          else setCurrentUserReaction(null);
         });
-      if (isLoggedIn) {
-        fetch(`/api/blog/react?postId=${params.slug}&me=1`)
-          .then(res => res.json())
-          .then(data => {
-            if (data && data.currentUserReaction) setCurrentUserReaction(data.currentUserReaction);
-            else setCurrentUserReaction(null);
-          });
-      } else {
-        setCurrentUserReaction(null);
-      }
+    } else {
+      setCurrentUserReaction(null);
     }
   }, [params.slug, isLoggedIn]);
 
@@ -91,6 +112,25 @@ export default function BlogDetailPage() {
     setCurrentUserReaction(type);
   };
 
+  const handleSubmitComment = async (commentText: string) => {
+    if (!post) return;
+    const res = await fetch("/api/blog/comment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ postId: post.id, content: commentText }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data?.error || "Failed to comment. Please login and try again.");
+      return;
+    }
+    fetch(`/api/admin/posts/${post.id}?public=1`)
+      .then(res => res.json())
+      .then(data => {
+        setPost(data.post);
+      });
+  };
+
   if (!post) return <BlogDetailSkeleton />;
 
   function getYoutubeIdFromUrl(url: string) {
@@ -108,6 +148,84 @@ export default function BlogDetailPage() {
     SAD: "😢",
     ANGRY: "😠"
   };
+
+
+  function flattenComments(comments: { id: string; text?: string; content?: string; createdAt?: string; userId?: string; user?: { wallet?: string; image?: string } | null; parentCommentId?: string | null; author?: string; avatar?: string; }[]): Comment[] {
+    return comments.map((c) => ({
+      id: c.id,
+      content: c.text ?? c.content ?? '',
+      createdAt: c.createdAt ?? '',
+      userId: c.userId ?? '',
+      user: c.user ?? null,
+      parentCommentId: c.parentCommentId !== undefined ? c.parentCommentId : null,
+      replies: [],
+      author: c.user?.wallet ?? c.author ?? '',
+      avatar: c.user?.image ?? c.avatar ?? '',
+    }));
+  }
+
+  function buildNestedComments(flatComments: Comment[], postId: string, authorId: string, authorWallet?: string) {
+    const commentMap = new Map<string, Comment & { replies: Comment[]; parentUserId?: string; parentAuthor?: string }>();
+    flatComments.forEach((c) => commentMap.set(c.id, { ...c, replies: [] }));
+    const rootComments: (Comment & { replies: Comment[]; parentUserId?: string; parentAuthor?: string })[] = [];
+    function getDepth(c: Comment & { parentCommentId?: string | null }): number {
+      let depth = 1;
+      let cur = c;
+      while (cur.parentCommentId) {
+        const parent = commentMap.get(cur.parentCommentId);
+        if (!parent) break;
+        depth++;
+        cur = parent;
+      }
+      return depth;
+    }
+    flatComments.forEach((c) => {
+      if (!c.replies) c.replies = [];
+      if (!c.author) c.author = '';
+      if (!c.createdAt) c.createdAt = '';
+      if (c.parentCommentId) {
+        let parent = commentMap.get(c.parentCommentId);
+        const depth = getDepth(c);
+        if (depth > 3) {
+          let cur = c;
+          let d = depth;
+          while (d > 3 && cur.parentCommentId) {
+            cur = commentMap.get(cur.parentCommentId)!;
+            d--;
+          }
+          if (!cur.replies) cur.replies = [];
+          parent = { ...cur, replies: cur.replies ?? [] };
+        }
+        if (parent) {
+          commentMap.get(c.id)!.parentUserId = parent.userId;
+          commentMap.get(c.id)!.parentAuthor = parent.user?.wallet || parent.author || '';
+          if (!parent.replies) parent.replies = [];
+          parent.replies.push(commentMap.get(c.id)!);
+        }
+      } else {
+        rootComments.push(commentMap.get(c.id)!);
+      }
+    });
+    rootComments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    function mapComment(c: Comment & { replies?: Comment[]; parentUserId?: string; parentAuthor?: string }): Comment {
+      const isPostAuthor = !!(c.userId && authorId && c.userId === authorId);
+      return {
+        id: c.id,
+        userId: c.userId,
+        author: isPostAuthor ? (authorWallet || c.user?.wallet || c.author || '') : (c.user?.wallet ?? c.author ?? ''),
+        content: c.content ?? '',
+        createdAt: c.createdAt ?? '',
+        time: c.time ?? c.createdAt ?? '',
+        avatar: c.avatar ?? '',
+        replies: (c.replies ?? []).map(mapComment), // ensure recursive mapping for replies
+        parentCommentId: c.parentCommentId,
+        parentUserId: c.parentUserId,
+        parentAuthor: c.parentAuthor,
+        isPostAuthor,
+      };
+    }
+    return rootComments.map(mapComment);
+  }
 
   return (
     <main className="relative min-h-screen bg-gradient-to-br from-gray-950 via-gray-950 to-gray-900">
@@ -245,7 +363,10 @@ export default function BlogDetailPage() {
                 )}
               </div>
               
-              <button className="flex flex-1 items-center justify-center gap-2 py-3 text-gray-400 hover:text-green-400 transition-colors group">
+              <button 
+                className="flex flex-1 items-center justify-center gap-2 py-3 text-gray-400 hover:text-green-400 transition-colors group"
+                onClick={() => setShowAllComments((v) => !v)}
+              >
                 <MessageCircle className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 <span className="font-medium">Comment</span>
               </button>
@@ -257,17 +378,12 @@ export default function BlogDetailPage() {
                 <span className="font-medium">Share</span>
               </button>
             </div>
-            <CommentSection comments={(post.comments || []).map((c: RawComment) => ({
-              id: c.id,
-              author: c.author,
-              content: c.text,
-              time: c.createdAt,
-              avatar: '',
-              reactions: {
-                like: 0, love: 0, haha: 0, wow: 0, sad: 0, angry: 0
-              },
-              replies: [],
-            }))} />
+            <CommentSection 
+              comments={buildNestedComments(flattenComments(post.comments || []), post.id, post.authorId || '', post.authorWallet)}
+              postId={post.id}
+              onSubmitComment={handleSubmitComment}
+              showAllComments={showAllComments}
+            />
           </div>
 
           <footer className="mt-16 pt-8 border-t border-gray-800">

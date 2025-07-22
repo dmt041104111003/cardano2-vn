@@ -18,6 +18,7 @@ export function TagsPageClient() {
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newTagName, setNewTagName] = useState('');
+  const [editTagName, setEditTagName] = useState('');
   const { showSuccess, showError } = useToastContext();
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export function TagsPageClient() {
     } catch {
       setTags([]);
     } finally {
-      // setLoading(false); // Xóa: loading ở dòng 19
+
     }
   };
 
@@ -59,7 +60,7 @@ export function TagsPageClient() {
         showError('Failed to create tag');
       }
     } finally {
-      // setLoading(false); // Xóa: loading ở dòng 19
+
     }
   };
 
@@ -79,7 +80,7 @@ export function TagsPageClient() {
         showError('Failed to delete tag');
       }
     } finally {
-      // setLoading(false); // Xóa: loading ở dòng 19
+
     }
   };
 
@@ -100,12 +101,21 @@ export function TagsPageClient() {
       }
     } finally {
       setEditingTag(null);
-      // setLoading(false); // Xóa: loading ở dòng 19
+
     }
   };
 
   const handleEdit = (tag: Tag) => {
     setEditingTag(tag);
+    setEditTagName(tag.name || '');
+  };
+
+  const handleSaveEdit = async () => {
+    if (editingTag && editTagName.trim()) {
+      await handleSave(editingTag.id, editTagName.trim());
+      setEditingTag(null);
+      setEditTagName('');
+    }
   };
 
   const handleCancel = () => {
@@ -208,6 +218,23 @@ export function TagsPageClient() {
           onPageChange={handlePageChange}
         />
       </div>
+      <Modal isOpen={!!editingTag} onClose={handleCancel} title="Edit Tag Name">
+        <input
+          className="w-full border rounded px-3 py-2 mb-4"
+          placeholder="Tag name"
+          value={editTagName}
+          onChange={e => setEditTagName(e.target.value)}
+          autoFocus
+        />
+        <div className="flex justify-end gap-2">
+          <button className="px-4 py-2 bg-gray-200 rounded" onClick={handleCancel}>Cancel</button>
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+            onClick={handleSaveEdit}
+            disabled={!editTagName.trim()}
+          >Save</button>
+        </div>
+      </Modal>
     </div>
   );
 }
