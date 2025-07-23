@@ -1,12 +1,10 @@
 import type { NextConfig } from 'next';
-import nextra from 'nextra';
+import { withNextra } from 'nextra';
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     domains: ['res.cloudinary.com', 'img.youtube.com'],
   },
 };
 
-export default nextra({
-  defaultShowCopyCode: true,
-})(nextConfig);
+export default withNextra()(nextConfig);
