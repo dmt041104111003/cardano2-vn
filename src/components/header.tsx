@@ -5,6 +5,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { navbars } from "~/constants/navbars";
 import { images } from "~/public/images";
@@ -19,6 +20,8 @@ export default function Header() {
   const { data: session } = useSession();
   const { isAdmin } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+  if (pathname.startsWith("/docs")) return null;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -86,19 +89,10 @@ export default function Header() {
               {session ? (
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
-                    <WalletAvatar
-                      address={(session.user as { address?: string })?.address || null}
-                      size={32}
-                      className="border border-white"
-                    />
-                    <span className="text-sm text-white font-mono">
-                      {formatWalletAddress((session.user as { address?: string })?.address || "")}
-                    </span>
+                    <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-white" />
+                    <span className="text-sm text-white font-mono">{formatWalletAddress((session.user as { address?: string })?.address || "")}</span>
                   </div>
-                  <button
-                    onClick={() => signOut()}
-                    className="font-medium text-gray-300 transition-colors duration-200 hover:text-white"
-                  >
+                  <button onClick={() => signOut()} className="font-medium text-gray-300 transition-colors duration-200 hover:text-white">
                     Sign out
                   </button>
                 </div>
@@ -113,11 +107,7 @@ export default function Header() {
               onClick={toggleMenu}
               className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-200"
             >
-              {isMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </section>
         </div>
@@ -179,11 +169,7 @@ export default function Header() {
                 {session ? (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <WalletAvatar
-                        address={(session.user as { address?: string })?.address || null}
-                        size={32}
-                        className="border border-white"
-                      />
+                      <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-white" />
                       <span className="text-sm text-white font-mono">
                         {formatWalletAddress((session.user as { address?: string })?.address || "")}
                       </span>

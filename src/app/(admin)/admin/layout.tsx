@@ -37,6 +37,11 @@ const adminNavItems = [
   },
 ];
 
+function compact(str?: string | null) {
+  if (!str) return '';
+  return str.length > 12 ? `${str.slice(0, 6)}...${str.slice(-4)}` : str;
+}
+
 export default function AdminLayout({
   children,
 }: {
@@ -44,7 +49,7 @@ export default function AdminLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
-  const { loading, isAdmin } = useUser();
+  const { user, loading, isAdmin } = useUser();
   const router = useRouter();
 
   useEffect(() => {
@@ -58,7 +63,16 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" suppressHydrationWarning>
+    <div className="min-h-screen bg-gray-50 relative" suppressHydrationWarning>
+      <div className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 opacity-3 pointer-events-none select-none block">
+        <img
+          src="/images/common/loading.png"
+          alt="Cardano2VN Logo"
+          className="w-[1200px] h-[1200px] object-contain"
+          draggable={false}
+          style={{ objectPosition: 'left center' }}
+        />
+      </div>
       <AnimatePresence>
         {sidebarOpen && (
           <>
@@ -81,8 +95,19 @@ export default function AdminLayout({
               className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-white shadow-xl"
               suppressHydrationWarning
             >
-              <div className="flex h-16 items-center justify-between px-4">
-                <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+              <div className="flex items-center gap-3 px-4 pt-4 pb-2">
+                {user?.image ? (
+                  <img src={user.image} alt="avatar" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">U</div>
+                )}
+                <div className="flex flex-col min-w-0">
+                  <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+                  <div className="flex flex-col items-start w-[160px] mt-1">
+                    <span className="text-xs text-gray-400 w-full">{user?.id ? compact(user.id) : 'No ID'}</span>
+                    <span className="text-xs text-gray-400 w-full">{user?.address ? compact(user.address) : 'No address'}</span>
+                  </div>
+                </div>
                 <button
                   onClick={() => setSidebarOpen(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -135,8 +160,19 @@ export default function AdminLayout({
       </AnimatePresence>
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col" suppressHydrationWarning>
         <div className="flex flex-col flex-grow bg-white border-r border-gray-200" suppressHydrationWarning>
-          <div className="flex h-16 items-center px-4" suppressHydrationWarning>
-            <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+          <div className="flex items-center gap-3 px-4 pt-4 pb-2">
+            {user?.image ? (
+              <img src={user.image} alt="avatar" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">U</div>
+            )}
+            <div className="flex flex-col min-w-0">
+              <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+              <div className="flex flex-col items-start w-[160px] mt-1">
+                <span className="text-xs text-gray-400 w-full">{user?.id ? compact(user.id) : 'No ID'}</span>
+                <span className="text-xs text-gray-400 w-full">{user?.address ? compact(user.address) : 'No address'}</span>
+              </div>
+            </div>
           </div>
           <div className="flex flex-col gap-2 p-4 border-b border-gray-100">
             <Link

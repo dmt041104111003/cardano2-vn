@@ -1,14 +1,27 @@
-import Sidebar from "~/components/sidebar";
-import { ReactNode } from "react";
+import { Layout, Navbar } from "nextra-theme-docs";
+import { Banner, Search } from "nextra/components";
+import { getPageMap } from "nextra/page-map";
+import "nextra-theme-docs/style.css";
+import { images } from "~/public/images";
+import Image from "next/image";
 
-export default function DocsLayout({ children }: { children: ReactNode }) {
+const banner = <Banner  
+storageKey="some-key">Welcome to Cardano2VN docs</Banner>;
+const navbar = <Navbar logo={<Image className="text-xl h-10 w-auto  font-bold text-white" loading="lazy" src={images.logo} alt="Cardano2vn" />} />;
+
+const search = <Search placeholder="Search docs.."></Search>;
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen">
-      <aside className="hidden lg:block w-80">
-        <Sidebar />
-      </aside>
-
-      <main className="flex-1 px-4 py-8 max-w-3xl mx-auto lg:ml-20 xl:mr-64 prose prose-blue dark:prose-invert">{children}</main>
-    </div>
+    <Layout
+      banner={banner}
+      navbar={navbar}
+      pageMap={await getPageMap()}
+      search={search}
+      editLink={null}
+      feedback={{ content: null }}
+    >
+      {children}
+    </Layout>
   );
 }
