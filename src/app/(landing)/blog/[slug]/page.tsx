@@ -312,7 +312,6 @@ export default function BlogDetailPage() {
               />
               <div className="flex items-center gap-4">
                 <span>{post.comments?.length || 0} comments</span>
-                <span>{post.shares || 0} shares</span>
               </div>
             </div>
             <div className="flex items-center border-t border-gray-800 pt-4">

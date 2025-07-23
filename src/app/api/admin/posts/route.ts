@@ -68,8 +68,8 @@ export async function GET(request: NextRequest) {
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
         comments: post.comments_rel.length,
-        comments_rel: post.comments_rel, // thêm dòng này
-        reactions: post.reactions,       // thêm dòng này
+        comments_rel: post.comments_rel, 
+        reactions: post.reactions,      
         author: post.author?.name || 'Admin',
         tags: post.tags?.map(t => t.tag) || [],
         ...reactionCount,
