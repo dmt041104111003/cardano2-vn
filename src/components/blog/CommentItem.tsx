@@ -156,9 +156,16 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
     };
   }, [showEmojiPicker]);
 
+
+  const maxIndentMobile = 8; 
+  const maxIndentDesktop = 12; 
+  const indentMobile = Math.min((depth + 1) * 4, maxIndentMobile);
+  const indentDesktop = Math.min((depth + 1) * 6, maxIndentDesktop); 
+
   return (
     <div
-      className={comment.parentCommentId ? `relative ml-${Math.min((depth+1)*6,18)}` : ''}
+      className={comment.parentCommentId ? `relative ml-[${indentMobile}px] md:ml-[${indentDesktop}px]` : ''}
+      style={{ maxWidth: '100%' }}
       onMouseEnter={() => setHoveredId && setHoveredId(comment.id)}
       onMouseLeave={() => setHoveredId && setHoveredId(null)}
     >
@@ -167,8 +174,8 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
           <div className={`border-l-2 h-full ml-2 transition-colors duration-200 ${isHoveredReply ? 'border-blue-400' : 'border-gray-700'}`}></div>
         </div>
       )}
-      <div className={comment.parentCommentId ? 'pl-4' : ''}>
-        <div className={`space-y-3 transition-colors duration-200 ${isParentHighlight ? 'bg-blue-900/30' : ''}`}>
+      <div className={comment.parentCommentId ? 'pl-2 md:pl-4 w-full max-w-full' : 'w-full max-w-full'}>
+        <div className={`space-y-3 transition-colors duration-200 ${isParentHighlight ? 'bg-blue-900/30' : ''}`} style={{wordBreak: 'break-word'}}>
           <div className="flex items-start gap-3">
             {avatarUrl ? (
               <Image src={avatarUrl} alt="avatar" width={32} height={32} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
