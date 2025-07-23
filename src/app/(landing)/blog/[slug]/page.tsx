@@ -13,6 +13,7 @@ import BlogDetailSkeleton from "~/components/blog/BlogDetailSkeleton";
 import { useSession } from "next-auth/react";
 import { useToastContext } from '~/components/toast-provider';
 import { useRef } from 'react';
+import { TipTapPreview } from '~/components/ui/tiptap-preview';
 
 interface Post {
   id: string;
@@ -348,12 +349,7 @@ export default function BlogDetailPage() {
               )}
             </div>
           </div>
-          <div className="prose prose-invert prose-lg max-w-none" ref={proseRef}>
-            <div 
-              className="text-gray-300 leading-relaxed space-y-6"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-          </div>
+          <TipTapPreview content={post.content} />
 
           <div className="mt-12 border-t border-gray-800 pt-8">
             <div className="mb-6 flex items-center justify-between text-sm text-gray-400">

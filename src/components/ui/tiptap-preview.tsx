@@ -16,7 +16,7 @@ import { Subscript } from '@tiptap/extension-subscript';
 import { Superscript } from '@tiptap/extension-superscript';
 import { Highlight } from '@tiptap/extension-highlight';
 import { createLowlight, common } from 'lowlight';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { tiptapPreviewStyles } from './tiptap/styles';
 
 const lowlight = createLowlight(common);
@@ -28,10 +28,50 @@ interface TipTapPreviewProps {
 
 export function TipTapPreview({ content, className = "" }: TipTapPreviewProps) {
   const [isClient, setIsClient] = useState(false);
+  const proseRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+
+  useEffect(() => {
+    if (!proseRef.current) return;
+    const prose = proseRef.current;
+    prose.querySelectorAll('.code-copy-btn').forEach(btn => btn.remove());
+    prose.querySelectorAll('pre > code').forEach((codeBlock) => {
+      const pre = codeBlock.parentElement;
+      if (!pre) return;
+      const btn = document.createElement('button');
+      btn.innerHTML = `
+        <span class="flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2" stroke="currentColor" fill="none"/><rect x="3" y="3" width="13" height="13" rx="2" stroke-width="2" stroke="currentColor" fill="none"/></svg>
+          <span class="font-medium">Copy</span>
+        </span>
+      `;
+      btn.className = 'code-copy-btn absolute top-2 right-2 px-2 py-1 text-xs bg-transparent text-gray-500 rounded shadow hover:bg-blue-500/20 hover:text-blue-600 transition-all duration-150 z-10 flex items-center gap-1';
+      btn.style.position = 'absolute';
+      btn.style.top = '8px';
+      btn.style.right = '8px';
+      btn.onclick = async (e) => {
+        e.stopPropagation();
+        try {
+          await navigator.clipboard.writeText(codeBlock.textContent || '');
+          btn.innerHTML = 'Copied!';
+          setTimeout(() => {
+            btn.innerHTML = `
+              <span class="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2" stroke="currentColor" fill="none"/><rect x="3" y="3" width="13" height="13" rx="2" stroke-width="2" stroke="currentColor" fill="none"/></svg>
+                <span class="font-medium">Copy</span>
+              </span>
+            `;
+          }, 1200);
+        } catch {}
+      };
+      pre.style.position = 'relative';
+      pre.appendChild(btn);
+    });
+  }, [content, isClient]);
 
   const editor = useEditor({
     extensions: [
@@ -46,29 +86,29 @@ export function TipTapPreview({ content, className = "" }: TipTapPreviewProps) {
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-500 underline cursor-pointer',
+          class: 'text-blue-500 underline cursor-pointer mx-auto',
         },
       }),
       Image.configure({
         HTMLAttributes: {
-          class: 'max-w-full h-auto rounded-lg shadow-md',
+          class: 'max-w-full h-auto rounded-lg shadow-md mx-auto',
         },
       }),
       Table.configure({
         resizable: true,
         HTMLAttributes: {
-          class: 'border-collapse border border-gray-300 w-full',
+          class: 'border-collapse border border-gray-300 w-full mx-auto',
         },
       }),
       TableRow,
       TableHeader.configure({
         HTMLAttributes: {
-          class: 'bg-gray-100 font-bold border border-gray-300 p-2',
+          class: 'bg-gray-100 font-bold border border-gray-300 p-2 mx-auto',
         },
       }),
       TableCell.configure({
         HTMLAttributes: {
-          class: 'border border-gray-300 p-2',
+          class: 'border border-gray-300 p-2 mx-auto',
         },
       }),
       TextAlign.configure({
@@ -108,8 +148,10 @@ export function TipTapPreview({ content, className = "" }: TipTapPreviewProps) {
   }
 
   return (
-    <div className={`prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto max-w-none ${className}`}>
-
+    <div
+      ref={proseRef}
+      className={`prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto max-w-none ${className}`}
+    >
       <EditorContent 
         editor={editor} 
         className="focus:outline-none"

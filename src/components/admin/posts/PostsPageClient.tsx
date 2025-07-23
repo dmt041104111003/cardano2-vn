@@ -105,11 +105,17 @@ export function PostsPageClient() {
 
   const handleSavePost = async (newPost: Post) => {
     try {
+      const backendPost = {
+        ...newPost,
+        media: Array.isArray(newPost.media)
+          ? newPost.media.map(m => ({ ...m, type: m.type.toUpperCase() }))
+          : [],
+      };
       if (editingPost && editingPost.id) {
         const res = await fetch(`/api/admin/posts/${editingPost.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newPost),
+          body: JSON.stringify(backendPost),
         });
         if (res.ok) {
           setPosts(posts => posts.map(p => p.id === editingPost.id ? { ...p, ...newPost, id: editingPost.id } : p));
@@ -121,7 +127,7 @@ export function PostsPageClient() {
         const res = await fetch('/api/admin/posts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newPost),
+          body: JSON.stringify(backendPost),
         });
         if (res.ok) {
           const data = await res.json();
