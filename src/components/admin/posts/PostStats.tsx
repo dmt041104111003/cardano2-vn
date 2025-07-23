@@ -30,7 +30,7 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
 
   let chartData = months.map(m => {
     const monthPosts = postsByMonth[m];
-    let LIKE = 0, HEART = 0, HAHA = 0, SAD = 0, ANGRY = 0, WOW = 0, Comments = 0, Shares = 0;
+    let LIKE = 0, HEART = 0, HAHA = 0, SAD = 0, ANGRY = 0, WOW = 0, Comments = 0;
 
     const userSet = new Set<string>();
     monthPosts.forEach(p => {
@@ -41,7 +41,6 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
       ANGRY += p.ANGRY || 0;
       WOW += p.WOW || 0;
       Comments += p.comments || 0;
-      Shares += p.shares || 0;
       // Đếm user từ comments_rel
       if (Array.isArray(p.comments_rel)) {
         p.comments_rel.forEach((c) => {
@@ -58,7 +57,7 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
     return {
       name: `${monthNames[m]} ${year}`,
       month: m,
-      LIKE, HEART, HAHA, SAD, ANGRY, WOW, Comments, Shares,
+      LIKE, HEART, HAHA, SAD, ANGRY, WOW, Comments,
       USER: userSet.size,
     };
   });
@@ -66,7 +65,7 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
     chartData = [chartData[filteredMonth]];
   }
 
-  const colors: Record<typeof REACTION_TYPES[number] | 'Comments' | 'Shares' | 'USER', string> = {
+  const colors: Record<typeof REACTION_TYPES[number] | 'Comments' | 'USER', string> = {
     LIKE: '#3B82F6',
     HEART: '#EF4444',
     HAHA: '#F59E0B',
@@ -74,7 +73,6 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
     ANGRY: '#F87171',
     WOW: '#a78bfa',
     Comments: '#8B5CF6',
-    Shares: '#10B981',
     USER: '#0ea5e9',
   };
 
@@ -137,7 +135,6 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
                   />
                 ))}
                 <Bar dataKey="Comments" fill={colors.Comments} />
-                <Bar dataKey="Shares" fill={colors.Shares} />
                 <Bar dataKey="USER" fill={colors.USER} />
               </BarChart>
             </ResponsiveContainer>
@@ -177,7 +174,6 @@ function PostMonthDetailTable({ posts, monthName, year }: { posts: Post[], month
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ANGRY</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">WOW</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comments</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shares</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">USER_BLOG</th>
             </tr>
           </thead>
@@ -200,13 +196,12 @@ function PostMonthDetailTable({ posts, monthName, year }: { posts: Post[], month
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.ANGRY || 0}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.WOW || 0}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.comments || 0}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{p.shares || 0}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-bold">{userSet.size}</td>
                 </tr>
               );
             })}
             {paginatedPosts.length === 0 && (
-              <tr><td colSpan={10} className="text-center text-gray-400 py-4">No posts in this month.</td></tr>
+              <tr><td colSpan={9} className="text-center text-gray-400 py-4">No posts in this month.</td></tr>
             )}
           </tbody>
         </table>
