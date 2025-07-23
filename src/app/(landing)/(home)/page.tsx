@@ -11,8 +11,16 @@ import { protocols } from "~/constants/protocols";
 import Protocol from "~/components/protocol";
 import { builds } from "~/constants/builds";
 import Build from "~/components/build";
+import Loading from '~/components/ui/Loading';
+import { useEffect, useState } from 'react';
 
 export default function HomePage() {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const timeout = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timeout);
+  }, []);
+  if (loading) return <Loading />;
   return (
     <main>
       {/* Landing */}

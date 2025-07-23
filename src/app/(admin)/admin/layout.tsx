@@ -17,6 +17,7 @@ import { useUser } from '~/hooks/useUser';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import Loading from '~/components/ui/Loading';
 
 const adminNavItems = [
   {
@@ -52,11 +53,8 @@ export default function AdminLayout({
     }
   }, [loading, isAdmin, router]);
 
-  if (loading) {
-    return <div className="flex items-center justify-center h-screen text-lg">Loading...</div>;
-  }
-  if (!isAdmin) {
-    return null;
+  if (loading || !isAdmin) {
+    return <Loading />;
   }
 
   return (
