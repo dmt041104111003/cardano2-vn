@@ -1,10 +1,12 @@
-import type { NextConfig } from 'next';
-import { withNextra } from 'nextra';
+import type { NextConfig } from "next";
+import withMDX from "@next/mdx";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   images: {
-    domains: ['res.cloudinary.com', 'img.youtube.com'],
+    domains: ["res.cloudinary.com", "img.youtube.com"],
   },
 };
 
-export default withNextra()(nextConfig);
+export default withMDX({
+  extension: /\.mdx?$/,
+})(nextConfig);
