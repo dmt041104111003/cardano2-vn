@@ -339,7 +339,7 @@ export default function BlogDetailPage() {
                 )
               ) : (
                 <Image
-                  src="/images/common/logo.png"
+                  src="/images/common/loading.png"
                   alt={post.title}
                   fill
                   className="object-cover"

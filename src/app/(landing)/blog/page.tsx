@@ -85,7 +85,7 @@ export default function BlogsPage() {
             Array.from({ length: 4 }).map((_, i) => <BlogCardSkeleton key={i} />)
           ) : (
             paginatedPosts.map((post) => {
-              let imageUrl = "/images/common/logo.png";
+              let imageUrl = "/images/common/loading.png";
               if (Array.isArray(post.media) && post.media.length > 0) {
                 const youtubeMedia = post.media.find((m: Media) => m.type === 'YOUTUBE');
                 if (youtubeMedia) {
