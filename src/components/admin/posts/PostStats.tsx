@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useState } from 'react';
 
 import { Pagination } from '~/components/ui/pagination';
@@ -66,14 +66,14 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
   }
 
   const colors: Record<typeof REACTION_TYPES[number] | 'Comments' | 'USER', string> = {
-    LIKE: '#3B82F6',
-    HEART: '#EF4444',
-    HAHA: '#F59E0B',
-    SAD: '#6366F1',
-    ANGRY: '#F87171',
-    WOW: '#a78bfa',
-    Comments: '#8B5CF6',
-    USER: '#0ea5e9',
+    LIKE: '#2563eb',      // xanh dương đậm
+    HEART: '#ef233c',     // đỏ tươi
+    HAHA: '#ffd600',      // vàng tươi
+    SAD: '#38bdf8',       // xanh lam nhạt
+    ANGRY: '#ff6f00',     // cam đậm
+    WOW: '#a020f0',       // tím
+    Comments: '#6b7280',  // xám đậm
+    USER: '#22c55e',      // xanh lá cây
   };
 
   return (
@@ -125,7 +125,6 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
                 <XAxis dataKey="name" />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Legend />
                 {REACTION_TYPES.map((type) => (
                   <Bar
                     key={type}
