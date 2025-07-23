@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import Footer from "~/components/footer";
 import dynamic from "next/dynamic";
 const Header = dynamic(() => import("~/components/header"), { ssr: false });
