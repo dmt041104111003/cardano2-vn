@@ -6,6 +6,7 @@ import { ReplySkeleton } from "./CommentSkeleton";
 import Image from "next/image";
 import { useToastContext } from "../toast-provider";
 import { EMOJIS } from "../../constants/emoji";
+import { useUser } from '~/hooks/useUser';
 
 const MAX_COMMENT_LENGTH = 200;
 
@@ -52,12 +53,14 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
   const [visibleReplies, setVisibleReplies] = useState(2);
   const [expandedComment, setExpandedComment] = useState(false);
   const [loadingReplies, setLoadingReplies] = useState(false);
-  const { showSuccess } = useToastContext();
+  const { showSuccess, showError } = useToastContext();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const handleEmojiClick = (emoji: string) => {
     setReplyText((prev) => prev + emoji);
     setShowEmojiPicker(false);
   };
+
+  const { isAuthenticated } = useUser();
 
   const handleSubmitReply = async (e: React.FormEvent, commentId: string) => {
     e.preventDefault();
@@ -69,6 +72,10 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
   };
 
   const handleReplyClick = () => {
+    if (!isAuthenticated) {
+      showError('You need to sign in to reply to a comment!');
+      return;
+    }
     setActiveReplyId(activeReplyId === comment.id ? null : comment.id);
     if (activeReplyId !== comment.id) {
       if (comment.userId) {
