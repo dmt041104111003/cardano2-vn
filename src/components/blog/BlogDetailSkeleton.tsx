@@ -13,8 +13,10 @@ export default function BlogDetailSkeleton() {
             <div className="mb-6 flex items-center gap-4">
               <div className="h-4 w-32 bg-gray-700 rounded" />
               <div className="h-4 w-20 bg-gray-700 rounded" />
+              <div className="h-4 w-24 bg-blue-700/40 rounded" /> {/* Skeleton cho updated */}
             </div>
             <div className="mb-8 h-12 w-2/3 bg-gray-700 rounded" />
+            <div className="mb-8 h-16 w-1/2 bg-gray-600 rounded-lg" /> {/* Skeleton cho title lớn */}
             <div className="flex flex-wrap gap-2 mt-4 mb-8">
               <div className="h-6 w-20 bg-blue-600/20 rounded-full" />
               <div className="h-6 w-16 bg-blue-600/20 rounded-full" />

@@ -28,6 +28,7 @@ interface Post {
   comments_rel?: unknown[];
   shares: number;
   reactions: { type: string }[];
+  updatedAt?: string;
 }
 
 interface Tag {
@@ -289,6 +290,18 @@ export default function BlogDetailPage() {
               </time>
               <span className="mx-2 text-gray-500">•</span>
               <span className="text-sm text-gray-400">by {post.author || 'Admin'}</span>
+              {post.updatedAt && post.updatedAt !== post.createdAt && (
+                <>
+                  <span className="mx-2 text-gray-500">•</span>
+                  <span className="text-sm text-blue-400">
+                    Updated: {new Date(post.updatedAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                </>
+              )}
             </div>
             <h1 className="mb-8 text-3xl font-bold text-white leading-tight break-words lg:text-5xl xl:text-6xl">
               {post.title}
