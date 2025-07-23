@@ -34,6 +34,12 @@ export default function ShareModal({ isOpen, onClose, blogTitle, blogUrl }: Shar
     onClose();
   };
 
+  const handleTelegramShare = () => {
+    const url = `https://t.me/share/url?url=${encodeURIComponent(blogUrl)}&text=${encodeURIComponent(blogTitle)}`;
+    window.open(url, '_blank', 'width=600,height=400');
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -90,6 +96,24 @@ export default function ShareModal({ isOpen, onClose, blogTitle, blogUrl }: Shar
               <div className="text-left">
                 <div className="font-bold text-white text-lg">Zalo</div>
                 <div className="text-gray-400 text-sm">Share on Zalo</div>
+              </div>
+            </div>
+            <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </button>
+
+          <button 
+            onClick={handleTelegramShare}
+            className="w-full group relative overflow-hidden bg-transparent border border-gray-600/50 hover:border-blue-500/50 rounded-xl p-4 transition-all duration-300 transform hover:scale-[1.02] hover:bg-blue-500/10"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center shadow-lg border border-blue-500/30">
+                <svg className="w-7 h-7 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                </svg>
+              </div>
+              <div className="text-left">
+                <div className="font-bold text-white text-lg">Telegram</div>
+                <div className="text-gray-400 text-sm">Share on Telegram</div>
               </div>
             </div>
             <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
