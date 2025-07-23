@@ -293,7 +293,7 @@ export default function BlogDetailPage() {
               {post.updatedAt && post.updatedAt !== post.createdAt && (
                 <>
                   <span className="mx-2 text-gray-500">•</span>
-                  <span className="text-sm text-blue-400">
+                  <span className="text-sm text-gray-400">
                     Updated: {new Date(post.updatedAt).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
