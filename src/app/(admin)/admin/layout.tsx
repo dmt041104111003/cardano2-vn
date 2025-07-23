@@ -102,7 +102,7 @@ export default function AdminLayout({
                   <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">U</div>
                 )}
                 <div className="flex flex-col min-w-0">
-                  <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+                <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
                   <div className="flex flex-col items-start w-[160px] mt-1">
                     <span className="text-xs text-gray-400 w-full">{user?.id ? compact(user.id) : 'No ID'}</span>
                     <span className="text-xs text-gray-400 w-full">{user?.address ? compact(user.address) : 'No address'}</span>
@@ -167,7 +167,7 @@ export default function AdminLayout({
               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">U</div>
             )}
             <div className="flex flex-col min-w-0">
-              <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+            <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
               <div className="flex flex-col items-start w-[160px] mt-1">
                 <span className="text-xs text-gray-400 w-full">{user?.id ? compact(user.id) : 'No ID'}</span>
                 <span className="text-xs text-gray-400 w-full">{user?.address ? compact(user.address) : 'No address'}</span>
