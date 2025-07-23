@@ -44,7 +44,7 @@ export function useCardanoWallet() {
       if (typeof update === "function") {
         await update();
       }
-      router.push("/");
+      window.location.href = "/";
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to connect to Cardano Wallet";
       setError(errorMessage);
