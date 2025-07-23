@@ -157,6 +157,19 @@ export function TipTapPreview({ content, className = "" }: TipTapPreviewProps) {
         className="focus:outline-none"
       />
       <style jsx global>{tiptapPreviewStyles}</style>
+      <style jsx global>{`
+        .prose a {
+          color: inherit;
+          text-decoration: none;
+          cursor: pointer;
+          transition: color 0.2s;
+          position: relative;
+        }
+        .prose a:hover, .prose a:focus {
+          text-decoration: none;
+          color: #2563eb;
+        }
+      `}</style>
     </div>
   );
 } 
