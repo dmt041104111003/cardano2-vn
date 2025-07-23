@@ -11,6 +11,8 @@ import CommentSection from "~/components/blog/CommentSection";
 import ReactionCount from "~/components/blog/ReactionCount";
 import BlogDetailSkeleton from "~/components/blog/BlogDetailSkeleton";
 import { useSession } from "next-auth/react";
+import { useToastContext } from '~/components/toast-provider';
+import { useRef } from 'react';
 
 interface Post {
   id: string;
@@ -63,6 +65,8 @@ export default function BlogDetailPage() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [currentUserReaction, setCurrentUserReaction] = useState<string | null>(null);
   const [showAllComments, setShowAllComments] = useState(true);
+  const proseRef = useRef<HTMLDivElement>(null);
+  const { showSuccess, showError } = useToastContext();
 
  
   useEffect(() => {
@@ -89,8 +93,41 @@ export default function BlogDetailPage() {
     }
   }, [params.slug, isLoggedIn]);
 
+  useEffect(() => {
+    if (!proseRef.current) return;
+    const prose = proseRef.current;
+    prose.querySelectorAll('.code-copy-btn').forEach(btn => btn.remove());
+    prose.querySelectorAll('pre > code').forEach((codeBlock) => {
+      const pre = codeBlock.parentElement;
+      if (!pre) return;
+      const btn = document.createElement('button');
+      btn.innerHTML = `
+        <span class="flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2" stroke-width="2" stroke="currentColor" fill="none"/><rect x="3" y="3" width="13" height="13" rx="2" stroke-width="2" stroke="currentColor" fill="none"/></svg>
+          <span class="font-medium">Copy</span>
+        </span>
+      `;
+      btn.className = 'code-copy-btn absolute top-2 right-2 px-2 py-1 text-xs bg-transparent text-gray-500 rounded shadow hover:bg-blue-500/20 hover:text-blue-600 transition-all duration-150 z-10 flex items-center gap-1';
+      btn.style.position = 'absolute';
+      btn.style.top = '8px';
+      btn.style.right = '8px';
+      btn.onclick = async (e) => {
+        e.stopPropagation();
+        try {
+          await navigator.clipboard.writeText(codeBlock.textContent || '');
+          showSuccess('Copied!');
+        } catch {}
+      };
+      pre.style.position = 'relative';
+      pre.appendChild(btn);
+    });
+  }, [post?.content]);
+
   const handleReact = async (type: string) => {
-    if (!isLoggedIn || !post) return;
+    if (!isLoggedIn || !post) {
+      showError('You need to sign in to react!');
+      return;
+    }
     setReactions(prev => ({ ...prev, [type]: (prev[type] || 0) + 1 }));
     setCurrentUserReaction(type);
     const res = await fetch("/api/blog/react", {
@@ -101,7 +138,7 @@ export default function BlogDetailPage() {
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       console.error("Reaction API error:", data);
-      alert(data?.error || "Failed to react. Please login and try again.");
+      showError(data?.error || "Failed to react. Please login and try again.");
       return;
     }
     fetch(`/api/blog/react?postId=${post.id}`)
@@ -298,7 +335,7 @@ export default function BlogDetailPage() {
               )}
             </div>
           </div>
-          <div className="prose prose-invert prose-lg max-w-none">
+          <div className="prose prose-invert prose-lg max-w-none" ref={proseRef}>
             <div 
               className="text-gray-300 leading-relaxed space-y-6"
               dangerouslySetInnerHTML={{ __html: post.content }}
