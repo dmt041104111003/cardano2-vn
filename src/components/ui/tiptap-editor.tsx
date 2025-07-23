@@ -17,6 +17,7 @@ import { Superscript } from '@tiptap/extension-superscript';
 import { Highlight } from '@tiptap/extension-highlight';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { createLowlight, common } from 'lowlight';
+import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import {
   Bold,
   Italic,
@@ -218,6 +219,13 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           title="Superscript"
         >
           <SuperscriptIcon className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          className="p-2 rounded hover:bg-gray-200 transition-colors text-gray-600"
+          title="Insert Horizontal Rule"
+        >
+          <span className="block w-6 border-t-2 border-gray-400" style={{ margin: 0 }} />
         </button>
       </div>
 
@@ -429,53 +437,54 @@ export function TipTapEditor({ content, onChange, placeholder }: TipTapEditorPro
       StarterKit.configure({
         bulletList: {
           HTMLAttributes: {
-            class: 'list-disc list-outside ml-6',
+            class: 'list-disc list-outside ml-6 mx-auto',
           },
         },
         orderedList: {
           HTMLAttributes: {
-            class: 'list-decimal list-outside ml-6',
+            class: 'list-decimal list-outside ml-6 mx-auto',
           },
         },
         listItem: {
           HTMLAttributes: {
-            class: 'mb-1',
+            class: 'mb-1 mx-auto',
           },
         },
       }),
+      HorizontalRule,
       CodeBlockLowlight.configure({
         lowlight,
         defaultLanguage: 'javascript',
         HTMLAttributes: {
-          class: 'bg-gray-900 text-gray-100 rounded-lg p-4 my-4 font-mono text-sm overflow-x-auto border border-gray-700 shadow-lg',
+          class: 'bg-gray-900 text-gray-100 rounded-lg p-4 my-4 font-mono text-sm overflow-x-auto border border-gray-700 shadow-lg mx-auto',
         },
       }),
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-500 underline cursor-pointer',
+          class: 'text-blue-500 underline cursor-pointer mx-auto',
         },
       }),
       Image.configure({
         HTMLAttributes: {
-          class: 'max-w-full h-auto rounded-lg shadow-md',
+          class: 'max-w-full h-auto rounded-lg shadow-md mx-auto',
         },
       }),
       Table.configure({
         resizable: true,
         HTMLAttributes: {
-          class: 'border-collapse border border-gray-300 w-full',
+          class: 'border-collapse border border-gray-300 w-full mx-auto',
         },
       }),
       TableRow,
       TableHeader.configure({
         HTMLAttributes: {
-          class: 'bg-gray-100 font-bold border border-gray-300 p-2',
+          class: 'bg-gray-100 font-bold border border-gray-300 p-2 mx-auto',
         },
       }),
       TableCell.configure({
         HTMLAttributes: {
-          class: 'border border-gray-300 p-2',
+          class: 'border border-gray-300 p-2 mx-auto',
         },
       }),
       TextAlign.configure({

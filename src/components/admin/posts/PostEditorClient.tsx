@@ -145,15 +145,13 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       showError('Image or YouTube media is required!');
       return;
     }
-    const normalizedMedia: { type: 'image' | 'youtube' | 'video'; url: string; id: string }[] =
+    const normalizedMedia =
       Array.isArray(postState.media)
-        ? postState.media.map(m => {
-            let type: 'image' | 'youtube' | 'video' = 'image';
-            if (m.type === 'youtube') type = 'youtube';
-            else if (m.type === 'video') type = 'video';
-            else type = 'image';
-            return { ...m, type, id: m.type === 'youtube' ? getYoutubeIdFromUrl(m.url) : m.id };
-          })
+        ? postState.media.map(m => ({
+            ...m,
+            type: m.type.toUpperCase(),
+            id: m.type === 'youtube' ? getYoutubeIdFromUrl(m.url) : m.id,
+          }))
         : [];
     const postData: Post = {
       id: post && typeof post.id === 'string' ? post.id : '',
@@ -161,7 +159,10 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       content: postState.content,
       status: postState.status.toUpperCase() as 'draft' | 'published' | 'archived',
       tags: postState.selectedTags,
-      media: normalizedMedia,
+      media: normalizedMedia.map(m => ({
+        ...m,
+        type: m.type.toLowerCase() as 'image' | 'youtube' | 'video', 
+      })),
       author: post && typeof post.author === 'string' ? post.author : '',
       createdAt: post && typeof post.createdAt === 'string' ? post.createdAt : new Date().toISOString(),
       updatedAt: new Date().toISOString(),
