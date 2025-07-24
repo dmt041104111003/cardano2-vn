@@ -5,6 +5,7 @@ import CommentInput from "./CommentInput";
 import CommentItem from "./CommentItem";
 import { CommentSkeletonList } from "./CommentSkeleton";
 import { useUser } from '~/hooks/useUser';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 
 interface Comment {
@@ -42,49 +43,76 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
+  const commentMutation = useMutation({
+    mutationFn: async (comment: string) => {
+      if (onSubmitComment) await onSubmitComment(comment);
+      return comment;
+    },
+    onMutate: async (comment: string) => {
+      const avatar = user?.image && (user.image.startsWith('http') || user.image.startsWith('data:image')) ? user.image : '';
+      const newComment: Comment = {
+        id: Math.random().toString(36).slice(2),
+        userId: user?.id || '',
+        author: user?.address || 'Unknown',
+        content: comment,
+        createdAt: new Date().toISOString(),
+        time: new Date().toISOString(),
+        avatar,
+        replies: [],
+      };
+      setComments(prev => [newComment, ...prev]);
+      return { previous: comments };
+    },
+    onError: (err, comment, context) => {
+      if (context?.previous) setComments(context.previous);
+    },
+    onSettled: () => {
+    }
+  });
+
   const handleSubmitComment = async (comment: string) => {
-    if (onSubmitComment) await onSubmitComment(comment);
-    const avatar = user?.image && (user.image.startsWith('http') || user.image.startsWith('data:image')) ? user.image : '';
-    const newComment: Comment = {
-      id: Math.random().toString(36).slice(2),
-      userId: user?.id || '',
-      author: user?.address || 'Unknown',
-      content: comment,
-      createdAt: new Date().toISOString(),
-      time: new Date().toISOString(),
-      avatar,
-      replies: [],
-    };
-    setComments(prev => [newComment, ...prev]);
+    commentMutation.mutate(comment);
   };
 
+  const replyMutation = useMutation({
+    mutationFn: async ({ parentId, replyText, userInfo }: { parentId: string, replyText: string, userInfo: { id?: string; address?: string; image?: string } }) => {
+      let realPostId = postId;
+      if (!realPostId && parentId) {
+        const parent = comments.find(c => c.id === parentId);
+        if (parent && parent.postId) realPostId = parent.postId;
+      }
+      if (!realPostId) throw new Error('Cannot determine postId to save reply!');
+      await fetch("/api/blog/comment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: realPostId, content: replyText, parentCommentId: parentId }),
+      });
+      return { parentId, replyText, userInfo };
+    },
+    onMutate: async ({ parentId, replyText, userInfo }) => {
+      const avatar = userInfo?.image && (userInfo.image.startsWith('http') || userInfo.image.startsWith('data:image')) ? userInfo.image : '';
+      const newReply: Comment = {
+        id: Math.random().toString(36).slice(2),
+        userId: userInfo?.id || '',
+        author: userInfo?.address || 'Unknown',
+        content: replyText,
+        createdAt: new Date().toISOString(),
+        time: new Date().toISOString(),
+        avatar,
+        replies: [],
+      };
+      setComments(prev => prev.map((c: Comment) => c.id === parentId ? { ...c, replies: [...(c.replies || []), newReply] } : c));
+      return { previous: comments };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previous) setComments(context.previous);
+    },
+    onSettled: () => {
+    }
+  });
+
   const handleSubmitReply = async (parentId: string, replyText: string, userInfo: { id?: string; address?: string; image?: string }) => {
-    let realPostId = postId;
-    if (!realPostId && parentId) {
-      const parent = comments.find(c => c.id === parentId);
-      if (parent && parent.postId) realPostId = parent.postId;
-    }
-    if (!realPostId) {
-      alert('Cannot determine postId to save reply!');
-      return;
-    }
-    await fetch("/api/blog/comment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ postId: realPostId, content: replyText, parentCommentId: parentId }),
-    });
-    const avatar = userInfo?.image && (userInfo.image.startsWith('http') || userInfo.image.startsWith('data:image')) ? userInfo.image : '';
-    const newReply: Comment = {
-      id: Math.random().toString(36).slice(2),
-      userId: userInfo?.id || '',
-      author: userInfo?.address || 'Unknown',
-      content: replyText,
-      createdAt: new Date().toISOString(),
-      time: new Date().toISOString(),
-      avatar,
-      replies: [],
-    };
-    setComments(prev => prev.map((c: Comment) => c.id === parentId ? { ...c, replies: [...(c.replies || []), newReply] } : c));
+    replyMutation.mutate({ parentId, replyText, userInfo });
   };
 
   const handleLoadMore = () => {

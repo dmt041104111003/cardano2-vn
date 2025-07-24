@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import BlogFilters from "~/components/blog/BlogFilters";
 import BlogCardSkeleton from "~/components/blog/BlogCardSkeleton";
 import { Pagination } from "~/components/ui/pagination";
+import { useQuery } from '@tanstack/react-query';
 
 interface Media {
   id: string;
@@ -33,24 +34,40 @@ function getYoutubeIdFromUrl(url: string) {
 }
 
 export default function BlogsPage() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
 
-  useEffect(() => {
-    fetch("/api/admin/posts?public=1")
-      .then(res => res.json())
-      .then(data => setPosts(Array.isArray(data.posts) ? data.posts : []));
-  }, []);
+  // Dùng useQuery để fetch posts
+  const {
+    data: postsData,
+    isLoading: loadingPosts,
+    refetch: refetchPosts,
+  } = useQuery({
+    queryKey: ['public-posts'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/posts?public=1');
+      if (!res.ok) throw new Error('Failed to fetch posts');
+      return res.json();
+    }
+  });
+  const posts: BlogPost[] = postsData?.posts || [];
 
-  useEffect(() => {
-    fetch("/api/admin/tags")
-      .then(res => res.json())
-      .then(data => setAllTags(Array.isArray(data.tags) ? data.tags : []));
-  }, []);
+  // Dùng useQuery để fetch tags
+  const {
+    data: tagsData,
+    isLoading: loadingTags,
+    refetch: refetchTags,
+  } = useQuery({
+    queryKey: ['public-tags'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/tags');
+      if (!res.ok) throw new Error('Failed to fetch tags');
+      return res.json();
+    }
+  });
+  const allTags: Tag[] = tagsData?.tags || [];
 
   const filteredPosts = posts.filter(post => {
     const matchTitle = post.title.toLowerCase().includes(search.toLowerCase());

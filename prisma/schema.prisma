@@ -54,6 +54,8 @@ model User {
   reactions Reaction[]
   sessions  Session[]
   media     Media[]   @relation("UserMedia")
+
+  @@index([createdAt])
 }
 
 model Role {
@@ -82,6 +84,10 @@ model Post {
   comments_rel  Comment[]   @relation("PostComments")
   reactions     Reaction[]
   media         Media[]     @relation("PostMedia")
+
+  @@index([status])
+  @@index([authorId])
+  @@index([createdAt])
 }
 
 model Comment {
@@ -98,6 +104,10 @@ model Comment {
 
   isApproved        Boolean     @default(false)
   createdAt         DateTime    @default(now())
+
+  @@index([postId])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model Reaction {
@@ -124,6 +134,10 @@ model Media {
   postId      String?   
   post        Post?     @relation("PostMedia", fields: [postId], references: [id], onDelete: SetNull)
   user        User?     @relation("UserMedia", fields: [uploadedBy], references: [id], onDelete: SetNull)
+
+  @@index([type])
+  @@index([uploadedBy])
+  @@index([uploadedAt])
 }
 
 model Tag {
@@ -131,6 +145,8 @@ model Tag {
   name       String
   createdAt  DateTime  @default(now())
   posts      PostTag[]
+
+  @@index([name])
 }
 
 model PostTag {

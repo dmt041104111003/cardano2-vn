@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useToastContext } from '~/components/toast-provider';
+import { useQuery } from '@tanstack/react-query';
 
 interface Media {
   id: string;
@@ -13,25 +14,16 @@ interface Media {
   usedInPosts?: string[];
 }
 
-interface MediaStats {
-  total: number;
-  images: number;
-  documents: number;
-  videos: number;
-  unused: number;
-}
+// interface MediaStats {
+//   total: number;
+//   images: number;
+//   documents: number;
+//   videos: number;
+//   unused: number;
+// }
 
 export function useMediaData() {
-  const [media, setMedia] = useState<Media[]>([]);
   const [filteredMedia, setFilteredMedia] = useState<Media[]>([]);
-  const [stats, setStats] = useState<MediaStats>({
-    total: 0,
-    images: 0,
-    documents: 0,
-    videos: 0,
-    unused: 0,
-  });
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [sortBy, setSortBy] = useState('date');
@@ -40,24 +32,26 @@ export function useMediaData() {
 
   const { showSuccess, showError } = useToastContext();
 
-  const fetchMedia = async () => {
-    try {
-      setLoading(true);
+  const {
+    data: queryData,
+    isLoading: loading,
+    refetch: fetchMedia,
+  } = useQuery({
+    queryKey: ['media-list'],
+    queryFn: async () => {
       const response = await fetch('/api/admin/media');
-      if (response.ok) {
-        const data = await response.json();
-        setMedia(data.media);
-        setStats(data.stats);
-        setTimeout(() => filterAndSortMedia(), 0);
-      } else {
-        showError('Failed to fetch media', 'Could not load media files.');
-      }
-    } catch (error) {
-      console.error('Error fetching media:', error);
-      showError('Error fetching media', 'An error occurred while loading media files.');
-    } finally {
-      setLoading(false);
+      if (!response.ok) throw new Error('Failed to fetch media');
+      return response.json();
     }
+  });
+
+  const media = queryData?.media || [];
+  const stats = queryData?.stats || {
+    total: 0,
+    images: 0,
+    documents: 0,
+    videos: 0,
+    unused: 0,
   };
 
   const filterAndSortMedia = () => {
@@ -85,11 +79,9 @@ export function useMediaData() {
         }
       });
     }
-
     // Sort
     filtered.sort((a, b) => {
       let aValue: unknown, bValue: unknown;
-      
       switch (sortBy) {
         case 'name':
           aValue = a.originalName.toLowerCase();
@@ -101,14 +93,12 @@ export function useMediaData() {
           bValue = new Date(b.createdAt).getTime();
           break;
       }
-
       if (sortOrder === 'asc') {
         return (aValue as number) > (bValue as number) ? 1 : -1;
       } else {
         return (aValue as number) < (bValue as number) ? 1 : -1;
       }
     });
-
     setFilteredMedia(filtered);
   };
 
@@ -119,8 +109,7 @@ export function useMediaData() {
       });
 
       if (response.ok) {
-        setMedia(prev => prev.filter(item => item.id !== id));
-        await fetchMedia();
+        await fetchMedia(); // Refetch to update the list
         filterAndSortMedia();
         showSuccess('Media deleted', 'The media file has been deleted successfully.');
       } else {
