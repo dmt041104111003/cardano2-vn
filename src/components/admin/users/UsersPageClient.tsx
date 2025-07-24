@@ -9,9 +9,9 @@ import { UserTable } from '~/components/admin/users/UserTable';
 import { Pagination } from '~/components/ui/pagination';
 import Modal from '~/components/admin/common/Modal';
 import { useToastContext } from '~/components/toast-provider';
+import { useQuery } from '@tanstack/react-query';
 
 export function UsersPageClient() {
-  const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'active' | 'inactive' | 'admin' | 'user'>('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,8 +23,21 @@ export function UsersPageClient() {
   const [editUserName, setEditUserName] = useState('');
   const { showSuccess, showError } = useToastContext();
 
+  const {
+    data: queryData,
+    isLoading: loading,
+    refetch: fetchUsers,
+  } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/users', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch users');
+      return res.json();
+    }
+  });
+  const users: User[] = queryData?.users || [];
+
   useEffect(() => {
-    fetchUsers();
     const session = window.sessionStorage.getItem('next-auth.session');
     if (session) {
       try {
@@ -33,18 +46,6 @@ export function UsersPageClient() {
       } catch {}
     }
   }, []);
-
-  const fetchUsers = async () => {
-    try {
-      const res = await fetch('/api/admin/users', { credentials: 'include' });
-      if (!res.ok) throw new Error('Failed to fetch users');
-      const data = await res.json();
-      setUsers(data.users);
-    } catch {
-      setUsers([]);
-    } finally {
-    }
-  };
 
   const handleCreateUser = async (address: string, name: string) => {
     try {

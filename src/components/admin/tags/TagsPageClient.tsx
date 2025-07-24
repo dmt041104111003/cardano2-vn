@@ -9,9 +9,9 @@ import { TagTable } from '~/components/admin/tags/TagTable';
 import { Pagination } from '~/components/ui/pagination';
 import Modal from '~/components/admin/common/Modal';
 import { useToastContext } from '~/components/toast-provider';
+import { useQuery } from '@tanstack/react-query';
 
 export function TagsPageClient() {
-  const [tags, setTags] = useState<Tag[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'newest'>('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,28 +21,23 @@ export function TagsPageClient() {
   const [editTagName, setEditTagName] = useState('');
   const { showSuccess, showError } = useToastContext();
 
-  useEffect(() => {
-    fetchTags();
-  }, []);
-
-  const fetchTags = async () => {
-    try {
+  const {
+    data: queryData,
+    isLoading: loading,
+    refetch: fetchTags,
+  } = useQuery({
+    queryKey: ['admin-tags'],
+    queryFn: async () => {
       const res = await fetch('/api/admin/tags', { credentials: 'include' });
-      const data = await res.json();
-      if (Array.isArray(data.tags)) {
-        setTags(data.tags.map((t: Tag) => ({
-          id: t.id,
-          name: t.name,
-          createdAt: t.createdAt,
-          postCount: t._count?.posts ?? t.postCount ?? 0,
-        })));
-      }
-    } catch {
-      setTags([]);
-    } finally {
-
+      if (!res.ok) throw new Error('Failed to fetch tags');
+      return res.json();
     }
-  };
+  });
+  const tags: Tag[] = queryData?.tags || [];
+
+  useEffect(() => {
+    // Bỏ useEffect fetchTags
+  }, []);
 
   const handleCreateTag = async (newName: string) => {
     if (!newName) return;

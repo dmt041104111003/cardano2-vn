@@ -11,21 +11,32 @@ import { Pagination } from '~/components/ui/pagination';
 import { BarChart3, Edit3 } from 'lucide-react';
 import { useToastContext } from '~/components/toast-provider';
 import { AdminStats } from '~/components/admin/common/AdminStats';
+import { useQuery } from '@tanstack/react-query';
 
 export function PostsPageClient() {
-  const [posts, setPosts] = useState<Post[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [activeTab, setActiveTab] = useState<'management' | 'create'>('management');
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [selectedYear] = useState<number>(new Date().getFullYear());
   useEffect(() => { setIsClient(true); }, []);
+  const {
+    data: queryData,
+    isLoading: loading,
+    refetch: fetchPosts,
+  } = useQuery({
+    queryKey: ['admin-posts'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/posts');
+      if (!res.ok) throw new Error('Failed to fetch posts');
+      return res.json();
+    }
+  });
+  const posts: Post[] = queryData?.posts || [];
   useEffect(() => {
     if (activeTab === 'management') {
-      fetch('/api/admin/posts')
-        .then(res => res.json())
-        .then(data => setPosts(Array.isArray(data.posts) ? data.posts : []));
+      fetchPosts();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchPosts]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'published' | 'draft' | 'archived'>('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,7 +84,7 @@ export function PostsPageClient() {
         method: 'DELETE',
       });
       if (res.ok) {
-        setPosts(posts => posts.filter(post => post.id !== postId));
+        await fetchPosts();
         showSuccess('Post deleted', 'The post has been deleted.');
       } else {
         showError('Failed to delete post');
@@ -84,9 +95,8 @@ export function PostsPageClient() {
   };
 
   const handleStatusChange = (postId: string, newStatus: 'published' | 'draft' | 'archived') => {
-    setPosts(posts.map(post => 
-      post.id === postId ? { ...post, status: newStatus } : post
-    ));
+
+    fetchPosts();
   };
 
   const handleSearchChange = (value: string) => {
@@ -118,7 +128,7 @@ export function PostsPageClient() {
           body: JSON.stringify(backendPost),
         });
         if (res.ok) {
-          setPosts(posts => posts.map(p => p.id === editingPost.id ? { ...p, ...newPost, id: editingPost.id } : p));
+          await fetchPosts();
           showSuccess('Post updated', 'The post has been updated.');
         } else {
           showError('Failed to update post');
@@ -130,8 +140,7 @@ export function PostsPageClient() {
           body: JSON.stringify(backendPost),
         });
         if (res.ok) {
-          const data = await res.json();
-          setPosts(posts => [data.post, ...posts]);
+          await fetchPosts();
           showSuccess('Post created', 'The post has been created.');
         } else {
           showError('Failed to create post');

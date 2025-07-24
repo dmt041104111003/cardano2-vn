@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { useToastContext } from '~/components/toast-provider';
 import { useRef } from 'react';
 import { TipTapPreview } from '~/components/ui/tiptap-preview';
+import { useQuery } from '@tanstack/react-query';
 
 interface Post {
   id: string;
@@ -59,42 +60,62 @@ interface Comment {
 
 export default function BlogDetailPage() {
   const params: Record<string, string> = useParams();
-  const [post, setPost] = useState<Post | null>(null);
-  const [reactions, setReactions] = useState<{ [type: string]: number }>({});
   const { data: session } = useSession();
   const isLoggedIn = !!session?.user;
   const [showReactions, setShowReactions] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [currentUserReaction, setCurrentUserReaction] = useState<string | null>(null);
   const [showAllComments, setShowAllComments] = useState(true);
   const proseRef = useRef<HTMLDivElement>(null);
   const { showSuccess, showError } = useToastContext();
 
- 
-  useEffect(() => {
-    if (!params.slug) return;
-    fetch(`/api/admin/posts/${params.slug}?public=1`)
-      .then(res => res.json())
-      .then(data => {
-        setPost(data.post);
-      });
-    fetch(`/api/blog/react?postId=${params.slug}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.reactions) setReactions(data.reactions);
-      });
-    if (isLoggedIn) {
-      fetch(`/api/blog/react?postId=${params.slug}&me=1`)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.currentUserReaction) setCurrentUserReaction(data.currentUserReaction);
-          else setCurrentUserReaction(null);
-        });
-    } else {
-      setCurrentUserReaction(null);
-    }
-  }, [params.slug, isLoggedIn]);
+  // Dùng useQuery để fetch post detail
+  const {
+    data: postData,
+    isLoading: loadingPost,
+    refetch: refetchPost,
+  } = useQuery({
+    queryKey: ['public-post-detail', params.slug],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/posts/${params.slug}?public=1`);
+      if (!res.ok) throw new Error('Failed to fetch post');
+      return res.json();
+    },
+    enabled: !!params.slug
+  });
+  const post: Post | null = postData?.post || null;
 
+  // Dùng useQuery để fetch reactions
+  const {
+    data: reactionsData,
+    refetch: refetchReactions,
+  } = useQuery({
+    queryKey: ['post-reactions', params.slug],
+    queryFn: async () => {
+      const res = await fetch(`/api/blog/react?postId=${params.slug}`);
+      if (!res.ok) throw new Error('Failed to fetch reactions');
+      return res.json();
+    },
+    enabled: !!params.slug
+  });
+  const reactions: { [type: string]: number } = reactionsData?.reactions || {};
+
+  // Dùng useQuery để fetch current user reaction
+  const {
+    data: currentUserReactionData,
+    refetch: refetchCurrentUserReaction,
+  } = useQuery({
+    queryKey: ['post-current-user-reaction', params.slug, isLoggedIn],
+    queryFn: async () => {
+      if (!isLoggedIn) return { currentUserReaction: null };
+      const res = await fetch(`/api/blog/react?postId=${params.slug}&me=1`);
+      if (!res.ok) throw new Error('Failed to fetch current user reaction');
+      return res.json();
+    },
+    enabled: !!params.slug && isLoggedIn
+  });
+  const currentUserReaction: string | null = currentUserReactionData?.currentUserReaction || null;
+
+ 
   useEffect(() => {
     if (!proseRef.current) return;
     const prose = proseRef.current;
@@ -130,25 +151,13 @@ export default function BlogDetailPage() {
       showError('You need to sign in to react!');
       return;
     }
-    setReactions(prev => ({ ...prev, [type]: (prev[type] || 0) + 1 }));
-    setCurrentUserReaction(type);
-    const res = await fetch("/api/blog/react", {
+    await fetch("/api/blog/react", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ postId: post.id, type }),
     });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      console.error("Reaction API error:", data);
-      showError(data?.error || "Failed to react. Please login and try again.");
-      return;
-    }
-    fetch(`/api/blog/react?postId=${post.id}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.reactions) setReactions(data.reactions);
-      });
-    setCurrentUserReaction(type);
+    await refetchReactions();
+    await refetchCurrentUserReaction();
   };
 
   const handleSubmitComment = async (commentText: string) => {
@@ -163,11 +172,7 @@ export default function BlogDetailPage() {
       alert(data?.error || "Failed to comment. Please login and try again.");
       return;
     }
-    fetch(`/api/admin/posts/${post.id}?public=1`)
-      .then(res => res.json())
-      .then(data => {
-        setPost(data.post);
-      });
+    await refetchPost();
   };
 
   if (!post) return <BlogDetailSkeleton />;
