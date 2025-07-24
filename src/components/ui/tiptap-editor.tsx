@@ -473,18 +473,18 @@ export function TipTapEditor({ content, onChange, placeholder }: TipTapEditorPro
       Table.configure({
         resizable: true,
         HTMLAttributes: {
-          class: 'border-collapse border border-gray-300 w-full mx-auto',
+          class: 'border-collapse border border-gray-700 w-full mx-auto bg-white rounded-lg overflow-hidden',
         },
       }),
       TableRow,
       TableHeader.configure({
         HTMLAttributes: {
-          class: 'bg-gray-100 font-bold border border-gray-300 p-2 mx-auto',
+          class: 'bg-purple-50 font-bold border border-gray-700 p-2 mx-auto text-gray-900 text-center',
         },
       }),
       TableCell.configure({
         HTMLAttributes: {
-          class: 'border border-gray-300 p-2 mx-auto',
+          class: 'border border-gray-700 p-2 mx-auto bg-white text-gray-900',
         },
       }),
       TextAlign.configure({
@@ -497,7 +497,7 @@ export function TipTapEditor({ content, onChange, placeholder }: TipTapEditorPro
       Highlight.configure({
         multicolor: true,
         HTMLAttributes: {
-          class: 'bg-yellow-200 px-1 rounded',
+          class: 'bg-yellow-200 px-1 rounded border border-yellow-400',
         },
       }),
       Placeholder.configure({
