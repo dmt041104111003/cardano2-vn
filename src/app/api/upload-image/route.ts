@@ -1,63 +1,89 @@
-// import { NextRequest, NextResponse } from 'next/server';
-// import { v2 as cloudinary } from 'cloudinary';
-// import { Buffer } from 'node:buffer';
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '~/app/api/auth/[...nextauth]/route';
+import { prisma } from '~/lib/prisma';
+import { writeFile } from 'fs/promises';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
 
+    const user = await prisma.user.findUnique({
+      where: { wallet: session.user.address },
+      include: { role: true }
+    });
 
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//   api_key: process.env.CLOUDINARY_API_KEY,
-//   api_secret: process.env.CLOUDINARY_API_SECRET,
-// });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
 
-// export async function POST(req: NextRequest) {
-//   let data;
-//   try {
-//     data = await req.formData();
-//   } catch (e) {
-//     return NextResponse.json({ error: 'Invalid form data' }, { status: 400 });
-//   }
+    if (user.role.name !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
-//   for (const [key, value] of data.entries()) {
-//     console.log('FormData:', key, value);
-//   }
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
 
-//   const file = data.get('file');
-//   if (!file || typeof file === 'string') {
-//     return NextResponse.json({ error: 'No file' }, { status: 400 });
-//   }
+    if (!file) {
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    }
 
-//   let arrayBuffer;
-//   try {
-//     arrayBuffer = await file.arrayBuffer();
-//   } catch (e) {
-//     return NextResponse.json({ error: 'Cannot read file buffer' }, { status: 400 });
-//   }
-//   const buffer = Buffer.from(arrayBuffer);
-//   console.log('Buffer size:', buffer.length);
+    if (!file.type.startsWith('image/')) {
+      return NextResponse.json({ error: 'Invalid file type. Only images are allowed.' }, { status: 400 });
+    }
 
-//   try {
-//     const upload = await new Promise((resolve, reject) => {
-//       const stream = cloudinary.uploader.upload_stream(
-//         { resource_type: 'image' },
-//         (err, result) => {
-//           if (err) {
-//             console.error('Cloudinary upload error:', err);
-//             reject(err);
-//           } else {
-//             resolve(result);
-//           }
-//         }
-//       );
-//       stream.end(buffer);
-//     });
-//     return NextResponse.json({ url: (upload as any).secure_url });
-//   } catch (e) {
-//     console.error('UPLOAD ERROR:', e);
-//     return NextResponse.json({ error: String(e) || 'Upload failed' }, { status: 500 });
-//   }
-// } 
 
-export async function GET() {
-  return new Response('Not implemented', { status: 501 });
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File too large. Maximum size is 5MB.' }, { status: 400 });
+    }
+
+
+    const fileExtension = path.extname(file.name);
+    const filename = `${uuidv4()}${fileExtension}`;
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'images');
+    const filePath = path.join(uploadDir, filename);
+
+
+    const fs = require('fs');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    await writeFile(filePath, buffer);
+
+
+    const media = await prisma.media.create({
+      data: {
+        url: `/uploads/images/${filename}`,
+        type: 'IMAGE',
+        uploadedBy: user.id,
+      },
+    });
+
+    return NextResponse.json({
+      message: 'File uploaded successfully',
+      media: {
+        id: media.id,
+        url: media.url,
+        type: media.type,
+      },
+    });
+
+  } catch (error) {
+    console.error('Upload error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
 } 

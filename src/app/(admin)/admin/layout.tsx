@@ -10,7 +10,8 @@ import {
   Menu,
   X,
   Home,
-  LogOut
+  LogOut,
+  Image
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '~/hooks/useUser';
@@ -34,6 +35,11 @@ const adminNavItems = [
     title: 'Tags',
     href: '/admin/tags',
     icon: Tags,
+  },
+  {
+    title: 'Media',
+    href: '/admin/media',
+    icon: Image,
   },
 ];
 
