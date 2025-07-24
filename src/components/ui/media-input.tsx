@@ -23,16 +23,26 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      const media = { type: 'image' as const, url: dataUrl, id: dataUrl };
-      setCurrentMedia(media);
-      if (onMediaAdd) {
-        onMediaAdd(media);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+      const result = await response.json();
+      if (response.ok && result.media?.url) {
+        const media = { type: 'image' as const, url: result.media.url, id: result.media.url };
+        setCurrentMedia(media);
+        if (onMediaAdd) {
+          onMediaAdd(media);
+        }
+      } else {
+        alert(result.error || 'Upload failed');
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      alert('Upload error');
+    }
   };
 
   const handleImageUrl = (url: string) => {

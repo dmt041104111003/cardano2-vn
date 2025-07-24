@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '~/app/api/auth/[...nextauth]/route';
 import { prisma } from '~/lib/prisma';
+import cloudinary from '~/lib/cloudinary';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,28 +21,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
     const formData = await request.formData();
+    let imageUrl = '';
+    let publicId = '';
+    const file = formData.get('file');
     const url = formData.get('url');
-    if (!url || typeof url !== 'string') {
-      return NextResponse.json({ error: 'No image URL provided' }, { status: 400 });
+    if (file && typeof file === 'object' && 'arrayBuffer' in file) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const uploadRes = await new Promise<any>((resolve, reject) => {
+        cloudinary.uploader.upload_stream({ resource_type: 'image' }, (err: any, result: any) => {
+          if (err || !result) reject(err);
+          else resolve(result);
+        }).end(buffer);
+      });
+      imageUrl = uploadRes.url;
+      publicId = uploadRes.public_id;
+    } else if (url && typeof url === 'string') {
+      if (/^data:image\//.test(url)) {
+        const uploadRes = await cloudinary.uploader.upload(url, { resource_type: 'image' });
+        imageUrl = uploadRes.url;
+        publicId = uploadRes.public_id;
+      } else if (/^https?:\/\//.test(url)) {
+        const uploadRes = await cloudinary.uploader.upload(url, { resource_type: 'image' });
+        imageUrl = uploadRes.url;
+        publicId = uploadRes.public_id;
+      } else {
+        return NextResponse.json({ error: 'Invalid image input' }, { status: 400 });
+      }
+    } else {
+      return NextResponse.json({ error: 'No image provided' }, { status: 400 });
     }
-    const isHttpImage = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url);
-    const isDataImage = /^data:image\//.test(url);
-    if (!isHttpImage && !isDataImage) {
-      return NextResponse.json({ error: 'Invalid image URL. Only direct image links or data:image are allowed.' }, { status: 400 });
-    }
-    const media = await prisma.media.create({
-      data: {
-        url,
-        type: 'IMAGE',
-        uploadedBy: user.id,
-      },
-    });
     return NextResponse.json({
-      message: 'Image saved successfully',
+      message: 'Image uploaded to Cloudinary',
       media: {
-        id: media.id,
-        url: media.url,
-        type: media.type,
+        url: imageUrl,
+        public_id: publicId,
+        type: 'IMAGE',
       },
     });
   } catch (error) {
