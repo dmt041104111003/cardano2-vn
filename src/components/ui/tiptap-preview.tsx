@@ -97,18 +97,18 @@ export function TipTapPreview({ content, className = "" }: TipTapPreviewProps) {
       Table.configure({
         resizable: true,
         HTMLAttributes: {
-          class: 'border-collapse border border-gray-300 w-full mx-auto',
+          class: 'border-collapse border border-gray-700 w-full mx-auto bg-white rounded-lg overflow-hidden',
         },
       }),
       TableRow,
       TableHeader.configure({
         HTMLAttributes: {
-          class: 'bg-gray-100 font-bold border border-gray-300 p-2 mx-auto',
+          class: 'bg-purple-50 font-bold border border-gray-700 p-2 mx-auto text-gray-900 text-center',
         },
       }),
       TableCell.configure({
         HTMLAttributes: {
-          class: 'border border-gray-300 p-2 mx-auto',
+          class: 'border border-gray-700 p-2 mx-auto bg-white text-gray-900',
         },
       }),
       TextAlign.configure({
@@ -121,7 +121,7 @@ export function TipTapPreview({ content, className = "" }: TipTapPreviewProps) {
       Highlight.configure({
         multicolor: true,
         HTMLAttributes: {
-          class: 'bg-yellow-200 px-1 rounded',
+          class: 'bg-yellow-200 px-1 rounded border border-yellow-400',
         },
       }),
     ],
@@ -168,6 +168,37 @@ export function TipTapPreview({ content, className = "" }: TipTapPreviewProps) {
         .prose a:hover, .prose a:focus {
           text-decoration: none;
           color: #2563eb;
+        }
+        
+        /* Override any conflicting styles */
+        .prose table {
+          border-collapse: collapse !important;
+          margin: 0 !important;
+          overflow: hidden !important;
+          table-layout: fixed !important;
+          width: 100% !important;
+          border-radius: 8px !important;
+        }
+        
+        .prose table td,
+        .prose table th {
+          border: 2px solid #374151 !important;
+          box-sizing: border-box !important;
+          min-width: 1em !important;
+          padding: 3px 5px !important;
+          position: relative !important;
+          vertical-align: top !important;
+          color: #1f2937 !important;
+        }
+        
+        .prose table td {
+          background-color: #ffffff !important;
+        }
+        
+        .prose table th {
+          background-color: #f3e8ff !important;
+          font-weight: bold !important;
+          text-align: center !important;
         }
       `}</style>
     </div>
