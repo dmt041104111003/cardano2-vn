@@ -32,13 +32,15 @@ export default function MediaPageClient() {
   const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
+    setSearchTerm('');
+    setFilterType('all');
     fetchMedia();
-  }, []); 
+  }, []);
 
   useEffect(() => {
     filterAndSortMedia();
-    resetPage(); 
-  }, [searchTerm, filterType]); 
+    resetPage();
+  }, [media, searchTerm, filterType]);
 
   const totalPages = Math.ceil(filteredMedia.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -51,8 +53,8 @@ export default function MediaPageClient() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <AdminHeader 
-          title="Media Management" 
+        <AdminHeader
+          title="Media Management"
           description="Manage all media files and track their usage in posts"
           buttonText="Upload Media"
           onAddClick={() => setShowUploadModal(true)}
@@ -89,10 +91,10 @@ export default function MediaPageClient() {
               Media Files ({filteredMedia.length})
             </h3>
           </div>
-          
-          <MediaTable 
-            media={paginatedMedia} 
-            onDelete={deleteMedia} 
+
+          <MediaTable
+            media={paginatedMedia}
+            onDelete={deleteMedia}
           />
 
           {totalPages > 1 && (
@@ -109,9 +111,11 @@ export default function MediaPageClient() {
 
       <MediaUpload
         isOpen={showUploadModal}
-        onUploadSuccess={() => {
+        onUploadSuccess={async () => {
           setShowUploadModal(false);
-          fetchMedia();
+          setSearchTerm('');
+          setFilterType('all');
+          await fetchMedia();
         }}
         onCancel={() => setShowUploadModal(false)}
       />

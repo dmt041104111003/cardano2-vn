@@ -48,6 +48,7 @@ export function useMediaData() {
         const data = await response.json();
         setMedia(data.media);
         setStats(data.stats);
+        setTimeout(() => filterAndSortMedia(), 0);
       } else {
         showError('Failed to fetch media', 'Could not load media files.');
       }
@@ -119,7 +120,8 @@ export function useMediaData() {
 
       if (response.ok) {
         setMedia(prev => prev.filter(item => item.id !== id));
-        fetchMedia();
+        await fetchMedia();
+        filterAndSortMedia();
         showSuccess('Media deleted', 'The media file has been deleted successfully.');
       } else {
         const errorData = await response.json();
