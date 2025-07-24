@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Image, Trash2, Download } from 'lucide-react';
+import { Image as ImageIcon, Trash2, Download } from 'lucide-react';
 import { useToastContext } from '~/components/toast-provider';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import Modal from '~/components/admin/common/Modal';
+import Image from 'next/image';
 
 interface Media {
   id: string;
@@ -92,7 +93,7 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
   if (media.length === 0) {
     return (
       <div className="px-6 py-12 text-center">
-        <Image className="mx-auto h-12 w-12 text-gray-400" />
+        <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
         <h3 className="mt-2 text-sm font-medium text-gray-900">No media files found</h3>
         <p className="mt-1 text-sm text-gray-500">
           No media files have been uploaded yet.
@@ -131,12 +132,23 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
                     {item.mimeType.startsWith('image/') ? (
-                      <img
-                        className="h-10 w-10 rounded-lg object-cover cursor-pointer hover:opacity-80"
-                        src={item.path}
-                        alt={item.originalName}
-                        onClick={() => setPreviewImage(item.path)}
-                      />
+                      item.path.startsWith('data:image') ? (
+                        <img
+                          className="h-10 w-10 rounded-lg object-cover cursor-pointer hover:opacity-80"
+                          src={item.path}
+                          alt={item.originalName}
+                          onClick={() => setPreviewImage(item.path)}
+                        />
+                      ) : (
+                        <Image
+                          className="h-10 w-10 rounded-lg object-cover cursor-pointer hover:opacity-80"
+                          src={item.path}
+                          alt={item.originalName}
+                          width={40}
+                          height={40}
+                          onClick={() => setPreviewImage(item.path)}
+                        />
+                      )
                     ) : (
                       <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-red-100"
                         onClick={() => {
@@ -261,34 +273,65 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
         mediaName={deleteModal.mediaName}
       />
       {previewImage && (
-        <Modal isOpen={!!previewImage} onClose={() => setPreviewImage(null)} title="Image Preview" maxWidth="max-w-2xl">
-          <div className="flex flex-col items-center gap-4">
-            <img src={previewImage} alt="Preview" className="max-h-[70vh] rounded shadow-lg" />
-            <div className="flex items-center gap-2 mt-2">
-              <span
-                className="text-xs text-gray-700 cursor-pointer hover:underline"
-                title={previewImage}
-                onClick={() => {
-                  navigator.clipboard.writeText(previewImage);
-                  showSuccess('Copied!', previewImage);
-                }}
-                style={{maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block'}}
-              >
-                {previewImage.split('/').pop()}
-              </span>
-              <button
-                className="p-1 text-xs rounded border border-emerald-500 text-emerald-600 hover:bg-emerald-50"
-                onClick={() => {
-                  navigator.clipboard.writeText(previewImage);
-                  showSuccess('Copied!', previewImage);
-                }}
-                title="Copy image link"
-              >
-                Copy
-              </button>
+        previewImage.startsWith('data:image') ? (
+          <Modal isOpen={!!previewImage} onClose={() => setPreviewImage(null)} title="Image Preview" maxWidth="max-w-2xl">
+            <div className="flex flex-col items-center gap-4">
+              <img src={previewImage} alt="Preview" className="max-h-[70vh] rounded shadow-lg" />
+              <div className="flex items-center gap-2 mt-2">
+                <span
+                  className="text-xs text-gray-700 cursor-pointer hover:underline"
+                  title={previewImage}
+                  onClick={() => {
+                    navigator.clipboard.writeText(previewImage);
+                    showSuccess('Copied!', previewImage);
+                  }}
+                  style={{maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block'}}
+                >
+                  {previewImage.split('/').pop()}
+                </span>
+                <button
+                  className="p-1 text-xs rounded border border-emerald-500 text-emerald-600 hover:bg-emerald-50"
+                  onClick={() => {
+                    navigator.clipboard.writeText(previewImage);
+                    showSuccess('Copied!', previewImage);
+                  }}
+                  title="Copy image link"
+                >
+                  Copy
+                </button>
+              </div>
             </div>
-          </div>
-        </Modal>
+          </Modal>
+        ) : (
+          <Modal isOpen={!!previewImage} onClose={() => setPreviewImage(null)} title="Image Preview" maxWidth="max-w-2xl">
+            <div className="flex flex-col items-center gap-4">
+              <Image src={previewImage} alt="Preview" width={600} height={400} className="max-h-[70vh] rounded shadow-lg" />
+              <div className="flex items-center gap-2 mt-2">
+                <span
+                  className="text-xs text-gray-700 cursor-pointer hover:underline"
+                  title={previewImage}
+                  onClick={() => {
+                    navigator.clipboard.writeText(previewImage);
+                    showSuccess('Copied!', previewImage);
+                  }}
+                  style={{maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block'}}
+                >
+                  {previewImage.split('/').pop()}
+                </span>
+                <button
+                  className="p-1 text-xs rounded border border-emerald-500 text-emerald-600 hover:bg-emerald-50"
+                  onClick={() => {
+                    navigator.clipboard.writeText(previewImage);
+                    showSuccess('Copied!', previewImage);
+                  }}
+                  title="Copy image link"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          </Modal>
+        )
       )}
       {previewYoutube && (
         <Modal isOpen={!!previewYoutube} onClose={() => setPreviewYoutube(null)} title="YouTube Preview" maxWidth="max-w-2xl">

@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '~/app/api/auth/[...nextauth]/route';
 import { prisma } from '~/lib/prisma';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     const images = media.filter(m => m.type === 'IMAGE').length;
     const videos = media.filter(m => m.type === 'VIDEO').length;
     const documents = media.filter(m => m.type === 'YOUTUBE').length;
-    const unused = media.filter(m => !m.postId).length;
+    const unused = media.filter(m => !m.post).length;
     const used = total - unused;
 
     const transformedMedia = media.map(item => ({

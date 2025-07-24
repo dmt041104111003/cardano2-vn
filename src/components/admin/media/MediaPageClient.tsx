@@ -33,12 +33,12 @@ export default function MediaPageClient() {
 
   useEffect(() => {
     fetchMedia();
-  }, []);
+  }, []); 
 
   useEffect(() => {
     filterAndSortMedia();
     resetPage(); 
-  }, [media, searchTerm, filterType]);
+  }, [searchTerm, filterType]); 
 
   const totalPages = Math.ceil(filteredMedia.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -62,7 +62,6 @@ export default function MediaPageClient() {
           stats={[
             { label: 'Total Files', value: stats.total },
             { label: 'Images', value: stats.images },
-            { label: 'Videos', value: stats.videos },
             { label: 'YouTube', value: stats.documents },
             { label: 'Used', value: stats.total - stats.unused },
             { label: 'Unused', value: stats.unused },
