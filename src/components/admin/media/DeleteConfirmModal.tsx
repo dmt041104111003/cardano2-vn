@@ -23,7 +23,7 @@ export function DeleteConfirmModal({ isOpen, onClose, onConfirm, mediaName }: De
         </h3>
         
         <p className="text-sm text-gray-500 mb-6">
-          Are you sure you want to delete <span className="font-medium text-gray-900">"{mediaName}"</span>? 
+          Are you sure you want to delete <span className="font-medium text-gray-900">&quot;{mediaName}&quot;</span>? 
           This action cannot be undone.
         </p>
         

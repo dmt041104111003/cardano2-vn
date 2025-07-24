@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload } from 'lucide-react';
 import { useToastContext } from '~/components/toast-provider';
 
 interface ImageUploadProps {
@@ -10,10 +9,11 @@ interface ImageUploadProps {
 
 export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showSuccess, showError } = useToastContext();
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
@@ -24,79 +24,67 @@ export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
       showError('File too large', 'Please select an image smaller than 5MB.');
       return;
     }
-
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        showSuccess('Image uploaded', 'Image has been uploaded successfully.');
-        onUploadSuccess();
-      } else {
-        const error = await response.json();
-        showError('Upload failed', error.message || 'Failed to upload image.');
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      showError('Upload error', 'An error occurred while uploading the image.');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      const file = files[0];
-      if (file.type.startsWith('image/')) {
-        const input = fileInputRef.current;
-        if (input) {
-          input.files = files;
-          handleFileUpload({ target: { files } } as any);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const dataUrl = reader.result as string;
+      setPreview(dataUrl);
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append('url', dataUrl);
+      try {
+        const response = await fetch('/api/upload-image', {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          showSuccess('Image uploaded', 'Image has been uploaded successfully.');
+          setPreview(null);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+          onUploadSuccess();
+        } else {
+          const errJson = await response.json();
+          showError('Upload failed', errJson.message || 'Failed to upload image.');
         }
-      } else {
-        showError('Invalid file type', 'Please drop an image file.');
+      } catch {
+        showError('Upload error', 'An error occurred while uploading the image.');
+      } finally {
+        setIsUploading(false);
       }
-    }
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
-    <div
-      className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors"
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-    >
-      <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-      <p className="text-sm text-gray-600 mb-4">
-        Drag and drop an image here, or click to select
-      </p>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileUpload}
-        className="hidden"
-      />
-      <button
-        onClick={() => fileInputRef.current?.click()}
-        disabled={isUploading}
-        className="bg-transparent border-2 border-emerald-500 text-emerald-600 px-4 py-2 rounded-md hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isUploading ? 'Uploading...' : 'Select Image'}
-      </button>
-      <p className="text-xs text-gray-500 mt-2">
-        Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP
+    <div className="space-y-4">
+      <div className="flex flex-col items-center gap-2">
+        <label htmlFor="media-upload-input" className="block text-sm font-medium text-gray-700 mb-1">Select image file</label>
+        <input
+          id="media-upload-input"
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          disabled={isUploading}
+          className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
+          title="Select image file to upload"
+          placeholder="Choose image file..."
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          className="bg-transparent border-2 border-emerald-500 text-emerald-600 px-4 py-2 rounded-md hover:bg-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isUploading ? 'Uploading...' : 'Select Image'}
+        </button>
+      </div>
+      {preview && (
+        <div className="flex justify-center mt-2">
+          <img src={preview} alt="Preview" className="max-h-48 rounded shadow" />
+        </div>
+      )}
+      <p className="text-xs text-gray-500">
+        Only images up to 5MB. Supported formats: JPG, PNG, GIF, WebP, SVG.
       </p>
     </div>
   );

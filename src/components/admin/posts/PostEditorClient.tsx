@@ -7,7 +7,6 @@ import MediaInput from '~/components/ui/media-input';
 import { useToastContext } from '~/components/toast-provider';
 import Image from 'next/image';
 import type { Post } from '~/constants/posts';
-import MediaSelectFromLibrary from '~/components/ui/media-select-from-library';
 
 interface Tag {
   id: string;
@@ -35,8 +34,6 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
   const [loadingTags, setLoadingTags] = useState(false);
   const [mediaType, setMediaType] = useState<'image' | 'youtube'>('image');
   const [isClient, setIsClient] = useState(false);
-  const [activeMediaTab, setActiveMediaTab] = useState<'image' | 'youtube' | 'library'>('image');
-  const [allMedia, setAllMedia] = useState<any[]>([]);
   useEffect(() => { setIsClient(true); }, []);
 
   const { showError } = useToastContext();
@@ -86,7 +83,7 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       .then(res => res.json())
       .then(data => {
         console.log('Fetched media:', data.media);
-        setAllMedia(data.media || []);
+        // setAllMedia(data.media || []); // This line was removed as per the edit hint
       });
   }, []);
 

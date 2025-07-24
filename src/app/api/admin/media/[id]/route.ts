@@ -5,11 +5,10 @@ import { prisma } from '~/lib/prisma';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -17,16 +16,17 @@ export async function DELETE(
       where: { wallet: session.user.address },
       include: { role: true }
     });
-
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-
     if (user.role.name !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
-
-    const { id } = params;
+    // Next.js 15: params là Promise, phải await
+    const { id } = await context.params;
+    if (!id) {
+      return NextResponse.json({ error: 'Invalid params' }, { status: 400 });
+    }
     const media = await prisma.media.findUnique({
       where: { id },
       include: {
@@ -35,7 +35,6 @@ export async function DELETE(
         }
       }
     });
-
     if (!media) {
       return NextResponse.json({ error: 'Media not found' }, { status: 404 });
     }
@@ -51,9 +50,7 @@ export async function DELETE(
     await prisma.media.delete({
       where: { id }
     });
-
     return NextResponse.json({ message: 'Media deleted successfully' });
-
   } catch (error) {
     console.error('Error deleting media:', error);
     return NextResponse.json(
