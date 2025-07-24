@@ -10,6 +10,8 @@ interface ImageUploadProps {
 export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const [cloudinaryPublicId, setCloudinaryPublicId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showSuccess, showError } = useToastContext();
 
@@ -24,34 +26,57 @@ export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
       showError('File too large', 'Please select an image smaller than 5MB.');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const dataUrl = reader.result as string;
-      setPreview(dataUrl);
-      setIsUploading(true);
-      const formData = new FormData();
-      formData.append('url', dataUrl);
-      try {
-        const response = await fetch('/api/upload-image', {
-          method: 'POST',
-          body: formData,
-        });
-        if (response.ok) {
-          showSuccess('Image uploaded', 'Image has been uploaded successfully.');
-          setPreview(null);
-          if (fileInputRef.current) fileInputRef.current.value = '';
-          onUploadSuccess();
-        } else {
-          const errJson = await response.json();
-          showError('Upload failed', errJson.message || 'Failed to upload image.');
-        }
-      } catch {
-        showError('Upload error', 'An error occurred while uploading the image.');
-      } finally {
-        setIsUploading(false);
+    setIsUploading(true);
+    setPreview(null);
+    setUploadedUrl(null);
+    setCloudinaryPublicId(null);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+      const result = await response.json();
+      if (response.ok && result.media?.url) {
+        setPreview(result.media.url);
+        setUploadedUrl(result.media.url);
+        setCloudinaryPublicId(result.media.public_id || null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      } else {
+        showError('Upload failed', result.error || 'Failed to upload image.');
       }
-    };
-    reader.readAsDataURL(file);
+    } catch {
+      showError('Upload error', 'An error occurred while uploading the image.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!uploadedUrl) return;
+    setIsUploading(true);
+    try {
+      const response = await fetch('/api/admin/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: uploadedUrl, type: 'IMAGE', public_id: cloudinaryPublicId }),
+      });
+      if (response.ok) {
+        showSuccess('Image saved', 'Image has been saved to the media library.');
+        setPreview(null);
+        setUploadedUrl(null);
+        setCloudinaryPublicId(null);
+        onUploadSuccess();
+      } else {
+        const errJson = await response.json();
+        showError('Save failed', errJson.message || 'Failed to save image.');
+      }
+    } catch {
+      showError('Save error', 'An error occurred while saving the image.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -77,6 +102,16 @@ export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
         >
           {isUploading ? 'Uploading...' : 'Select Image'}
         </button>
+        {uploadedUrl && (
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={isUploading}
+            className="mt-2 bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 disabled:opacity-50"
+          >
+            {isUploading ? 'Saving...' : 'Save'}
+          </button>
+        )}
       </div>
       {preview && (
         <div className="flex justify-center mt-2">

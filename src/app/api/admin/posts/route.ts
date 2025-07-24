@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '~/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '~/app/api/auth/[...nextauth]/route';
+import cloudinary from '~/lib/cloudinary';
 
 function getYoutubeIdFromUrl(url: string) {
   if (!url) return '';
@@ -136,7 +137,21 @@ export async function POST(request: NextRequest) {
       updatedAt: updatedAt ? new Date(updatedAt) : undefined,
     };
     if (Array.isArray(media) && media.length > 0) {
-      data.media = { create: (media as Array<{ url: string; type: MediaType }> ).map((m) => ({ url: m.url, type: m.type })) };
+      const uploadedMedia = await Promise.all(
+        (media as Array<{ url: string; type: MediaType }> ).map(async (m) => {
+          if (m.type === 'IMAGE' && /^data:image\//.test(m.url)) {
+            try {
+              const uploadRes = await cloudinary.uploader.upload(m.url, { resource_type: 'image' });
+              return { url: uploadRes.url, type: m.type };
+            } catch (e) {
+              console.error('Cloudinary upload failed:', e);
+              return null;
+            }
+          }
+          return m;
+        })
+      );
+      data.media = { create: (uploadedMedia.filter(Boolean) as { url: string; type: MediaType }[]) };
     }
     if (tagIds.length > 0) {
       data.tags = { create: tagIds.map(tagId => ({ tagId })) };
