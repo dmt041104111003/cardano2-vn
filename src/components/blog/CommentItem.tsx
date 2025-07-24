@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useToastContext } from "../toast-provider";
 import { EMOJIS } from "../../constants/emoji";
 import { useUser } from '~/hooks/useUser';
+import Modal from '../admin/common/Modal';
 
 const MAX_COMMENT_LENGTH = 200;
 
@@ -60,7 +61,46 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
     setShowEmojiPicker(false);
   };
 
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, user: currentUser } = useUser();
+  const [deleted, setDeleted] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editText, setEditText] = useState(comment.content);
+  const canEdit = currentUser && currentUser.id === comment.userId;
+
+  const handleEdit = () => {
+    setEditText(comment.content);
+    setEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditing(false);
+    setEditText(comment.content);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editText.trim()) {
+      showError('Content cannot be empty');
+      return;
+    }
+    try {
+      const res = await fetch('/api/blog/comment', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: comment.id, content: editText }),
+      });
+      if (res.ok) {
+        setEditing(false);
+        showSuccess('Comment updated successfully');
+        comment.content = editText;
+      } else {
+        const data = await res.json();
+        showError('Update failed', data.error || 'Could not update comment.');
+      }
+    } catch (e) {
+      showError('Update error', 'An error occurred while updating the comment.');
+    }
+  };
 
   const handleSubmitReply = async (e: React.FormEvent, commentId: string) => {
     e.preventDefault();
@@ -162,6 +202,30 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
   const indentMobile = Math.min((depth + 1) * 4, maxIndentMobile);
   const indentDesktop = Math.min((depth + 1) * 6, maxIndentDesktop); 
 
+  const canDelete = currentUser && (currentUser.role === 'ADMIN' || currentUser.id === comment.userId);
+
+  const handleDelete = async () => {
+    setShowDeleteModal(false);
+    try {
+      const res = await fetch('/api/blog/comment', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: comment.id }),
+      });
+      if (res.ok) {
+        setDeleted(true);
+        showSuccess('Comment deleted successfully', 'The comment has been removed from the post.');
+      } else {
+        const data = await res.json();
+        showError('Delete failed', data.error || 'Could not delete comment.');
+      }
+    } catch (e) {
+      showError('Delete error', 'An error occurred while deleting the comment.');
+    }
+  };
+
+  if (deleted) return null;
+
   return (
     <div
       className={comment.parentCommentId ? `relative ml-[${indentMobile}px] md:ml-[${indentDesktop}px]` : ''}
@@ -211,7 +275,31 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
            
 
                 </div>
-                {renderCommentContent(comment.content)}
+                {editing ? (
+                <div className="mt-2 flex flex-col gap-2">
+                  <textarea
+                    className="w-full rounded-xl bg-gray-700/50 border border-gray-600/50 p-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 text-sm"
+                    value={editText}
+                    onChange={e => setEditText(e.target.value)}
+                    rows={3}
+                    placeholder="Enter your comment..."
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={handleCancelEdit}
+                      className="px-4 py-1 rounded bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSaveEdit}
+                      className="px-4 py-1 rounded bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              ) : renderCommentContent(comment.content)}
               </div>
               <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                 <button 
@@ -220,6 +308,47 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                 >
                   Reply
                 </button>
+                {canEdit && !editing && (
+                  <button
+                    onClick={handleEdit}
+                    className="hover:text-yellow-400 text-yellow-300 transition-colors font-medium ml-2"
+                  >
+                    Edit
+                  </button>
+                )}
+                {canDelete && (
+                  <>
+                    <button
+                      onClick={() => setShowDeleteModal(true)}
+                      className="hover:text-red-400 text-red-300 transition-colors font-medium ml-2"
+                    >
+                      Delete
+                    </button>
+                    <Modal
+                      isOpen={showDeleteModal}
+                      onClose={() => setShowDeleteModal(false)}
+                      title="Delete comment confirmation"
+                    >
+                      <div className="space-y-4">
+                        <p>Are you sure you want to delete this comment?</p>
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => setShowDeleteModal(false)}
+                            className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={handleDelete}
+                            className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </Modal>
+                  </>
+                )}
                 <span className="text-xs text-gray-500 ml-2">{formatTime(comment.time || '')}</span>
               </div>
             </div>
