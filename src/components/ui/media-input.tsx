@@ -45,12 +45,25 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
     }
   };
 
-  const handleImageUrl = (url: string) => {
+  const handleImageUrl = async (url: string) => {
     setImageUrl(url);
-    if (url && onMediaAdd) {
-      const media = { type: 'image' as const, url, id: url };
-      setCurrentMedia(media);
-      onMediaAdd(media);
+    if (!url) return;
+    try {
+      const response = await fetch('/api/admin/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, type: 'IMAGE' }),
+      });
+      const result = await response.json();
+      if (response.ok && result.media?.url) {
+        const media = { type: 'image' as const, url: result.media.url, id: result.media.url };
+        setCurrentMedia(media);
+        if (onMediaAdd) onMediaAdd(media);
+      } else {
+        alert(result.error || 'Failed to add image URL');
+      }
+    } catch (err) {
+      alert('Error adding image URL');
     }
   };
 
