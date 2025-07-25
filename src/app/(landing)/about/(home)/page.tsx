@@ -1,7 +1,10 @@
 import About from "~/components/about";
 import Title from "~/components/title";
 import { abouts } from "~/constants/abouts";
-
+export const metadata = {
+  title: 'About | Cardano2vn',
+  description: 'About Cardano2vn',
+}; 
 export default function AboutPage() {
   return (
     <main className="relative pt-20">

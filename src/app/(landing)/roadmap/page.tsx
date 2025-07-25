@@ -1,6 +1,11 @@
 import Navigation from "~/components/navigation";
 import Title from "~/components/title";
 
+export const metadata = {
+  title: 'Roadmap | Cardano2vn',
+  description: 'Cardano2vn project roadmap',
+};
+
 export default function RoadmapPage() {
   return (
     <main className="relative pt-20">

@@ -48,6 +48,11 @@ const TagsPageClient = dynamic(() => import('~/components/admin/tags/TagsPageCli
   ),
 });
 
+export const metadata = {
+  title: 'Tag Management - Admin | Cardano2vn',
+  description: 'Admin tag management page for Cardano2vn',
+};
+
 export default function TagsPage() {
   return <TagsPageClient />;
 } 

@@ -58,6 +58,11 @@ const PostsPageClient = dynamic(() => import('~/components/admin/posts/PostsPage
   ),
 });
 
+export const metadata = {
+  title: 'Post Management - Admin | Cardano2vn',
+  description: 'Admin post management page for Cardano2vn',
+};
+
 export default function PostsPage() {
   return <PostsPageClient />;
 } 

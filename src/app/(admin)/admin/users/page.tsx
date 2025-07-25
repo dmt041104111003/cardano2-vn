@@ -48,6 +48,11 @@ const UsersPageClient = dynamic(() => import('~/components/admin/users/UsersPage
   ),
 });
 
+export const metadata = {
+  title: 'User Management - Admin | Cardano2vn',
+  description: 'Admin user management page for Cardano2vn',
+};
+
 export default function UsersPage() {
   return <UsersPageClient />;
 } 

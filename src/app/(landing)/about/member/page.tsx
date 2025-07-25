@@ -8,6 +8,11 @@ import Title from "~/components/title";
 import { members } from "~/constants/members";
 import { useState } from "react";
 
+export const metadata = {
+  title: 'Members | Cardano2vn',
+  description: 'Meet the Cardano2vn team members',
+};
+
 type MemberType = typeof members[0];
 
 export default function MemberPage() {
