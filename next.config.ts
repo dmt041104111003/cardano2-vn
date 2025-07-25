@@ -1,11 +1,14 @@
-import type { NextConfig } from "next";
-import withMDX from "@next/mdx";
+import { createMDX } from "fumadocs-mdx/next";
 
-const nextConfig: NextConfig = {
+import type { NextConfig } from "next";
+
+const withMDX = createMDX();
+
+const config: NextConfig = {
+  reactStrictMode: true,
   images: {
     domains: ["res.cloudinary.com", "img.youtube.com"],
   },
-  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -14,5 +17,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withMDX({
-})(nextConfig);
+export default withMDX(config);
