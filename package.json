@@ -58,6 +58,7 @@
     "graphql-request": "^7.2.0",
     "graphql-yoga": "^5.15.1",
     "highlight.js": "^11.11.1",
+    "katex": "^0.16.22",
     "lodash": "^4.17.21",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.525.0",
