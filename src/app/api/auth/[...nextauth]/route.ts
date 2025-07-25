@@ -2,6 +2,7 @@ import NextAuth from "next-auth/next";
 import { prisma } from "~/lib/prisma"
 import { CardanoWalletProvider } from "~/lib/cardano-auth-provider"
 import { generateWalletAvatar } from '~/lib/wallet-avatar';
+import cloudinary from '~/lib/cloudinary';
 
 interface TokenWithAddress extends Record<string, unknown> {
   address?: string;
@@ -59,12 +60,17 @@ export const authOptions = {
             });
             
             if (!userRole) {
-              throw new Error("Role USER không tồn tại");
+              throw new Error("Role USER not exist");
             }
 
             let avatar: string | null = user.image || null;
             if (!avatar && user.address) {
-              avatar = generateWalletAvatar(user.address);
+              const dataImage = generateWalletAvatar(user.address);
+              const uploadRes = await cloudinary.uploader.upload(dataImage, { resource_type: 'image' });
+              avatar = uploadRes.url;
+            } else if (avatar && avatar.startsWith('data:image')) {
+              const uploadRes = await cloudinary.uploader.upload(avatar, { resource_type: 'image' });
+              avatar = uploadRes.url;
             }
 
             dbUser = await prisma.user.create({
@@ -80,13 +86,18 @@ export const authOptions = {
             console.log("[NextAuth] New Cardano Wallet user created:", dbUser.wallet);
           } else {
             if (dbUser && !dbUser.image && dbUser.wallet) {
-              const avatar = generateWalletAvatar(dbUser.wallet);
-              if (avatar) {
-                await prisma.user.update({
-                  where: { id: dbUser.id },
-                  data: { image: avatar },
-                });
-              }
+              const dataImage = generateWalletAvatar(dbUser.wallet);
+              const uploadRes = await cloudinary.uploader.upload(dataImage, { resource_type: 'image' });
+              await prisma.user.update({
+                where: { id: dbUser.id },
+                data: { image: uploadRes.url },
+              });
+            } else if (dbUser && dbUser.image && dbUser.image.startsWith('data:image')) {
+              const uploadRes = await cloudinary.uploader.upload(dbUser.image, { resource_type: 'image' });
+              await prisma.user.update({
+                where: { id: dbUser.id },
+                data: { image: uploadRes.url },
+              });
             }
             console.log("[NextAuth] Existing Cardano Wallet user signed in:", dbUser.wallet);
           }

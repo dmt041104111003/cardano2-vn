@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { prisma } from "~/lib/prisma";
+import cloudinary from '~/lib/cloudinary';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,13 +14,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { wallet: address },
       include: { role: true },
     });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (user.image && user.image.startsWith('data:image')) {
+      const uploadRes = await cloudinary.uploader.upload(user.image, { resource_type: 'image' });
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { image: uploadRes.url },
+      });
+      user.image = uploadRes.url;
     }
 
     await prisma.session.updateMany({
