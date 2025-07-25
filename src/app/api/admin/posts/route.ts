@@ -12,9 +12,20 @@ function getYoutubeIdFromUrl(url: string) {
 
 export async function GET(request: NextRequest) {
   const isPublic = request.nextUrl?.searchParams?.get('public') === '1';
+  const titleQuery = request.nextUrl?.searchParams?.get('title') || '';
   try {
     if (isPublic) {
+      let where = {};
+      if (titleQuery) {
+        where = {
+          title: {
+            contains: titleQuery,
+            mode: 'insensitive',
+          },
+        };
+      }
       const posts = await prisma.post.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         select: {
           id: true,
@@ -100,6 +111,10 @@ export async function POST(request: NextRequest) {
     const { title, content, excerpt, status, tags, media, createdAt, updatedAt } = body;
     if (!title || !content || !status) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+    const exist = await prisma.post.findFirst({ where: { title: { equals: title, mode: 'insensitive' } } });
+    if (exist) {
+      return NextResponse.json({ error: 'Title already exists' }, { status: 409 });
     }
     let tagIds: string[] = [];
     if (Array.isArray(tags) && tags.length > 0) {

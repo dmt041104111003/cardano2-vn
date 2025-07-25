@@ -6,6 +6,7 @@ import { useToastContext } from '~/components/toast-provider';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import Modal from '~/components/admin/common/Modal';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface Media {
   id: string;
@@ -16,7 +17,9 @@ interface Media {
   path: string;
   createdAt: string;
   updatedAt: string;
-  usedInPosts?: string[];
+  usageCount?: number;
+  usageTitles?: string[];
+  // usedInPosts?: string[]; 
 }
 
 interface MediaTableProps {
@@ -33,6 +36,10 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
   const { showSuccess, showError } = useToastContext();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [previewYoutube, setPreviewYoutube] = useState<string | null>(null);
+  const [showUsageModal, setShowUsageModal] = useState<{ open: boolean; titles: string[] }>({ open: false, titles: [] });
+  const [loadingPostIdx, setLoadingPostIdx] = useState<number | null>(null);
+
+  const router = useRouter();
 
   const getFileIcon = (mimeType: string) => {
     if (mimeType.startsWith('image/')) return '🖼️';
@@ -88,6 +95,24 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
   const handleCopyLink = (url: string) => {
     navigator.clipboard.writeText(url);
     showSuccess('Copied!', 'Media link copied to clipboard.');
+  };
+
+  const handleNavigateToBlog = async (title: string, idx: number) => {
+    setLoadingPostIdx(idx);
+    try {
+      const res = await fetch(`/api/admin/posts?title=${encodeURIComponent(title)}&public=1`);
+      const data = await res.json();
+      const post = data.posts?.[0];
+      if (post && post.id) {
+        router.push(`/blog/${post.id}`);
+      } else {
+        showError('Not found', 'Not found!');
+      }
+    } catch {
+      showError('Error', 'Error!');
+    } finally {
+      setLoadingPostIdx(null);
+    }
   };
 
   if (media.length === 0) {
@@ -195,13 +220,32 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                {item.usedInPosts && item.usedInPosts.length > 0 ? (
+                {item.usageCount && item.usageCount > 0 ? (
                   <div className="text-sm text-gray-900">
-                    <span className="font-medium">{item.usedInPosts.length}</span> post{item.usedInPosts.length > 1 ? 's' : ''}
-                    <div className="text-xs text-gray-500 mt-1 truncate">
-                      {truncateText(item.usedInPosts.slice(0, 2).join(', '), 20)}
-                      {item.usedInPosts.length > 2 && ` +${item.usedInPosts.length - 2} more`}
-                    </div>
+                    <span className="font-medium">{item.usageCount}</span> post{item.usageCount > 1 ? 's' : ''}
+                    {item.usageTitles && item.usageTitles.length > 0 && (
+                      <div className="text-xs text-gray-500 mt-1 truncate" title={item.usageTitles.join(', ')}>
+                        {(() => {
+                          const preview = item.usageTitles.slice(0, 2).join(', ');
+                          const maxLen = 10;
+                          const showPreview = preview.length > maxLen ? preview.slice(0, maxLen) + '...' : preview;
+                          const needReadMore = preview.length > maxLen || item.usageTitles.length > 2;
+                          return (
+                            <>
+                              {showPreview}
+                              {needReadMore && (
+                                <button
+                                  className="text-emerald-600 underline ml-1"
+                                  onClick={() => setShowUsageModal({ open: true, titles: item.usageTitles! })}
+                                >
+                                  Read more
+                                </button>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
@@ -234,7 +278,7 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
                   </button>
                   <button
                     onClick={() => {
-                      if (item.usedInPosts && item.usedInPosts.length > 0) {
+                      if (!!item.usageCount) {
                         showError('Cannot delete', 'This media is being used in posts and cannot be deleted.');
                         return;
                       }
@@ -245,16 +289,16 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
                       });
                     }}
                     className={`${
-                      item.usedInPosts && item.usedInPosts.length > 0
+                      !!item.usageCount
                         ? 'text-gray-400 cursor-not-allowed'
                         : 'text-red-600 hover:text-red-900'
                     }`}
                     title={
-                      item.usedInPosts && item.usedInPosts.length > 0
+                      !!item.usageCount
                         ? 'Cannot delete - Media is being used in posts'
                         : 'Delete'
                     }
-                    disabled={item.usedInPosts && item.usedInPosts.length > 0}
+                    disabled={!!item.usageCount}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -367,6 +411,27 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
                 Copy
               </button>
             </div>
+          </div>
+        </Modal>
+      )}
+      {showUsageModal.open && (
+        <Modal isOpen={showUsageModal.open} onClose={() => setShowUsageModal({ open: false, titles: [] })} title="Posts using this media" maxWidth="max-w-lg">
+          <div className="p-6">
+            <ul className="list-disc pl-8 space-y-3">
+              {showUsageModal.titles.map((title, idx) => (
+                <li key={idx} className="text-base">
+                  <button
+                    className="text-emerald-700 hover:underline font-medium disabled:opacity-60"
+                    title={title}
+                    onClick={() => handleNavigateToBlog(title, idx)}
+                    disabled={loadingPostIdx === idx}
+                  >
+                    {title}
+                    {loadingPostIdx === idx && <span className="ml-2 animate-spin">Loading...</span>}
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
         </Modal>
       )}
