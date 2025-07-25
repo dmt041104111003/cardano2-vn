@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -110,6 +111,17 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+.admin-root, .admin-root * {
+  color: #222 !important;
+  --color-foreground: #222 !important;
+}
+
+html .admin-root, html .admin-root * {
+  color: #222 !important;
+  --color-foreground: #222 !important;
+  background: none !important;
 }
 
 @layer base {
