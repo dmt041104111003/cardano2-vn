@@ -92,6 +92,10 @@ export async function PATCH(request: NextRequest) {
     if (!id || !name) {
       return NextResponse.json({ error: 'Missing tag id or name' }, { status: 400 });
     }
+    const exist = await prisma.tag.findFirst({ where: { name, NOT: { id } } });
+    if (exist) {
+      return NextResponse.json({ error: 'Tag name already exists' }, { status: 409 });
+    }
     const tag = await prisma.tag.update({ where: { id }, data: { name } });
     return NextResponse.json({ tag });
   } catch {
