@@ -58,7 +58,7 @@
     "ethereum-blockies-base64": "^1.0.2",
     "framer-motion": "^12.23.6",
     "fumadocs-core": "^15.6.5",
-    "fumadocs-mdx": "^11.7.0",
+    "fumadocs-mdx": "^11.7.1",
     "fumadocs-ui": "^15.6.5",
     "graphql-request": "^7.2.0",
     "graphql-yoga": "^5.15.1",

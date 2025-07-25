@@ -124,8 +124,8 @@ export async function PATCH(request: NextRequest) {
       where: { wallet: session.user.address },
       include: { role: true },
     });
-    if (!currentUser || currentUser.role.name !== 'ADMIN') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const { address, name, promote } = await request.json();
     if (!address) {
@@ -138,13 +138,15 @@ export async function PATCH(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-    if (name !== undefined) {
-      if (user.wallet === currentUser.wallet || user.role.name !== 'ADMIN') {
-        await prisma.user.update({ where: { wallet: address }, data: { name } });
-        return NextResponse.json({ success: true });
-      } else {
-        return NextResponse.json({ error: 'Cannot change name of another admin' }, { status: 403 });
-      }
+    if (currentUser.role.name === 'ADMIN' && name !== undefined) {
+      await prisma.user.update({ where: { wallet: address }, data: { name } });
+      return NextResponse.json({ success: true });
+    }
+    if (name !== undefined && user.wallet === currentUser.wallet) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    if (currentUser.role.name !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     if (promote) {
