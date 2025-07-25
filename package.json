@@ -7,7 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next export"
+    "export": "next export",
+    "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
     "@harmoniclabs/cbor": "1.6.0",
@@ -49,12 +50,16 @@
     "@tiptap/extension-youtube": "^3.0.7",
     "@tiptap/react": "^3.0.7",
     "@tiptap/starter-kit": "^3.0.7",
+    "@types/mdx": "^2.0.13",
     "blockies-identicon": "^0.1.0",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
     "ethereum-blockies-base64": "^1.0.2",
     "framer-motion": "^12.23.6",
+    "fumadocs-core": "^15.6.5",
+    "fumadocs-mdx": "^11.7.0",
+    "fumadocs-ui": "^15.6.5",
     "graphql-request": "^7.2.0",
     "graphql-yoga": "^5.15.1",
     "highlight.js": "^11.11.1",
