@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* thêm theme*/
+@import "fumadocs-ui/css/ocean.css";
+@import "fumadocs-ui/css/preset.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -113,12 +116,14 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-.admin-root, .admin-root * {
+.admin-root,
+.admin-root * {
   color: #222 !important;
   --color-foreground: #222 !important;
 }
 
-html .admin-root, html .admin-root * {
+html .admin-root,
+html .admin-root * {
   color: #222 !important;
   --color-foreground: #222 !important;
   background: none !important;
@@ -137,23 +142,22 @@ html .admin-root, html .admin-root * {
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px; 
+  width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent; 
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: transparent; 
+  background-color: transparent;
   border-radius: 4px;
   transition: background-color 0.3s ease;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(17, 18, 65, 0.5); 
+  background-color: rgba(17, 18, 65, 0.5);
 }
-
 
 .custom-scrollbar {
   scrollbar-width: thin;
