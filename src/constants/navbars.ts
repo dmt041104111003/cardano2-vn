@@ -11,12 +11,17 @@ export const navbars = [
   },
   {
     id: 3,
-    title: "Roadmaps",
-    href: "/roadmap",
+    title: "Projects",
+    href: "/project",
   },
   {
     id: 4,
     title: "Abouts",
     href: "/about",
+  },
+  {
+    id: 5,
+    title: "Lms",
+    href: "/lms",
   },
 ];

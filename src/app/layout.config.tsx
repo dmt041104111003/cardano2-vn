@@ -10,5 +10,5 @@ export const baseOptions: BaseLayoutProps = {
     ),
   },
   githubUrl: 'https://github.com',
- 
+  disableThemeSwitch: true,
 };

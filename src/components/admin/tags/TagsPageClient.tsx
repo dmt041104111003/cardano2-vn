@@ -10,12 +10,14 @@ import { Pagination } from '~/components/ui/pagination';
 import Modal from '~/components/admin/common/Modal';
 import { useToastContext } from '~/components/toast-provider';
 import { useQuery } from '@tanstack/react-query';
+import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
 
 export function TagsPageClient() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'newest'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  const ITEMS_PER_PAGE = 6;
   const [showAddModal, setShowAddModal] = useState(false);
   const [newTagName, setNewTagName] = useState('');
   const [editTagName, setEditTagName] = useState('');
@@ -195,24 +197,28 @@ export function TagsPageClient() {
         onFilterChange={handleFilterChange}
       />
 
-      <div className="bg-white rounded-lg shadow">
-        <TagTable
-          tags={paginatedTags}
-          editingTag={editingTag}
-          onEdit={handleEdit}
-          onSave={handleSave}
-          onDelete={handleDelete}
-          onCancel={handleCancel}
-        />
+      {loading ? (
+        <AdminTableSkeleton columns={4} rows={5} />
+      ) : (
+        <div className="bg-white rounded-lg shadow">
+          <TagTable
+            tags={paginatedTags}
+            editingTag={editingTag}
+            onEdit={handleEdit}
+            onSave={handleSave}
+            onDelete={handleDelete}
+            onCancel={handleCancel}
+          />
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={filteredTags.length}
-          itemsPerPage={ITEMS_PER_PAGE}
-          onPageChange={handlePageChange}
-        />
-      </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredTags.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
       <Modal isOpen={!!editingTag} onClose={handleCancel} title="Edit Tag Name">
         <input
           className="w-full border rounded px-3 py-2 mb-4"

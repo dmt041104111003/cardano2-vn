@@ -1,8 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-/* Docs CSS - only affects docs pages */
-@import 'fumadocs-ui/css/ocean.css';
-@import 'fumadocs-ui/css/preset.css';
+
+/* thêm theme*/
+@import "fumadocs-ui/css/ocean.css";
+@import "fumadocs-ui/css/preset.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -115,6 +116,36 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Admin theme - force light mode */
+.admin-root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -127,118 +158,22 @@
   }
 }
 
-/* Admin CSS - Override docs CSS for admin pages */
-/* Only apply to admin pages, not docs */
-[data-admin="true"] .admin-root, 
-[data-admin="true"] .admin-root *,
-.admin-root[data-admin="true"], 
-.admin-root[data-admin="true"] * {
-  color: #222 !important;
-  --color-foreground: #222 !important;
-}
-
-html [data-admin="true"] .admin-root, 
-html [data-admin="true"] .admin-root * {
-  color: #222 !important;
-  --color-foreground: #222 !important;
-  background: none !important;
-}
-
-/* Force admin text color even in dark mode */
-html.dark [data-admin="true"] .admin-root, 
-html.dark [data-admin="true"] .admin-root * {
-  color: #222 !important;
-  --color-foreground: #222 !important;
-}
-
-/* Ensure docs layout works correctly */
-#nd-docs-layout,
-#nd-docs-layout *,
-[data-fd-layout] {
-  color: inherit !important;
-  --color-foreground: inherit !important;
-}
-
-/* Ensure docs sidebar works */
-[data-fd-sidebar],
-[data-fd-sidebar] * {
-  color: inherit !important;
-  --color-foreground: inherit !important;
-}
-
-/* Fix docs sidebar width and spacing */
-[data-fd-sidebar] {
-  min-width: 280px !important;
-  width: 280px !important;
-  padding: 1rem !important;
-  margin-top: 2rem !important;
-}
-
-/* Force docs sidebar spacing with stronger selectors */
-#nd-docs-layout [data-fd-sidebar],
-#nd-docs-layout [data-fd-sidebar] *,
-[data-fd-layout] [data-fd-sidebar],
-[data-fd-layout] [data-fd-sidebar] * {
-  margin-top: 2rem !important;
-  padding-top: 1rem !important;
-}
-
-/* Alternative selectors for docs sidebar */
-.fd-sidebar,
-.fd-sidebar *,
-[class*="fd-sidebar"],
-[class*="fd-sidebar"] * {
-  margin-top: 2rem !important;
-  padding-top: 1rem !important;
-}
-
-/* Direct fumadocs-ui sidebar fix */
-[data-fd-sidebar],
-[data-fd-sidebar] > div,
-[data-fd-sidebar] > nav,
-[data-fd-sidebar] > * {
-  margin-top: 2rem !important;
-  padding-top: 1rem !important;
-}
-
-/* Fix docs layout container */
-#nd-docs-layout,
-[data-fd-layout] {
-  padding-top: 2rem !important;
-}
-
-/* Fix docs sidebar container */
-[data-fd-sidebar] {
-  padding-top: 2rem !important;
-  margin-top: 2rem !important;
-}
-
-/* Fix docs sidebar content spacing */
-[data-fd-sidebar] > * {
-  margin-bottom: 1rem !important;
-}
-
-/* Fix docs main content spacing */
-[data-fd-layout] > main {
-  padding-left: 2rem !important;
-}
-
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px; 
+  width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent; 
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: transparent; 
+  background-color: transparent;
   border-radius: 4px;
   transition: background-color 0.3s ease;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(17, 18, 65, 0.5); 
+  background-color: rgba(17, 18, 65, 0.5);
 }
 
 .custom-scrollbar {
@@ -268,6 +203,7 @@ html.dark [data-admin="true"] .admin-root * {
   background-color: #111241;
 }
 
+/* Firefox */
 .transparent-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
@@ -275,21 +211,4 @@ html.dark [data-admin="true"] .admin-root * {
 
 .transparent-scrollbar.scrolling {
   scrollbar-color: #888 transparent;
-}
-
-/* Override fumadocs-ui sidebar with strongest selectors */
-html body [data-fd-sidebar],
-html body [data-fd-sidebar] *,
-html body #nd-docs-layout [data-fd-sidebar],
-html body [data-fd-layout] [data-fd-sidebar] {
-  margin-top: 2rem !important;
-  padding-top: 2rem !important;
-}
-
-/* Force all docs sidebar elements */
-html body [data-fd-sidebar] > *,
-html body [data-fd-sidebar] > div,
-html body [data-fd-sidebar] > nav {
-  margin-top: 2rem !important;
-  padding-top: 1rem !important;
 }

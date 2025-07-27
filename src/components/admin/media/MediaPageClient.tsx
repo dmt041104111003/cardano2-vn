@@ -7,8 +7,8 @@ import { AdminFilters } from '~/components/admin/common/AdminFilters';
 import { Pagination } from '~/components/ui/pagination';
 import { MediaUpload } from './MediaUpload';
 import { MediaTable } from './MediaTable';
-import { MediaLoading } from './MediaLoading';
 import { useMediaData } from './useMediaData';
+import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
 
 export default function MediaPageClient() {
   const {
@@ -29,7 +29,7 @@ export default function MediaPageClient() {
   } = useMediaData();
 
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 6;
 
   useEffect(() => {
     setSearchTerm('');
@@ -45,10 +45,6 @@ export default function MediaPageClient() {
   const totalPages = Math.ceil(filteredMedia.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedMedia = filteredMedia.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-  if (loading) {
-    return <MediaLoading />;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -85,6 +81,9 @@ export default function MediaPageClient() {
           onFilterChange={setFilterType}
         />
 
+        {loading ? (
+          <AdminTableSkeleton columns={5} rows={5} />
+        ) : (
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900">
@@ -107,18 +106,17 @@ export default function MediaPageClient() {
             />
           )}
         </div>
-      </div>
+        )}
 
       <MediaUpload
         isOpen={showUploadModal}
-        onUploadSuccess={async () => {
+          onClose={() => setShowUploadModal(false)}
+          onUploadSuccess={() => {
           setShowUploadModal(false);
-          setSearchTerm('');
-          setFilterType('all');
-          await fetchMedia();
+            fetchMedia();
         }}
-        onCancel={() => setShowUploadModal(false)}
       />
+      </div>
     </div>
   );
 } 

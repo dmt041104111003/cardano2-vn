@@ -10,6 +10,7 @@ import { Pagination } from '~/components/ui/pagination';
 import Modal from '~/components/admin/common/Modal';
 import { useToastContext } from '~/components/toast-provider';
 import { useQuery } from '@tanstack/react-query';
+import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
 
 export function UsersPageClient() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,6 +21,7 @@ export function UsersPageClient() {
   const [newUserName, setNewUserName] = useState('');
   const [currentUserAddress, setCurrentUserAddress] = useState<string | null>(null);
   const [editUser, setEditUser] = useState<User | null>(null);
+  const ITEMS_PER_PAGE = 6;
   const [editUserName, setEditUserName] = useState('');
   const { showSuccess, showError } = useToastContext();
 
@@ -229,6 +231,9 @@ export function UsersPageClient() {
         onSearchChange={setSearchTerm}
         onFilterChange={(v: string) => setFilterType(v as typeof filterType)}
       />
+      {loading ? (
+        <AdminTableSkeleton columns={5} rows={5} />
+      ) : (
       <div className="bg-white rounded-lg shadow">
         <UserTable
           users={paginatedUsers}
@@ -245,6 +250,7 @@ export function UsersPageClient() {
           onPageChange={setCurrentPage}
         />
       </div>
+      )}
       <Modal isOpen={!!editUser} onClose={() => setEditUser(null)} title="Edit User Name">
         <input
           className="w-full border rounded px-3 py-2 mb-4"

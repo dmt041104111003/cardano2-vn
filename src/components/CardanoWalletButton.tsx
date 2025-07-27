@@ -10,20 +10,8 @@ interface CardanoWalletButtonProps {
   variant?: "default" | "outline" | "ghost";
 }
 
-export default function CardanoWalletButton({ 
-  className = "", 
-  variant = "default"
-}: CardanoWalletButtonProps) {
-  const { 
-    connect, 
-    disconnect, 
-    isConnecting, 
-    error, 
-    walletUser, 
-    isAuthenticated, 
-    isWalletInstalled,
-    hasLoggedIn,
-  } = useCardanoWallet();
+export default function CardanoWalletButton({ className = "", variant = "default" }: CardanoWalletButtonProps) {
+  const { connect, disconnect, isConnecting, error, walletUser, isAuthenticated, isWalletInstalled, hasLoggedIn } = useCardanoWallet();
 
   const { showError, showSuccess, showInfo } = useToastContext();
   const lastErrorRef = useRef<string>("");
@@ -64,8 +52,8 @@ export default function CardanoWalletButton({
         lastConnectingRef.current = false;
         const shortAddress = `${walletUser.address.slice(0, 6)}...${walletUser.address.slice(-4)}`;
         showSuccess(
-          "Login Successful! 🎉", 
-          `Welcome to Cardano2VN! Your wallet ${shortAddress} has been connected successfully. You can now access your profile and manage your account.`
+          "Login Successful! 🎉",
+          `Welcome to Cardano2VN! Your wallet ${shortAddress} has been connected successfully. You can now access your profile and manage your account.`,
         );
       }
     }
@@ -75,7 +63,7 @@ export default function CardanoWalletButton({
     if (isConnecting) return "Connecting...";
     if (isAuthenticated) return "Disconnect Wallet";
     if (!isWalletInstalled) return "Install Cardano Wallet";
-    return "Connect Cardano Wallet";
+    return "Connect Wallet";
   };
 
   const getButtonIcon = () => {
@@ -87,24 +75,23 @@ export default function CardanoWalletButton({
 
   const getButtonClasses = () => {
     const baseClasses = "inline-flex items-center gap-2 rounded-sm border px-4 py-2 text-sm font-medium shadow-lg transition-all duration-200";
-    
+
     if (variant === "outline") {
       return `${baseClasses} border-white/30 bg-gray-800/50 text-white hover:border-white/50 hover:bg-gray-700/50`;
     }
-    
+
     if (variant === "ghost") {
       return `${baseClasses} border-transparent text-gray-300 hover:text-white`;
     }
-    
+
     return `${baseClasses} border-white/30 bg-gray-800/50 text-white hover:border-white/50 hover:bg-gray-700/50`;
   };
-
 
   if (!isWalletInstalled) {
     return (
       <button
         type="button"
-        onClick={() => window.open('https://eternl.io', '_blank', 'noopener,noreferrer')}
+        onClick={() => window.open("https://eternl.io", "_blank", "noopener,noreferrer")}
         className={`${getButtonClasses()} ${className}`}
       >
         {getButtonIcon()}
@@ -117,7 +104,7 @@ export default function CardanoWalletButton({
     <button
       onClick={handleClick}
       disabled={isConnecting}
-      className={`${getButtonClasses()} ${className} ${isConnecting ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={`${getButtonClasses()} ${className} ${isConnecting ? "opacity-50 cursor-not-allowed" : ""}`}
     >
       {getButtonIcon()}
       <span>{getButtonText()}</span>
