@@ -193,3 +193,16 @@ model Project {
   @@index([year])
   @@index([createdAt])
 }
+
+model Technology {
+  id          String   @id @default(uuid())
+  title       String
+  name        String
+  description String   @db.Text
+  href        String
+  image       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+}

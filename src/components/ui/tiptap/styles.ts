@@ -173,6 +173,7 @@ export const tiptapPreviewStyles = `
   .ProseMirror {
     outline: none;
     max-width: 100%;
+    color: #ffffff;
   }
   
   .ProseMirror p.is-editor-empty:first-child::before {
@@ -283,6 +284,7 @@ export const tiptapPreviewStyles = `
     margin-bottom: 0.5rem;
     font-weight: 600;
     line-height: 1.25;
+    color: #ffffff;
   }
   
   .ProseMirror h1 { font-size: 2rem; }
@@ -295,15 +297,18 @@ export const tiptapPreviewStyles = `
   .ProseMirror p {
     margin-bottom: 1rem;
     line-height: 1.75;
+    color: #ffffff;
   }
   
   .ProseMirror ul, .ProseMirror ol {
     margin-bottom: 1rem;
     padding-left: 1.5rem;
+    color: #ffffff;
   }
   
   .ProseMirror li {
     margin-bottom: 0.25rem;
+    color: #ffffff;
   }
   
   .ProseMirror table {
