@@ -13,6 +13,7 @@ import { routers } from "~/constants/routers";
 import CardanoWalletButton from "~/components/CardanoWalletButton";
 import { useUser } from "~/hooks/useUser";
 import { WalletAvatar } from "~/components/WalletAvatar";
+import { ThemeToggle } from "~/components/ui/theme-toggle";
 
 type NavbarType = { id: number; title: string; href: string };
 
@@ -62,6 +63,8 @@ export default function Header() {
                 {navbar.title}
               </Link>
             ))}
+            
+            <ThemeToggle />
             
             {session && isAdmin && (
               <Link
@@ -117,6 +120,9 @@ export default function Header() {
                     {navbar.title}
                   </Link>
                 ))}
+                <div className="py-2">
+                  <ThemeToggle />
+                </div>
               </div>
 
               <div className="space-y-4">
