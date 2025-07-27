@@ -6,7 +6,6 @@ import ProjectSkeleton from "~/components/project/ProjectSkeleton";
 import { Pagination } from "~/components/ui/pagination";
 import Navigation from "~/components/navigation";
 import Title from "~/components/title";
-import Link from "next/link";
 
 export default function ProjectPageClient() {
   const [year, setYear] = useState(new Date().getFullYear());
