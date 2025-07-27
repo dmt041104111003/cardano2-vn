@@ -20,6 +20,32 @@ export function Pagination({
 
   if (totalPages <= 1) return null;
 
+  const getPageNumbers = () => {
+    const delta = 2;
+    const range = [];
+    const rangeWithDots = [];
+
+    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      rangeWithDots.push(1, '...');
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (currentPage + delta < totalPages - 1) {
+      rangeWithDots.push('...', totalPages);
+    } else {
+      rangeWithDots.push(totalPages);
+    }
+
+    return rangeWithDots;
+  };
+
   return (
     <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
       {/* Mobile pagination */}
@@ -59,14 +85,17 @@ export function Pagination({
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            {getPageNumbers().map((page, index) => (
               <button
-                key={page}
-                onClick={() => onPageChange(page)}
+                key={index}
+                onClick={() => typeof page === 'number' ? onPageChange(page) : undefined}
+                disabled={typeof page !== 'number'}
                 className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                  page === currentPage
+                  typeof page === 'number' && page === currentPage
                     ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                    : typeof page === 'number'
+                    ? 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                    : 'bg-white border-gray-300 text-gray-400 cursor-default'
                 }`}
               >
                 {page}
