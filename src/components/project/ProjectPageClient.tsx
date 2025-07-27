@@ -59,7 +59,7 @@ export default function ProjectPageClient() {
   };
   
   return (
-    <main className="relative pt-20">
+    <main className="relative pt-20 bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900">
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
         <Title
           title="Projects Cardano2vn Roadmap"
@@ -100,7 +100,7 @@ export default function ProjectPageClient() {
                     className="ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 mt-0"
                   >
                     <div className="mb-8 text-right">
-                      <h2 className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-6xl font-bold tracking-tight text-transparent">
+                      <h2 className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300 bg-clip-text text-6xl font-bold tracking-tight text-transparent">
                         {year}
                       </h2>
                     </div>

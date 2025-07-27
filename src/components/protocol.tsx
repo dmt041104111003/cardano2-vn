@@ -17,7 +17,7 @@ export default function Protocol({
         className={`absolute -inset-0.5 rounded-sm bg-gradient-to-r from-${color}-500 to-${color}-600 opacity-30 blur transition duration-500 group-hover:opacity-50`}
       ></div>
       <div
-        className={`relative aspect-square overflow-hidden rounded-sm border border-white/20 bg-gray-900 shadow-2xl transition-all duration-500 hover:shadow-${color}-500/10`}
+        className={`relative aspect-square overflow-hidden rounded-sm border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-900 shadow-2xl transition-all duration-500 hover:shadow-${color}-500/10`}
       >
         <Image
           alt="Protocol Image"

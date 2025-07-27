@@ -41,7 +41,7 @@ export default function Header() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed top-0 z-50 w-full border-b border-white/20 bg-black/20 backdrop-blur-sm"
+      className="fixed top-0 z-50 w-full border-b border-gray-200 dark:border-white/20 bg-white/80 dark:bg-black/20 backdrop-blur-sm"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
@@ -52,13 +52,13 @@ export default function Header() {
             className="flex items-center"
           >
             <Link href={routers.home} className="flex items-center gap-3">
-              <Image className="text-xl h-10 w-auto  font-bold text-white" loading="lazy" src={images.logo} alt="Cardano2vn" />
+              <Image className="text-xl h-10 w-auto font-bold text-gray-900 dark:text-white" loading="lazy" src={images.logo} alt="Cardano2vn" />
             </Link>
           </motion.section>
 
           <section className="hidden md:flex items-center space-x-8">
             {navbars.map((navbar: NavbarType) => (
-              <Link href={navbar.href} key={navbar.id} className="font-medium text-gray-300 transition-colors duration-200 hover:text-white">
+              <Link href={navbar.href} key={navbar.id} className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white">
                 {navbar.title}
               </Link>
             ))}
@@ -66,7 +66,7 @@ export default function Header() {
             {session && isAdmin && (
               <Link
                 href="/admin/posts"
-                className="inline-flex items-center gap-2 rounded-sm border border-white/30 bg-gray-800/50 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-200 hover:border-white/50 hover:bg-gray-700/50"
+                className="inline-flex items-center gap-2 rounded-sm border border-gray-300 dark:border-white/30 bg-gray-100 dark:bg-gray-800/50 px-4 py-2 text-sm font-medium text-gray-700 dark:text-white shadow-lg transition-all duration-200 hover:border-gray-400 dark:hover:border-white/50 hover:bg-gray-200 dark:hover:bg-gray-700/50"
               >
                 <span>Admin Panel</span>
               </Link>
@@ -75,10 +75,10 @@ export default function Header() {
             {session ? (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-white" />
-                  <span className="text-sm text-white font-mono">{formatWalletAddress((session.user as { address?: string })?.address || "")}</span>
+                  <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
+                  <span className="text-sm text-gray-700 dark:text-white font-mono">{formatWalletAddress((session.user as { address?: string })?.address || "")}</span>
                 </div>
-                <button onClick={() => signOut()} className="font-medium text-gray-300 transition-colors duration-200 hover:text-white">
+                <button onClick={() => signOut()} className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white">
                   Sign out
                 </button>
               </div>
@@ -90,7 +90,7 @@ export default function Header() {
           <section className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-200"
+              className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/10 border border-gray-300 dark:border-white/20 text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 transition-all duration-200"
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -103,7 +103,7 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden border-t border-white/10 bg-black/95 backdrop-blur-sm"
+            className="md:hidden border-t border-gray-200 dark:border-white/10 bg-white/95 dark:bg-black/95 backdrop-blur-sm"
           >
             <div className="px-6 py-4 space-y-4">
               <div className="space-y-3">
@@ -112,20 +112,20 @@ export default function Header() {
                     href={navbar.href}
                     key={navbar.id}
                     onClick={closeMenu}
-                    className="block font-medium text-gray-300 transition-colors duration-200 hover:text-white py-2"
+                    className="block font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white py-2"
                   >
                     {navbar.title}
                   </Link>
                 ))}
               </div>
 
-              <div className="pt-2 border-t border-white/10">
+              <div className="space-y-4">
                 {session && isAdmin && (
                   <div className="flex items-center gap-4 mb-4">
                     <Link
                       href="/admin/posts"
                       onClick={closeMenu}
-                      className="inline-flex items-center gap-2 rounded-sm border border-white/30 bg-gray-800/50 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-200 hover:border-white/50 hover:bg-gray-700/50"
+                      className="inline-flex items-center gap-2 rounded-sm border border-gray-300 dark:border-white/30 bg-gray-100 dark:bg-gray-800/50 px-4 py-2 text-sm font-medium text-gray-700 dark:text-white shadow-lg transition-all duration-200 hover:border-gray-400 dark:hover:border-white/50 hover:bg-gray-200 dark:hover:bg-gray-700/50"
                     >
                      <span>Admin Panel</span>
                     </Link>
@@ -135,8 +135,8 @@ export default function Header() {
                 {session ? (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-white" />
-                      <span className="text-sm text-white font-mono">
+                      <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
+                      <span className="text-sm text-gray-700 dark:text-white font-mono">
                         {formatWalletAddress((session.user as { address?: string })?.address || "")}
                       </span>
                     </div>
@@ -145,7 +145,7 @@ export default function Header() {
                         signOut();
                         closeMenu();
                       }}
-                      className="font-medium text-gray-300 transition-colors duration-200 hover:text-white"
+                      className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white"
                     >
                       Sign out
                     </button>

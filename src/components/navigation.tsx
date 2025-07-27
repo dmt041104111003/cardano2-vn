@@ -30,23 +30,24 @@ export default function Navigation({
     <div className="w-full md:w-80 md:shrink-0 md:pr-8">
       <div className="space-y-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
           <input
             type="text"
             placeholder="Search projects..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-white/20 rounded-sm bg-gray-800/50 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-white/20 rounded-sm bg-white dark:bg-gray-800/50 backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         
         {/* Status Filter */}
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
           <select
             value={statusFilter}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-white/20 rounded-sm bg-gray-800/50 backdrop-blur-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-white/20 rounded-sm bg-white dark:bg-gray-800/50 backdrop-blur-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            title="Filter by status"
           >
             <option value="all">All Status</option>
             <option value="PROPOSED">Proposed</option>
@@ -58,11 +59,12 @@ export default function Navigation({
         </div>
         
         <div className="relative">
-          <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
           <select
             value={fundFilter}
             onChange={(e) => onFundChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-white/20 rounded-sm bg-gray-800/50 backdrop-blur-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-white/20 rounded-sm bg-white dark:bg-gray-800/50 backdrop-blur-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            title="Filter by fund"
           >
             <option value="all">All Funds</option>
             {Array.from(new Set(projects.map((p: any) => p.fund).filter(Boolean))).map((fund: any) => (
@@ -92,12 +94,14 @@ export default function Navigation({
               key={key}
               type="button"
               role="tab"
-              aria-selected={selectedYear === year}
+              aria-selected={selectedYear === year ? "true" : "false"}
               aria-controls={`content-${year}`}
               id={`trigger-${year}`}
               onClick={() => onYearChange(year)}
               className={`inline-flex items-center whitespace-nowrap w-full justify-start rounded-sm border px-4 py-3 text-left text-sm font-medium backdrop-blur-sm transition-all ${
-                selectedYear === year ? "bg-blue-600 text-white border-white/20" : "bg-gray-800/50 text-white border-white/20 hover:bg-gray-700/50"
+                selectedYear === year 
+                  ? "bg-blue-600 text-white border-blue-600 dark:border-white/20" 
+                  : "bg-gray-100 dark:bg-gray-800/50 text-gray-900 dark:text-white border-gray-200 dark:border-white/20 hover:bg-gray-200 dark:hover:bg-gray-700/50"
               }`}
             >
               {year}

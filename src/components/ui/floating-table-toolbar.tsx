@@ -79,7 +79,7 @@ export const FloatingTableToolbar = ({ editor, isClient }: FloatingTableToolbarP
   return (
     <div
       ref={toolbarRef}
-      className="fixed z-50 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg p-3 flex flex-col gap-3"
+      className="fixed z-50 bg-gray-900/90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg p-3 flex flex-col gap-3"
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
@@ -88,20 +88,20 @@ export const FloatingTableToolbar = ({ editor, isClient }: FloatingTableToolbarP
     >
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-gray-300">
             Column
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={addColumnAfter}
-              className="w-7 h-7 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded flex items-center justify-center transition-colors font-bold text-sm"
+              className="w-7 h-7 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded flex items-center justify-center transition-colors font-bold text-sm"
               title="Add column"
             >
               +
             </button>
             <button
               onClick={deleteColumn}
-              className="w-7 h-7 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded flex items-center justify-center transition-colors font-bold text-sm"
+              className="w-7 h-7 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded flex items-center justify-center transition-colors font-bold text-sm"
               title="Delete column"
             >
               −
@@ -112,20 +112,20 @@ export const FloatingTableToolbar = ({ editor, isClient }: FloatingTableToolbarP
 
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-gray-300">
             Row
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={addRowAfter}
-              className="w-7 h-7 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded flex items-center justify-center transition-colors font-bold text-sm"
+              className="w-7 h-7 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded flex items-center justify-center transition-colors font-bold text-sm"
               title="Add row"
             >
               +
             </button>
             <button
               onClick={deleteRow}
-              className="w-7 h-7 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded flex items-center justify-center transition-colors font-bold text-sm"
+              className="w-7 h-7 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded flex items-center justify-center transition-colors font-bold text-sm"
               title="Delete row"
             >
               −
@@ -134,13 +134,13 @@ export const FloatingTableToolbar = ({ editor, isClient }: FloatingTableToolbarP
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-        <span className="text-sm font-medium text-gray-700">
+      <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+        <span className="text-sm font-medium text-gray-300">
           Table
         </span>
         <button
           onClick={deleteTable}
-          className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded flex items-center gap-2 transition-colors font-medium text-sm"
+          className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded flex items-center gap-2 transition-colors font-medium text-sm"
           title="Delete table"
         >
           <Trash2 className="h-3 w-3" />

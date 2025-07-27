@@ -82,7 +82,7 @@ export default function BlogPageClient() {
   }, [search, selectedTags]);
 
   return (
-    <main className="relative pt-20">
+    <main className="relative pt-20 bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900">
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
         <Title
           title="Cardano2vn Blog"

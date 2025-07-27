@@ -21,17 +21,17 @@ export default function Project({
       <li className="flex items-start gap-4">
         <Icon />
         <div>
-          <h4 className="text-lg font-semibold text-white">{title}</h4>
-          <p className="text-sm text-gray-300">{description}</p>
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-300">{description}</p>
         </div>
       </li>
     );
   };
   return (
-    <section className="mb-16 flex flex-col items-center gap-12 rounded-sm border border-white/20 bg-gray-800/50 p-8 backdrop-blur-sm lg:flex-row">
+    <section className="mb-16 flex flex-col items-center gap-12 rounded-sm border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 p-8 backdrop-blur-sm lg:flex-row">
       <div className="lg:w-1/2">
-        <h2 className="mb-4 text-3xl font-bold text-white">{title}</h2>
-        <p className="mb-8 text-lg text-gray-300">{description}</p>
+        <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">{title}</h2>
+        <p className="mb-8 text-lg text-gray-600 dark:text-gray-300">{description}</p>
         <ul className="space-y-4">
           {results?.map((result, index) => (
             <Component key={index} Icon={result.Icon} title={result.title} description={result.description} />

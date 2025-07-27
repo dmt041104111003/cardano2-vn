@@ -7,237 +7,166 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enum cho trạng thái bài viết
-enum PostStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-// Enum cho vai trò người dùng
-enum RoleName {
-  ADMIN
-  USER
-}
-
-// Enum cho loại phản hồi
-enum ReactionType {
-  LIKE
-  HEART
-  HAHA
-  WOW
-  SAD
-  ANGRY
-  SHARE
-}
-
-// Enum cho loại media
-enum MediaType {
-  IMAGE
-  YOUTUBE
-  VIDEO
-}
-
-// Enum cho trạng thái project
-enum ProjectStatus {
-  PROPOSED
-  APPROVED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
 model User {
-  id        String    @id @default(cuid())
-  wallet    String    @unique
+  id        String     @id @default(cuid())
+  wallet    String     @unique
   name      String?
   image     String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   roleId    String
-  role      Role      @relation(fields: [roleId], references: [id])
-
-  posts     Post[]    @relation("UserPosts")
-  comments  Comment[] @relation("UserComments")
+  comments  Comment[]  @relation("UserComments")
+  media     Media[]    @relation("UserMedia")
+  posts     Post[]     @relation("UserPosts")
   reactions Reaction[]
   sessions  Session[]
-  media     Media[]   @relation("UserMedia")
+  role      Role       @relation(fields: [roleId], references: [id])
 
-  @@index([createdAt])
+  @@index([createdAt], map: "idx_user_createdat")
 }
 
 model Role {
-  id          String    @id @default(uuid())
-  name        RoleName  @unique
+  id          String   @id @default(uuid())
+  name        RoleName @unique
   description String?
-
   users       User[]
 }
 
 model Post {
-  id            String      @id @default(uuid())
-  title         String
-  content       String      @db.Text 
-  status        PostStatus  @default(DRAFT)
-  views         Int         @default(0)
-  likes         Int         @default(0)
-  comments      Int         @default(0)
-  shares        Int         @default(0)
-  authorId      String 
-  author        User        @relation("UserPosts", fields: [authorId], references: [id])
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id           String     @id @default(uuid())
+  title        String
+  content      String
+  status       PostStatus @default(DRAFT)
+  authorId     String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  comments     Int        @default(0)
+  likes        Int        @default(0)
+  shares       Int        @default(0)
+  views        Int        @default(0)
+  comments_rel Comment[]  @relation("PostComments")
+  media        Media[]    @relation("PostMedia")
+  author       User       @relation("UserPosts", fields: [authorId], references: [id])
+  tags         PostTag[]
+  reactions    Reaction[]
 
-  tags          PostTag[]
-  comments_rel  Comment[]   @relation("PostComments")
-  reactions     Reaction[]
-  media         Media[]     @relation("PostMedia")
-
-  @@index([status])
-  @@index([authorId])
-  @@index([createdAt])
+  @@index([authorId], map: "idx_post_authorid")
+  @@index([createdAt], map: "idx_post_createdat")
+  @@index([status], map: "idx_post_status")
 }
 
 model Comment {
-  id                String      @id @default(uuid())
-  postId            String
-  userId            String?
-  content           String      @db.Text
-  parentCommentId   String?
+  id              String    @id @default(uuid())
+  postId          String
+  userId          String?
+  content         String
+  parentCommentId String?
+  isApproved      Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  parent          Comment?  @relation("CommentToReplies", fields: [parentCommentId], references: [id])
+  replies         Comment[] @relation("CommentToReplies")
+  post            Post      @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade)
+  user            User?     @relation("UserComments", fields: [userId], references: [id])
 
-  post              Post        @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade)
-  user              User?       @relation("UserComments", fields: [userId], references: [id])
-  parent            Comment?    @relation("CommentToReplies", fields: [parentCommentId], references: [id])
-  replies           Comment[]   @relation("CommentToReplies")
-
-  isApproved        Boolean     @default(false)
-  createdAt         DateTime    @default(now())
-
-  @@index([postId])
-  @@index([userId])
-  @@index([createdAt])
+  @@index([createdAt], map: "idx_comment_createdat")
+  @@index([postId], map: "idx_comment_postid")
+  @@index([userId], map: "idx_comment_userid")
 }
 
 model Reaction {
-  id          String       @id @default(uuid())
-  userId      String
-  postId      String?
-  type        ReactionType
-
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post        Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  createdAt   DateTime     @default(now())
+  id        String       @id @default(uuid())
+  userId    String
+  postId    String?
+  type      ReactionType
+  createdAt DateTime     @default(now())
+  post      Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId, type])
 }
 
 model Media {
-  id          String    @id @default(uuid())
-  url         String
-  type        MediaType 
-  mediaId     String?
-  uploadedBy  String?   
-  uploadedAt  DateTime  @default(now())
-  postId      String?   
-  post        Post?     @relation("PostMedia", fields: [postId], references: [id], onDelete: SetNull)
-  user        User?     @relation("UserMedia", fields: [uploadedBy], references: [id], onDelete: SetNull)
+  id         String    @id @default(uuid())
+  url        String
+  type       MediaType
+  uploadedBy String?
+  uploadedAt DateTime  @default(now())
+  postId     String?
+  mediaId    String?
+  post       Post?     @relation("PostMedia", fields: [postId], references: [id])
+  user       User?     @relation("UserMedia", fields: [uploadedBy], references: [id])
 
-  @@index([type])
-  @@index([uploadedBy])
-  @@index([uploadedAt])
+  @@index([type], map: "idx_media_type")
+  @@index([uploadedAt], map: "idx_media_uploadedat")
+  @@index([uploadedBy], map: "idx_media_uploadedby")
 }
 
 model Tag {
-  id         String    @id @default(uuid())
-  name       String
-  createdAt  DateTime  @default(now())
-  posts      PostTag[]
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  posts     PostTag[]
 
-  @@index([name])
+  @@index([name], map: "idx_tag_name")
 }
 
 model PostTag {
   postId String
   tagId  String
-
-  post   Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  tag    Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([postId, tagId])
 }
 
 model Session {
-  id           String    @id @default(cuid())
-  userId       String
-  accessTime   DateTime?
-  lastAccess   DateTime?
-
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String    @id @default(cuid())
+  userId     String
+  accessTime DateTime?
+  lastAccess DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Project {
-  id          String        @id @default(uuid())
+  id          String   @id @default(uuid())
   title       String
-  description String        @db.Text
+  description String
   href        String?
-  status      ProjectStatus @default(PROPOSED)
+  status      String   @default("PROPOSED")
   year        Int
   quarterly   String
   fund        String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([status])
   @@index([year])
   @@index([createdAt])
 }
 
-model Technology {
-  id          String   @id @default(uuid())
-  title       String
-  name        String
-  description String   @db.Text
-  href        String
-  image       String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([createdAt])
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 }
 
-model AboutContent {
-  id          String   @id @default(uuid())
-  title       String
-  subtitle    String
-  description String   @db.Text
-  youtubeUrl  String
-  buttonText  String
-  buttonUrl   String
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([isActive])
-  @@index([createdAt])
+enum RoleName {
+  ADMIN
+  USER
 }
 
-model Member {
-  id          String   @id @default(uuid())
-  name        String
-  role        String
-  description String   @db.Text
-  image       String
-  email       String?
-  color       String?  @default("blue")
-  skills      String[] @default([])
-  isActive    Boolean  @default(true)
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+enum ReactionType {
+  LIKE
+  HEART
+  HAHA
+  SAD
+  ANGRY
+  SHARE
+  WOW
+}
 
-  @@index([isActive])
-  @@index([order])
-  @@index([createdAt])
+enum MediaType {
+  IMAGE
+  YOUTUBE
+  VIDEO
 }

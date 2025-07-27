@@ -145,17 +145,17 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
     const shouldTruncate = content.length > MAX_COMMENT_LENGTH;
     
     if (!shouldTruncate) {
-      return <p className="text-gray-200 text-sm leading-relaxed">{content}</p>;
+      return <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">{content}</p>;
     }
 
     return (
       <div>
-        <p className="text-gray-200 text-sm leading-relaxed">
+        <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">
           {expandedComment ? content : `${content.substring(0, MAX_COMMENT_LENGTH)}...`}
         </p>
         <button
           onClick={toggleCommentExpansion}
-          className="text-blue-400 hover:text-blue-300 text-sm font-medium mt-1"
+          className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium mt-1"
         >
           {expandedComment ? "Show less" : "Show more"}
         </button>
@@ -235,11 +235,11 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
     >
       {comment.parentCommentId && (
         <div className="absolute left-0 top-0 h-full flex items-stretch" style={{width: '16px'}}>
-          <div className={`border-l-2 h-full ml-2 transition-colors duration-200 ${isHoveredReply ? 'border-blue-400' : 'border-gray-700'}`}></div>
+          <div className={`border-l-2 h-full ml-2 transition-colors duration-200 ${isHoveredReply ? 'border-blue-500 dark:border-blue-400' : 'border-gray-300 dark:border-gray-700'}`}></div>
         </div>
       )}
       <div className={comment.parentCommentId ? 'pl-2 md:pl-4 w-full max-w-full' : 'w-full max-w-full'}>
-        <div className={`space-y-3 transition-colors duration-200 ${isParentHighlight ? 'bg-blue-900/30' : ''}`} style={{wordBreak: 'break-word'}}>
+        <div className={`space-y-3 transition-colors duration-200 ${isParentHighlight ? 'bg-blue-100/50 dark:bg-blue-900/30' : ''}`} style={{wordBreak: 'break-word'}}>
           <div className="flex items-start gap-3">
             {avatarUrl ? (
               <Image src={avatarUrl} alt="avatar" width={32} height={32} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
@@ -247,10 +247,10 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
               <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${comment.avatar || 'from-blue-500 to-purple-600'} flex-shrink-0`}></div>
             )}
             <div className="flex-1 min-w-0">
-              <div className="bg-gray-800/30 rounded-2xl px-3 py-2">
+              <div className="bg-gray-100 dark:bg-gray-800/30 rounded-2xl px-3 py-2">
                 <div className="flex items-center gap-2 mb-1">
                   <span
-                    className="font-semibold text-white text-xs font-mono cursor-pointer select-all"
+                    className="font-semibold text-gray-900 dark:text-white text-xs font-mono cursor-pointer select-all"
                     title="Copy userId"
                     onClick={() => {
                       navigator.clipboard.writeText(comment.userId || '');
@@ -260,7 +260,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                     {shortAddress(comment.userId || '')}
                   </span>
                   <span
-                    className="font-mono text-blue-300 text-xs bg-blue-900/40 px-2 py-0.5 rounded select-all cursor-pointer hover:text-blue-200"
+                    className="font-mono text-blue-700 dark:text-blue-300 text-xs bg-blue-100/40 dark:bg-blue-900/40 px-2 py-0.5 rounded select-all cursor-pointer hover:text-blue-800 dark:hover:text-blue-200"
                     title="Copy address"
                     onClick={() => {
                       navigator.clipboard.writeText(comment.author || '');
@@ -270,7 +270,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                     {shortAddress(comment.author || '')}
                   </span>
                   {comment.isPostAuthor && (
-                    <span className="ml-2 italic font-bold text-blue-500 text-xs">author</span>
+                    <span className="ml-2 italic font-bold text-blue-600 dark:text-blue-500 text-xs">author</span>
                   )}
            
 
@@ -278,7 +278,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                 {editing ? (
                 <div className="mt-2 flex flex-col gap-2">
                   <textarea
-                    className="w-full rounded-xl bg-gray-700/50 border border-gray-600/50 p-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 text-sm"
+                    className="w-full rounded-xl bg-gray-200/50 dark:bg-gray-700/50 border border-gray-300/50 dark:border-gray-600/50 p-2 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-blue-500/50 text-sm"
                     value={editText}
                     onChange={e => setEditText(e.target.value)}
                     rows={3}
@@ -287,7 +287,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                   <div className="flex gap-2 justify-end">
                     <button
                       onClick={handleCancelEdit}
-                      className="px-4 py-1 rounded bg-gray-200 text-gray-800 hover:bg-gray-300"
+                      className="px-4 py-1 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                     >
                       Cancel
                     </button>
@@ -301,17 +301,17 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                 </div>
               ) : renderCommentContent(comment.content)}
               </div>
-              <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+              <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
                 <button 
                   onClick={handleReplyClick}
-                  className="hover:text-gray-300 transition-colors font-medium"
+                  className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors font-medium"
                 >
                   Reply
                 </button>
                 {canEdit && !editing && (
                   <button
                     onClick={handleEdit}
-                    className="hover:text-yellow-400 text-yellow-300 transition-colors font-medium ml-2"
+                    className="hover:text-yellow-600 dark:hover:text-yellow-400 text-yellow-600 dark:text-yellow-300 transition-colors font-medium ml-2"
                   >
                     Edit
                   </button>
@@ -320,7 +320,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                   <>
                     <button
                       onClick={() => setShowDeleteModal(true)}
-                      className="hover:text-red-400 text-red-300 transition-colors font-medium ml-2"
+                      className="hover:text-red-600 dark:hover:text-red-400 text-red-600 dark:text-red-300 transition-colors font-medium ml-2"
                     >
                       Delete
                     </button>
@@ -334,7 +334,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => setShowDeleteModal(false)}
-                            className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300"
+                            className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                           >
                             Cancel
                           </button>
@@ -349,14 +349,14 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                     </Modal>
                   </>
                 )}
-                <span className="text-xs text-gray-500 ml-2">{formatTime(comment.time || '')}</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">{formatTime(comment.time || '')}</span>
               </div>
             </div>
           </div>
 
           {activeReplyId === comment.id && (
             <div className="ml-11">
-              <div className="bg-gray-800/30 rounded-2xl p-3 border border-gray-700/50">
+              <div className="bg-gray-100 dark:bg-gray-800/30 rounded-2xl p-3 border border-gray-200 dark:border-gray-700/50">
                 <div className="flex items-start gap-3">
                   {user?.image ? (
                     <Image src={user.image} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
@@ -371,14 +371,14 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                           value={replyText}
                           onChange={(e) => setReplyText(e.target.value)}
                           placeholder="Write a reply..."
-                          className="w-full rounded-xl bg-gray-700/50 border border-gray-600/50 pl-4 pr-10 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 text-sm"
+                          className="w-full rounded-xl bg-gray-200/50 dark:bg-gray-700/50 border border-gray-300/50 dark:border-gray-600/50 pl-4 pr-10 py-2 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-blue-500/50 text-sm"
                           autoFocus
                         />
    
                         <button
                           type="button"
                           onClick={() => setShowEmojiPicker && setShowEmojiPicker((v: boolean) => !v)}
-                          className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-yellow-400 transition-colors p-1"
+                          className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors p-1"
                           title="Add emoji"
                           tabIndex={-1}
                           ref={emojiButtonRef}
@@ -390,7 +390,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                         <button 
                           type="submit"
                           disabled={!replyText.trim()}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-300 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors p-1"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 disabled:text-gray-400 dark:disabled:text-gray-500 disabled:cursor-not-allowed transition-colors p-1"
                           aria-label="Send reply"
                         >
                           <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
@@ -399,7 +399,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                         </button>
                         {showEmojiPicker && (
                           <div
-                            className="absolute z-50 right-10 top-full mt-2 bg-gray-800 border border-gray-700 rounded-lg p-2 shadow-lg"
+                            className="absolute z-50 right-10 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2 shadow-lg"
                             ref={emojiPickerRef}
                           >
                             <div className="grid grid-cols-8 gap-1">
@@ -407,7 +407,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                                 <button
                                   key={index}
                                   onClick={() => handleEmojiClick && handleEmojiClick(emoji)}
-                                  className="w-8 h-8 flex items-center justify-center hover:bg-gray-700 rounded transition-colors text-lg"
+                                  className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors text-lg"
                                   title={emoji}
                                 >
                                   {emoji}
@@ -444,7 +444,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                 <div>
                   <button
                     onClick={loadMoreReplies}
-                    className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
                   >
                     Load {Math.min(3, comment.replies.length - visibleReplies)} more replies
                   </button>

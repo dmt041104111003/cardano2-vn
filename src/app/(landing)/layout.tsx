@@ -10,7 +10,7 @@ export default function LandingLayout({
 }>) {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-950 to-gray-900 text-white">
+      <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 text-gray-900 dark:text-white">
         <Header />
         <div>{children}</div>
         <Footer />

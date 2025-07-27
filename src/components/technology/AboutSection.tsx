@@ -35,14 +35,14 @@ export default function AboutSection() {
       <section className="mb-16 text-left">
         <aside className="mx-auto my-0 flex w-full max-w-[1200px] flex-col gap-2">
           <div className="flex w-full gap-7 max-sm:flex-col">
-            <div className='m relative aspect-video w-[60%] rounded-3xl before:absolute before:left-8 before:top-8 before:h-full before:w-full before:rounded-3xl before:bg-slate-900 before:shadow-xl before:content-[""] max-sm:w-full animate-pulse'>
-              <div className="absolute inset-0 z-10 block h-full w-full rounded-xl bg-gray-700"></div>
+            <div className='m relative aspect-video w-[60%] rounded-3xl before:absolute before:left-8 before:top-8 before:h-full before:w-full before:rounded-3xl before:bg-gray-300 dark:before:bg-slate-900 before:shadow-xl before:content-[""] max-sm:w-full animate-pulse'>
+              <div className="absolute inset-0 z-10 block h-full w-full rounded-xl bg-gray-300 dark:bg-gray-700"></div>
             </div>
             <div className="z-10 flex w-[40%] flex-col items-start gap-[15px] max-md:gap-3 max-sm:w-full">
-              <div className="h-8 bg-gray-700 rounded w-3/4 animate-pulse"></div>
-              <div className="h-6 bg-gray-700 rounded w-full animate-pulse"></div>
-              <div className="h-32 bg-gray-700 rounded w-full animate-pulse"></div>
-              <div className="h-12 bg-gray-700 rounded w-1/2 animate-pulse"></div>
+              <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
+              <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-full animate-pulse"></div>
+              <div className="h-32 bg-gray-300 dark:bg-gray-700 rounded w-full animate-pulse"></div>
+              <div className="h-12 bg-gray-300 dark:bg-gray-700 rounded w-1/2 animate-pulse"></div>
             </div>
           </div>
         </aside>
@@ -58,7 +58,7 @@ export default function AboutSection() {
     <section className="mb-16 text-left">
       <aside className="mx-auto my-0 flex w-full max-w-[1200px] flex-col gap-2">
         <div className="flex w-full gap-7 max-sm:flex-col">
-          <div className='m relative aspect-video w-[60%] rounded-3xl before:absolute before:left-8 before:top-8 before:h-full before:w-full before:rounded-3xl before:bg-slate-900 before:shadow-xl before:content-[""] max-sm:w-full'>
+          <div className='m relative aspect-video w-[60%] rounded-3xl before:absolute before:left-8 before:top-8 before:h-full before:w-full before:rounded-3xl before:bg-gray-300 dark:before:bg-slate-900 before:shadow-xl before:content-[""] max-sm:w-full'>
             <iframe
               className="absolute inset-0 z-10 block h-full w-full rounded-xl"
               src={aboutContent.youtubeUrl}
@@ -68,9 +68,9 @@ export default function AboutSection() {
             ></iframe>
           </div>
           <div className="z-10 flex w-[40%] flex-col items-start gap-[15px] max-md:gap-3 max-sm:w-full">
-            <h2 className="text-left text-[25px] font-bold max-md:text-xl">{aboutContent.title}</h2>
-            <p className="mb-1 text-[20px] font-normal max-md:text-lg">{aboutContent.subtitle}</p>
-            <span className={"text-left leading-[1.8] max-md:text-base"}>
+            <h2 className="text-left text-[25px] font-bold max-md:text-xl text-gray-900 dark:text-white">{aboutContent.title}</h2>
+            <p className="mb-1 text-[20px] font-normal max-md:text-lg text-gray-700 dark:text-gray-300">{aboutContent.subtitle}</p>
+            <span className={"text-left leading-[1.8] max-md:text-base text-gray-600 dark:text-gray-300"}>
               {aboutContent.description}
             </span>
             <Link href={aboutContent.buttonUrl} target="_blank">
