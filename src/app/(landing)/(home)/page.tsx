@@ -185,7 +185,7 @@ export default function HomePage() {
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="2"
-                                stroke-linecap="round"
+                                strokeLinecap="round"
                                 stroke-linejoin="round"
                                 className="lucide lucide-users h-8 w-8"
                               >
@@ -226,7 +226,7 @@ export default function HomePage() {
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="2"
-                                stroke-linecap="round"
+                                strokeLinecap="round"
                                 stroke-linejoin="round"
                                 className="lucide lucide-check-circle h-8 w-8"
                               >

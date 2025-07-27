@@ -16,7 +16,7 @@ export default function Timeline() {
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
-                    stroke-linecap="round"
+                    strokeLinecap="round"
                     stroke-linejoin="round"
                     className="lucide lucide-target h-8 w-8"
                   >

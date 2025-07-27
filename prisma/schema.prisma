@@ -222,3 +222,22 @@ model AboutContent {
   @@index([isActive])
   @@index([createdAt])
 }
+
+model Member {
+  id          String   @id @default(uuid())
+  name        String
+  role        String
+  description String   @db.Text
+  image       String
+  email       String?
+  color       String?  @default("blue")
+  skills      String[] @default([])
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
+  @@index([createdAt])
+}

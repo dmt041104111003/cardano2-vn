@@ -1,15 +1,28 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { members } from "~/constants/members";
+
+interface MemberType {
+  id: string;
+  name: string;
+  role: string;
+  description: string;
+  image: string;
+  email?: string;
+  color?: string;
+  skills?: string[];
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface MemberModalProps {
-  member: (typeof members[0] & { skills?: string[] }) | null;
+  member: MemberType | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
 export default function MemberModal({ member, isOpen, onClose }: MemberModalProps) {
   if (!member) return null;
-  const imageSrc = typeof member.image === 'string' ? member.image : member.image.src;
 
   return (
     <AnimatePresence>
@@ -33,7 +46,7 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
               <div className="flex h-96">
                 <div className="w-2/5 relative overflow-hidden">
                   <motion.img
-                    src={imageSrc}
+                    src={member.image}
                     alt={member.name}
                     className="w-full h-full object-cover"
                     initial={{ scale: 1.1 }}
@@ -83,7 +96,7 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
                     >
                       {member.description}
                     </motion.p>
-                    {member.skills && (
+                    {member.skills && member.skills.length > 0 && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -116,7 +129,7 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-sm text-gray-300">
                           <div className="w-1.5 h-1.5 bg-white/60 rounded-full"></div>
-                          <span>cardano2vn@gmail.com</span>
+                          <span>{member.email || "cardano2vn@gmail.com"}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-300">
                           <div className="w-1.5 h-1.5 bg-white/60 rounded-full"></div>
