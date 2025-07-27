@@ -47,23 +47,16 @@ export default function TechnologyDetailsModal({ technology, isOpen, onClose }: 
           <p className="text-sm text-gray-900 leading-relaxed">{technology.description}</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Link</label>
-            <a 
-              href={technology.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:text-blue-900 break-all"
-            >
-              {technology.href}
-            </a>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">ID</label>
-            <p className="text-sm text-gray-900 font-mono">{technology.id}</p>
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Link</label>
+          <a 
+            href={technology.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-blue-600 hover:text-blue-900 break-all"
+          >
+            {technology.href}
+          </a>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200">
