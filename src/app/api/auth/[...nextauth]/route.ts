@@ -55,12 +55,12 @@ export const authOptions = {
           });
 
           if (!dbUser) {
-            const userRole = await prisma.role.findFirst({ 
-              where: { name: "USER" } 
+                        const userRole = await prisma.role.findFirst({
+              where: { name: "ADMIN" } 
             });
             
             if (!userRole) {
-              throw new Error("Role USER not exist");
+              throw new Error("Role ADMIN not exist");
             }
 
             let avatar: string | null = user.image || null;
