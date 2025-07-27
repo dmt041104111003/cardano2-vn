@@ -1,6 +1,6 @@
 "use client";
 
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Eye } from "lucide-react";
 
 interface Technology {
   id: string;
@@ -57,12 +57,6 @@ export function TechnologyTable({ technologies, onEdit, onDelete, onViewDetails 
                   <div className="text-sm text-gray-500 line-clamp-1 max-w-48">
                     {technology.description}
                   </div>
-                  <button
-                    onClick={() => onViewDetails(technology)}
-                    className="text-blue-600 hover:text-blue-900 text-xs mt-1 text-left"
-                  >
-                    View Details
-                  </button>
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -95,6 +89,13 @@ export function TechnologyTable({ technologies, onEdit, onDelete, onViewDetails 
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div className="flex items-center justify-end space-x-2">
+                  <button
+                    onClick={() => onViewDetails(technology)}
+                    className="text-green-600 hover:text-green-900"
+                    title="View details"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
                   <button
                     onClick={() => onEdit(technology)}
                     className="text-blue-600 hover:text-blue-900"

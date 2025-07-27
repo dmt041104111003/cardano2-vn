@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 interface AboutContent {
   id?: string;
@@ -21,18 +22,70 @@ interface AboutEditorProps {
 
 export default function AboutEditor({ initialData, onSave, onCancel, isLoading }: AboutEditorProps) {
   const [formData, setFormData] = useState<AboutContent>({
-    title: initialData?.title || "About Cardano2vn",
-    subtitle: initialData?.subtitle || "Open source dynamic assets (Token/NFT) generator (CIP68)",
-    description: initialData?.description || "Open source dynamic assets (Token/NFT) generator (CIP68) CIP68 Generator is a tool designed to simplify the creation, management, and burning of CIP68-compliant native assets on the Cardano platform. It provides an easy-to-use interface for non-technical users to interact with these assets while also offering open-source code for developers to integrate and deploy applications faster and more efficiently.",
-    youtubeUrl: initialData?.youtubeUrl || "https://www.youtube.com/embed/_GrbIRoT3mU",
-    buttonText: initialData?.buttonText || "Learn More Cardano2vn",
-    buttonUrl: initialData?.buttonUrl || "https://cips.cardano.org/cip/CIP-68"
+    title: "",
+    subtitle: "",
+    description: "",
+    youtubeUrl: "",
+    buttonText: "",
+    buttonUrl: ""
   });
+
+  const { data: aboutData, isLoading: loadingAbout } = useQuery({
+    queryKey: ['admin-about'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/about');
+      if (!res.ok) throw new Error('Failed to fetch about data');
+      return res.json();
+    }
+  });
+
+  useEffect(() => {
+    if (aboutData?.aboutContent) {
+      setFormData(aboutData.aboutContent);
+    }
+  }, [aboutData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
   };
+
+  if (loadingAbout) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+          <div className="space-y-2 mt-6">
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-24 bg-gray-200 rounded"></div>
+          </div>
+          <div className="space-y-2 mt-6">
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-10 bg-gray-200 rounded"></div>
+          </div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-6">
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

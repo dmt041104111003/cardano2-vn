@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Image as ImageIcon, Trash2, Download } from 'lucide-react';
+import { Image as ImageIcon, Trash2, Download, Eye } from 'lucide-react';
 import { useToastContext } from '~/components/toast-provider';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import Modal from '~/components/admin/common/Modal';
@@ -159,39 +159,21 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
                     {item.mimeType.startsWith('image/') ? (
                       item.path.startsWith('data:image') ? (
                         <img
-                          className="h-10 w-10 rounded-lg object-cover cursor-pointer hover:opacity-80"
+                          className="h-10 w-10 rounded-lg object-cover"
                           src={item.path}
                           alt={item.originalName}
-                          onClick={() => setPreviewImage(item.path)}
                         />
                       ) : (
                         <Image
-                          className="h-10 w-10 rounded-lg object-cover cursor-pointer hover:opacity-80"
+                          className="h-10 w-10 rounded-lg object-cover"
                           src={item.path}
                           alt={item.originalName}
                           width={40}
                           height={40}
-                          onClick={() => setPreviewImage(item.path)}
                         />
                       )
                     ) : (
-                      <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-red-100"
-                        onClick={() => {
-                          // Extract YouTube video ID
-                          let videoId = '';
-                          if (item.path.includes('v=')) {
-                            videoId = item.path.split('v=')[1]?.split('&')[0] || '';
-                          } else if (item.path.includes('youtu.be/')) {
-                            videoId = item.path.split('youtu.be/')[1]?.split('?')[0] || '';
-                          } else if (item.path.includes('youtube.com/embed/')) {
-                            videoId = item.path.split('youtube.com/embed/')[1]?.split('?')[0] || '';
-                          } else if (item.path.includes('youtube.com/watch/')) {
-                            videoId = item.path.split('youtube.com/watch/')[1]?.split('?')[0] || '';
-                          }
-                          if (videoId) setPreviewYoutube(videoId);
-                        }}
-                        title="Click to preview YouTube video"
-                      >
+                      <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center">
                         <span className="text-lg">{getFileIcon(item.mimeType)}</span>
                       </div>
                     )}
@@ -270,8 +252,32 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div className="flex items-center justify-end space-x-2">
                   <button
-                    onClick={() => handleDownload(item)}
+                    onClick={() => {
+                      if (item.mimeType.startsWith('image/')) {
+                        setPreviewImage(item.path);
+                      } else if (item.mimeType.includes('youtube') || item.mimeType === 'application/youtube') {
+                        // Extract YouTube video ID
+                        let videoId = '';
+                        if (item.path.includes('v=')) {
+                          videoId = item.path.split('v=')[1]?.split('&')[0] || '';
+                        } else if (item.path.includes('youtu.be/')) {
+                          videoId = item.path.split('youtu.be/')[1]?.split('?')[0] || '';
+                        } else if (item.path.includes('youtube.com/embed/')) {
+                          videoId = item.path.split('youtube.com/embed/')[1]?.split('?')[0] || '';
+                        } else if (item.path.includes('youtube.com/watch/')) {
+                          videoId = item.path.split('youtube.com/watch/')[1]?.split('?')[0] || '';
+                        }
+                        if (videoId) setPreviewYoutube(videoId);
+                      }
+                    }}
                     className="text-green-600 hover:text-green-900"
+                    title="View details"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDownload(item)}
+                    className="text-blue-600 hover:text-blue-900"
                     title={item.mimeType.includes('youtube') || item.mimeType === 'application/youtube' ? 'Download Thumbnail' : 'Download'}
                   >
                     <Download className="h-4 w-4" />

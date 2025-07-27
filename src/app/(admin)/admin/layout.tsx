@@ -14,7 +14,8 @@ import {
   Image,
   FolderOpen,
   Cpu,
-  Info
+  Info,
+  UserPlus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '~/hooks/useUser';
@@ -38,6 +39,11 @@ const adminNavItems = [
     title: 'Technologies',
     href: '/admin/technologies',
     icon: Cpu,
+  },
+  {
+    title: 'Members',
+    href: '/admin/members',
+    icon: UserPlus,
   },
   {
     title: 'Users',
