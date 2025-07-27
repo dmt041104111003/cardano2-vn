@@ -5,6 +5,7 @@ import { AdminHeader } from "~/components/admin/common/AdminHeader";
 import { AdminStats } from "~/components/admin/common/AdminStats";
 import { AdminFilters } from "~/components/admin/common/AdminFilters";
 import TechnologyEditor from "~/components/admin/technologies/TechnologyEditor";
+import AboutEditor from "~/components/admin/about/AboutEditor";
 import DeleteConfirmModal from "~/components/admin/technologies/DeleteConfirmModal";
 import { TechnologyTable } from "~/components/admin/technologies/TechnologyTable";
 import TechnologyDetailsModal from "~/components/admin/technologies/TechnologyDetailsModal";
@@ -33,6 +34,7 @@ export default function TechnologiesPageClient() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingTechnology, setDeletingTechnology] = useState<Technology | null>(null);
   const [showTechnologyModal, setShowTechnologyModal] = useState<Technology | null>(null);
+  const [activeTab, setActiveTab] = useState<'technologies' | 'about'>('technologies');
   const { showSuccess, showError } = useToastContext();
 
   const {
@@ -93,6 +95,26 @@ export default function TechnologiesPageClient() {
     }
   };
 
+  const handleSaveAbout = async (aboutData: any) => {
+    try {
+      const response = await fetch('/api/admin/about', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(aboutData),
+      });
+
+      if (response.ok) {
+        showSuccess('About content updated', 'About content has been updated successfully.');
+      } else {
+        showError('Failed to save about content');
+      }
+    } catch (error) {
+      showError('Failed to save about content');
+    }
+  };
+
   const handleDeleteConfirm = async () => {
     if (!deletingTechnology) return;
     try {
@@ -145,43 +167,82 @@ export default function TechnologiesPageClient() {
         onAddClick={handleCreateTechnology}
       />
 
-      <AdminStats 
-        stats={[
-          { label: "Total Technologies", value: stats.total },
-        ]}
-      />
+      {/* Tabs */}
+      <div className="border-b border-gray-200">
+        <nav className="-mb-px flex space-x-8">
+          <button
+            onClick={() => setActiveTab('technologies')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'technologies'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Technologies
+          </button>
+          <button
+            onClick={() => setActiveTab('about')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'about'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            About Content
+          </button>
+        </nav>
+      </div>
 
-      <AdminFilters
-        searchTerm={searchTerm}
-        filterType="all"
-        searchPlaceholder="Search technologies by title, name or description..."
-        filterOptions={[
-          { value: "all", label: "All Technologies" },
-        ]}
-        onSearchChange={setSearchTerm}
-        onFilterChange={() => {}}
-      />
-
-      {loadingTechnologies ? (
-        <AdminTableSkeleton columns={5} rows={6} />
-      ) : filteredTechnologies.length === 0 ? (
-        <div className="p-8 text-center">
-          <p className="text-gray-600">No technologies found.</p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow">
-          <TechnologyTable
-            technologies={paginatedTechnologies}
-            onEdit={handleEditTechnology}
-            onDelete={handleDeleteTechnology}
-            onViewDetails={setShowTechnologyModal}
+      {activeTab === 'technologies' ? (
+        <>
+          <AdminStats 
+            stats={[
+              { label: "Total Technologies", value: stats.total },
+            ]}
           />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={filteredTechnologies.length}
-            itemsPerPage={ITEMS_PER_PAGE}
-            onPageChange={handlePageChange}
+
+          <AdminFilters
+            searchTerm={searchTerm}
+            filterType="all"
+            searchPlaceholder="Search technologies by title, name or description..."
+            filterOptions={[
+              { value: "all", label: "All Technologies" },
+            ]}
+            onSearchChange={setSearchTerm}
+            onFilterChange={() => {}}
+          />
+
+          {loadingTechnologies ? (
+            <AdminTableSkeleton columns={5} rows={6} />
+          ) : filteredTechnologies.length === 0 ? (
+            <div className="p-8 text-center">
+              <p className="text-gray-600">No technologies found.</p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow">
+              <TechnologyTable
+                technologies={paginatedTechnologies}
+                onEdit={handleEditTechnology}
+                onDelete={handleDeleteTechnology}
+                onViewDetails={setShowTechnologyModal}
+              />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={filteredTechnologies.length}
+                itemsPerPage={ITEMS_PER_PAGE}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">About Section Content</h2>
+          <AboutEditor
+            onSave={handleSaveAbout}
+            onCancel={() => {}}
+            isLoading={false}
           />
         </div>
       )}

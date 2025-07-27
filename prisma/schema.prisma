@@ -206,3 +206,19 @@ model Technology {
 
   @@index([createdAt])
 }
+
+model AboutContent {
+  id          String   @id @default(uuid())
+  title       String
+  subtitle    String
+  description String   @db.Text
+  youtubeUrl  String
+  buttonText  String
+  buttonUrl   String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([createdAt])
+}

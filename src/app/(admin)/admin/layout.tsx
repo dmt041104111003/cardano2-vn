@@ -13,7 +13,8 @@ import {
   LogOut,
   Image,
   FolderOpen,
-  Cpu
+  Cpu,
+  Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '~/hooks/useUser';
