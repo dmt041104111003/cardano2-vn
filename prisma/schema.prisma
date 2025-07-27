@@ -38,6 +38,15 @@ enum MediaType {
   VIDEO
 }
 
+// Enum cho trạng thái project
+enum ProjectStatus {
+  PROPOSED
+  APPROVED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id        String    @id @default(cuid())
   wallet    String    @unique
@@ -166,4 +175,21 @@ model Session {
   lastAccess   DateTime?
 
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  title       String
+  description String        @db.Text
+  href        String?
+  status      ProjectStatus @default(PROPOSED)
+  year        Int
+  quarterly   String
+  fund        String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status])
+  @@index([year])
+  @@index([createdAt])
 }

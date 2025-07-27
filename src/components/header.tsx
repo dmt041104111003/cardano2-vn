@@ -56,15 +56,13 @@ export default function Header() {
             </Link>
           </motion.section>
 
-          <section className="hidden items-center space-x-8 md:flex">
+          <section className="hidden md:flex items-center space-x-8">
             {navbars.map((navbar: NavbarType) => (
               <Link href={navbar.href} key={navbar.id} className="font-medium text-gray-300 transition-colors duration-200 hover:text-white">
                 {navbar.title}
               </Link>
             ))}
-          </section>
-
-          <section>
+            
             {session && isAdmin && (
               <Link
                 href="/admin/posts"
@@ -73,21 +71,20 @@ export default function Header() {
                 <span>Admin Panel</span>
               </Link>
             )}
-            <div className="flex items-center gap-3">
-              {session ? (
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-white" />
-                    <span className="text-sm text-white font-mono">{formatWalletAddress((session.user as { address?: string })?.address || "")}</span>
-                  </div>
-                  <button onClick={() => signOut()} className="font-medium text-gray-300 transition-colors duration-200 hover:text-white">
-                    Sign out
-                  </button>
+            
+            {session ? (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-white" />
+                  <span className="text-sm text-white font-mono">{formatWalletAddress((session.user as { address?: string })?.address || "")}</span>
                 </div>
-              ) : (
-                <CardanoWalletButton />
-              )}
-            </div>
+                <button onClick={() => signOut()} className="font-medium text-gray-300 transition-colors duration-200 hover:text-white">
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <CardanoWalletButton />
+            )}
           </section>
 
           <section className="md:hidden">
@@ -122,19 +119,19 @@ export default function Header() {
                 ))}
               </div>
 
-              {session && isAdmin && (
-                <div className="pt-2 border-t border-white/10">
-                  <Link
-                    href="/admin/posts"
-                    onClick={closeMenu}
-                    className="inline-flex items-center gap-2 rounded-sm border border-white/30 bg-gray-800/50 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-200 hover:border-white/50 hover:bg-gray-700/50"
-                  >
-                    <span>Admin Panel</span>
-                  </Link>
-                </div>
-              )}
-
               <div className="pt-2 border-t border-white/10">
+                {session && isAdmin && (
+                  <div className="flex items-center gap-4 mb-4">
+                    <Link
+                      href="/admin/posts"
+                      onClick={closeMenu}
+                      className="inline-flex items-center gap-2 rounded-sm border border-white/30 bg-gray-800/50 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-200 hover:border-white/50 hover:bg-gray-700/50"
+                    >
+                     <span>Admin Panel</span>
+                    </Link>
+                  </div>
+                )}
+                
                 {session ? (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

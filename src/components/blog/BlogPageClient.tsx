@@ -119,10 +119,12 @@ export default function BlogPageClient() {
                   title={post.title}
                   author={post.author || "Admin"}
                   slug={post.slug || post.id}
-                  datetime={new Date(post.createdAt).toLocaleDateString("en-US", {
+                  datetime={new Date(post.createdAt).toLocaleString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
                     year: "numeric",
-                    month: "long",
-                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
                   })}
                   tags={post.tags || []}
                 />

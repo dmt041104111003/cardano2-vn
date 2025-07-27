@@ -11,7 +11,8 @@ import {
   X,
   Home,
   LogOut,
-  Image
+  Image,
+  FolderOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '~/hooks/useUser';
@@ -25,6 +26,11 @@ const adminNavItems = [
     title: 'Posts',
     href: '/admin/posts',
     icon: FileText,
+  },
+  {
+    title: 'Projects',
+    href: '/admin/projects',
+    icon: FolderOpen,
   },
   {
     title: 'Users',

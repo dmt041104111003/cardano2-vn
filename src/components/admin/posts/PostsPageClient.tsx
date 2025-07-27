@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Post, ITEMS_PER_PAGE } from '~/constants/posts';
+import { Post } from '~/constants/posts';
 import { AdminHeader } from '~/components/admin/common/AdminHeader';
 import { AdminFilters } from '~/components/admin/common/AdminFilters';
 import { PostTable } from '~/components/admin/posts/PostTable';
@@ -12,6 +12,7 @@ import { BarChart3, Edit3 } from 'lucide-react';
 import { useToastContext } from '~/components/toast-provider';
 import { AdminStats } from '~/components/admin/common/AdminStats';
 import { useQuery } from '@tanstack/react-query';
+import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
 
 export function PostsPageClient() {
   const [isClient, setIsClient] = useState(false);
@@ -40,6 +41,7 @@ export function PostsPageClient() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'published' | 'draft' | 'archived'>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 6;
   const postsOfYear = useMemo(() => posts.filter(p => new Date(p.createdAt).getFullYear() === selectedYear), [posts, selectedYear]);
 
   const filteredPosts = posts.filter(post => {
@@ -239,22 +241,26 @@ export function PostsPageClient() {
             onFilterChange={handleFilterChange}
           />
 
-          <div className="bg-white rounded-lg shadow" suppressHydrationWarning>
-            <PostTable
-              posts={paginatedPosts || []}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onStatusChange={handleStatusChange}
-            />
+          {loading ? (
+            <AdminTableSkeleton columns={6} rows={5} />
+          ) : (
+            <div className="bg-white rounded-lg shadow" suppressHydrationWarning>
+              <PostTable
+                posts={paginatedPosts || []}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+              />
 
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={filteredPosts.length}
-              itemsPerPage={ITEMS_PER_PAGE}
-              onPageChange={handlePageChange}
-            />
-          </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={filteredPosts.length}
+                itemsPerPage={ITEMS_PER_PAGE}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </>
       ) : (
         <PostEditor onSave={handleSavePost} post={editingPost || undefined} onCancel={handleCancelEdit} />

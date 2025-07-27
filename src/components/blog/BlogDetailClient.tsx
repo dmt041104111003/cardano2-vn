@@ -278,10 +278,12 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
           <header className="mb-12">
             <div className="mb-6">
               <time className="text-sm text-gray-400">
-                {new Date(post.createdAt).toLocaleDateString("en-US", {
+                {new Date(post.createdAt).toLocaleString("en-GB", {
+                  day: "2-digit",
+                  month: "2-digit",
                   year: "numeric",
-                  month: "long",
-                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit"
                 })}
               </time>
               <span className="mx-2 text-gray-500">•</span>
@@ -290,10 +292,12 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                 <>
                   <span className="mx-2 text-gray-500">•</span>
                   <span className="text-sm text-gray-400">
-                    Updated: {new Date(post.updatedAt).toLocaleDateString("en-US", {
+                    Updated: {new Date(post.updatedAt).toLocaleString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
                       year: "numeric",
-                      month: "long",
-                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit"
                     })}
                   </span>
                 </>
@@ -429,10 +433,12 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
           <footer className="mt-16 pt-8 border-t border-gray-800">
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
               <div className="text-sm text-gray-400">
-                Published on {new Date(post.createdAt).toLocaleDateString("en-US", {
+                Published on {new Date(post.createdAt).toLocaleString("en-GB", {
+                  day: "2-digit",
+                  month: "2-digit",
                   year: "numeric",
-                  month: "long",
-                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit"
                 })}
               </div>
               <Link
