@@ -78,7 +78,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="admin-root min-h-screen bg-gray-50 relative" suppressHydrationWarning>
+    <div className="admin-root min-h-screen bg-gray-50 relative" data-admin="true" suppressHydrationWarning>
       <div className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 opacity-3 pointer-events-none select-none block">
         <img
           src="/images/common/loading.png"
