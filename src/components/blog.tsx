@@ -48,7 +48,7 @@ export default function Blog({
           : '')
     : (typeof image === 'string' ? image : '');
   return (
-    <div className="rounded-sm text-card-foreground px-5 py-3 group relative overflow-hidden border border-white/20 bg-gray-800/50 backdrop-blur-sm shadow-xl transition-all duration-300 hover:border-white/40 hover:shadow-2xl">
+    <div className="rounded-sm text-card-foreground px-5 py-3 group relative overflow-hidden border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 backdrop-blur-sm shadow-xl transition-all duration-300 hover:border-gray-300 dark:hover:border-white/40 hover:shadow-2xl">
       <Link className="block" href={`/blog/${slug}`}>
         <div className="relative aspect-video overflow-hidden">
           {isYoutube && youtubeId ? (
@@ -87,7 +87,6 @@ export default function Blog({
               />
             )
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent"></div>
         </div>
 
         {Array.isArray(tags) && tags.length > 0 && (
@@ -95,7 +94,7 @@ export default function Blog({
             {tags.map((tag) => (
               <span
                 key={tag.id}
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300"
               >
                 {tag.name}
               </span>
@@ -108,13 +107,13 @@ export default function Blog({
           </span>
         </div> */}
         <div className="p-6">
-          <h2 className="mb-4 text-xl font-bold text-white transition-colors duration-200 group-hover:text-blue-300 lg:text-2xl">{title}</h2>
-          <div className="flex items-center justify-between text-sm text-gray-400">
+          <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white transition-colors duration-200 group-hover:text-blue-600 dark:group-hover:text-blue-300 lg:text-2xl">{title}</h2>
+          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-4">
               <span className="font-mono">{datetime}</span>
               <span>by {author}</span>
             </div>
-            <div className="flex items-center gap-2 text-blue-400 transition-colors duration-200 group-hover:text-blue-300">
+            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 transition-colors duration-200 group-hover:text-blue-700 dark:group-hover:text-blue-300">
               <span className="text-xs font-medium">Read More</span>
               <svg
                 className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
@@ -122,7 +121,7 @@ export default function Blog({
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
               </svg>
             </div>
           </div>

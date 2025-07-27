@@ -473,18 +473,18 @@ export function TipTapEditor({ content, onChange, placeholder }: TipTapEditorPro
       Table.configure({
         resizable: true,
         HTMLAttributes: {
-          class: 'border-collapse border border-gray-700 w-full mx-auto bg-white rounded-lg overflow-hidden',
+          class: 'border-collapse w-full mx-auto rounded-lg overflow-hidden',
         },
       }),
       TableRow,
       TableHeader.configure({
         HTMLAttributes: {
-          class: 'bg-purple-50 font-bold border border-gray-700 p-2 mx-auto text-gray-900 text-center',
+          class: 'font-bold border p-2 mx-auto text-center',
         },
       }),
       TableCell.configure({
         HTMLAttributes: {
-          class: 'border border-gray-700 p-2 mx-auto bg-white text-gray-900',
+          class: 'border p-2 mx-auto',
         },
       }),
       TextAlign.configure({

@@ -7,7 +7,7 @@ export const metadata = {
 }; 
 export default function AboutPage() {
   return (
-    <main className="relative pt-20">
+    <main className="relative pt-20 bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900">
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
         <Title
           title="About Cardano2vn"
@@ -15,14 +15,14 @@ export default function AboutPage() {
         />
         <div className="pb-20">
           <div className="relative mb-16">
-            <p className="mb-12 text-lg leading-relaxed text-gray-300">
-              Andamio is a <strong className="text-white">Trust Protocol for Distributed Work</strong> that provides infrastructure for decentralized
+            <p className="mb-12 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+              Andamio is a <strong className="text-gray-900 dark:text-white">Trust Protocol for Distributed Work</strong> that provides infrastructure for decentralized
               access control, credential issuance, contributor onboarding, and treasury management. We believe in enabling local participation that
               opens global opportunity.
             </p>
-            <div className="mb-16 rounded-sm border border-white/20 bg-gray-800/50 p-8 backdrop-blur-sm">
-              <h2 className="mb-4 text-2xl font-bold text-white">Our Mission</h2>
-              <p className="text-lg text-gray-300">
+            <div className="mb-16 rounded-sm border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 p-8 backdrop-blur-sm">
+              <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">Our Mission</h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300">
                 To create trust networks that enable purpose-driven, collaborative work by providing the tools and infrastructure needed for
                 distributed organizations to thrive.
               </p>

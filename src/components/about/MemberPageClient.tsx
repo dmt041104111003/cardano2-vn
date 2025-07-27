@@ -50,7 +50,7 @@ export default function MemberPageClient() {
 
   if (isLoading) {
     return (
-      <main className="relative pt-20">
+      <main className="relative pt-20 bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900">
         <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
           <Title
             title="Founding Team"
@@ -60,22 +60,22 @@ export default function MemberPageClient() {
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {[...Array(6)].map((_, index) => (
                 <div key={index} className="animate-pulse">
-                  <div className="bg-gray-700 rounded-lg h-64 mb-4"></div>
-                  <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-gray-700 rounded w-1/2 mb-2"></div>
-                  <div className="h-3 bg-gray-700 rounded w-full"></div>
+                  <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-64 mb-4"></div>
+                  <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+                  <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-full"></div>
                 </div>
               ))}
             </div>
             <div className="mt-16 text-center">
-              <div className="rounded-sm border border-white/20 bg-gray-800/50 p-8 backdrop-blur-sm">
-                <h3 className="mb-4 text-2xl font-bold text-white">Join Our Team</h3>
-                <p className="mb-6 text-gray-300">
+              <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 p-8 backdrop-blur-sm">
+                <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">Join Our Team</h3>
+                <p className="mb-6 text-gray-600 dark:text-gray-300">
                   Interested in contributing to the future of distributed work? We are always looking for passionate individuals.
                 </p>
                 <Link
                   href="mailto:cardano2vn@gmail.com"
-                  className="inline-flex items-center gap-2 rounded-sm border border-white/30 bg-blue-600 px-6 py-3 text-white transition-all duration-200 hover:bg-blue-700"
+                  className="inline-flex items-center gap-2 rounded-sm border border-gray-300 dark:border-white/30 bg-blue-600 px-6 py-3 text-white transition-all duration-200 hover:bg-blue-700"
                 >
                   <span>Get in Touch</span>
                   <Gmail />
@@ -89,7 +89,7 @@ export default function MemberPageClient() {
   }
 
   return (
-    <main className="relative pt-20" suppressHydrationWarning>
+    <main className="relative pt-20 bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900" suppressHydrationWarning>
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
         <Title
           title="Founding Team"
@@ -111,14 +111,14 @@ export default function MemberPageClient() {
             })}
           </div>
           <div className="mt-16 text-center">
-            <div className="rounded-sm border border-white/20 bg-gray-800/50 p-8 backdrop-blur-sm">
-              <h3 className="mb-4 text-2xl font-bold text-white">Join Our Team</h3>
-              <p className="mb-6 text-gray-300">
+            <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 p-8 backdrop-blur-sm">
+              <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">Join Our Team</h3>
+              <p className="mb-6 text-gray-600 dark:text-gray-300">
                 Interested in contributing to the future of distributed work? We are always looking for passionate individuals.
               </p>
               <Link
                 href="mailto:cardano2vn@gmail.com"
-                className="inline-flex items-center gap-2 rounded-sm border border-white/30 bg-blue-600 px-6 py-3 text-white transition-all duration-200 hover:bg-blue-700"
+                className="inline-flex items-center gap-2 rounded-sm border border-gray-300 dark:border-white/30 bg-blue-600 px-6 py-3 text-white transition-all duration-200 hover:bg-blue-700"
               >
                 <span>Get in Touch</span>
                 <Gmail />

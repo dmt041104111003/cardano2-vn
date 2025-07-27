@@ -1,38 +1,38 @@
 export default function BlogDetailSkeleton() {
   return (
-    <main className="relative min-h-screen bg-gradient-to-br from-gray-950 via-gray-950 to-gray-900 animate-pulse">
+    <main className="relative min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 animate-pulse">
       <div className="pt-20">
         <div className="mx-auto max-w-4xl px-6 py-8 lg:px-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="h-4 w-24 bg-gray-700 rounded" />
-            <div className="h-4 w-16 bg-gray-700 rounded" />
+            <div className="h-4 w-24 bg-gray-300 dark:bg-gray-700 rounded" />
+            <div className="h-4 w-16 bg-gray-300 dark:bg-gray-700 rounded" />
           </div>
         </div>
         <article className="mx-auto max-w-4xl px-6 pb-20 lg:px-8">
           <header className="mb-12">
             <div className="mb-6 flex items-center gap-4">
-              <div className="h-4 w-32 bg-gray-700 rounded" />
-              <div className="h-4 w-20 bg-gray-700 rounded" />
-              <div className="h-4 w-24 bg-blue-700/40 rounded" /> {/* Skeleton cho updated */}
+              <div className="h-4 w-32 bg-gray-300 dark:bg-gray-700 rounded" />
+              <div className="h-4 w-20 bg-gray-300 dark:bg-gray-700 rounded" />
+              <div className="h-4 w-24 bg-blue-300/40 dark:bg-blue-700/40 rounded" /> {/* Skeleton cho updated */}
             </div>
-            <div className="mb-8 h-12 w-2/3 bg-gray-700 rounded" />
-            <div className="mb-8 h-16 w-1/2 bg-gray-600 rounded-lg" /> {/* Skeleton cho title lớn */}
+            <div className="mb-8 h-12 w-2/3 bg-gray-300 dark:bg-gray-700 rounded" />
+            <div className="mb-8 h-16 w-1/2 bg-gray-200 dark:bg-gray-600 rounded-lg" /> {/* Skeleton cho title lớn */}
             <div className="flex flex-wrap gap-2 mt-4 mb-8">
-              <div className="h-6 w-20 bg-blue-600/20 rounded-full" />
-              <div className="h-6 w-16 bg-blue-600/20 rounded-full" />
+              <div className="h-6 w-20 bg-blue-300/20 dark:bg-blue-600/20 rounded-full" />
+              <div className="h-6 w-16 bg-blue-300/20 dark:bg-blue-600/20 rounded-full" />
             </div>
           </header>
           <div className="relative h-64 w-full overflow-hidden rounded-lg sm:h-80 lg:h-96 mb-8">
-            <div className="w-full h-full bg-gray-700 rounded" />
+            <div className="w-full h-full bg-gray-300 dark:bg-gray-700 rounded" />
           </div>
-          <div className="prose prose-invert prose-lg max-w-none">
+          <div className="prose prose-lg max-w-none dark:prose-invert">
             <div className="space-y-4">
-              <div className="h-4 w-full bg-gray-700 rounded" />
-              <div className="h-4 w-5/6 bg-gray-700 rounded" />
-              <div className="h-4 w-2/3 bg-gray-700 rounded" />
-              <div className="h-4 w-1/2 bg-gray-700 rounded" />
-              <div className="h-4 w-3/4 bg-gray-700 rounded" />
-              <div className="h-4 w-1/3 bg-gray-700 rounded" />
+              <div className="h-4 w-full bg-gray-300 dark:bg-gray-700 rounded" />
+              <div className="h-4 w-5/6 bg-gray-300 dark:bg-gray-700 rounded" />
+              <div className="h-4 w-2/3 bg-gray-300 dark:bg-gray-700 rounded" />
+              <div className="h-4 w-1/2 bg-gray-300 dark:bg-gray-700 rounded" />
+              <div className="h-4 w-3/4 bg-gray-300 dark:bg-gray-700 rounded" />
+              <div className="h-4 w-1/3 bg-gray-300 dark:bg-gray-700 rounded" />
             </div>
           </div>
         </article>

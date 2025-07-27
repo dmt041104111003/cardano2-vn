@@ -132,7 +132,7 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
       {isAuthenticated ? (
         <CommentInput onSubmit={handleSubmitComment} user={user} />
       ) : (
-        <div className="bg-gray-800/30 rounded-2xl p-3 border border-gray-700/50 text-center text-gray-400">
+        <div className="bg-gray-100 dark:bg-gray-800/30 rounded-2xl p-3 border border-gray-200 dark:border-gray-700/50 text-center text-gray-600 dark:text-gray-400">
           <span>You need to <b>log in</b> to comment.</span>
         </div>
       )}
@@ -165,18 +165,18 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
             <button 
               onClick={handleLoadMore}
               disabled={loading}
-              className="text-blue-400 hover:text-blue-300 disabled:text-gray-500 disabled:cursor-not-allowed text-sm font-medium transition-colors hover:underline"
+              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 disabled:text-gray-500 disabled:cursor-not-allowed text-sm font-medium transition-colors hover:underline"
             >
               {loading ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin"></div>
                   Loading...
                 </div>
               ) : (
                 `Load ${Math.min(3, totalParentComments - visibleComments)} more parent comments`
               )}
             </button>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
               Showing {visibleComments} of {totalParentComments} parent comments
             </span>
           </div>
@@ -185,7 +185,7 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
 
       {showAllComments && !hasMoreComments && comments.length > 0 && (
         <div className="text-center pt-4">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-500 dark:text-gray-400">
             All {totalParentComments} parent comments loaded
           </span>
         </div>
