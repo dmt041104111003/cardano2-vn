@@ -146,6 +146,17 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* Docs isolated container - force light mode */
+.docs-isolated-container {
+  position: relative;
+  z-index: 1000;
+}
+
+/* Hide theme toggle in docs */
+.docs-isolated-container [data-fumadocs-theme-toggle] {
+  display: none !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
