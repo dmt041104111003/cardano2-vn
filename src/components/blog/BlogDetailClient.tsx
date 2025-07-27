@@ -262,13 +262,13 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
   }
 
   return (
-    <main className="relative min-h-screen bg-gradient-to-br from-gray-950 via-gray-950 to-gray-900">
+    <main className="relative min-h-screen bg-white">
       <Header />
       <div className="pt-20">
         <div className="mx-auto max-w-4xl px-6 py-8 lg:px-8">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
+            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Blog
@@ -277,7 +277,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
         <article className="mx-auto max-w-4xl px-6 pb-20 lg:px-8">
           <header className="mb-12">
             <div className="mb-6">
-              <time className="text-sm text-gray-400">
+              <time className="text-sm text-gray-600">
                 {new Date(post.createdAt).toLocaleString("en-GB", {
                   day: "2-digit",
                   month: "2-digit",
@@ -287,11 +287,11 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                 })}
               </time>
               <span className="mx-2 text-gray-500">•</span>
-              <span className="text-sm text-gray-400">by {post.author || 'Admin'}</span>
+              <span className="text-sm text-gray-600">by {post.author || 'Admin'}</span>
               {post.updatedAt && post.updatedAt !== post.createdAt && (
                 <>
                   <span className="mx-2 text-gray-500">•</span>
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-gray-600">
                     Updated: {new Date(post.updatedAt).toLocaleString("en-GB", {
                       day: "2-digit",
                       month: "2-digit",
@@ -303,7 +303,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                 </>
               )}
             </div>
-            <h1 className="mb-8 text-3xl font-bold text-white leading-tight break-words lg:text-5xl xl:text-6xl">
+            <h1 className="mb-8 text-3xl font-bold text-gray-900 leading-tight break-words lg:text-5xl xl:text-6xl">
               {post.title}
             </h1>
             {Array.isArray(post.tags) && post.tags.length > 0 && (
@@ -350,8 +350,8 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
           </div>
           <TipTapPreview content={post.content} />
 
-          <div className="mt-12 border-t border-gray-800 pt-8">
-            <div className="mb-6 flex items-center justify-between text-sm text-gray-400">
+          <div className="mt-12 border-t border-gray-200 pt-8">
+            <div className="mb-6 flex items-center justify-between text-sm text-gray-600">
               <ReactionCount 
                 reactions={reactions}
               />
@@ -359,25 +359,25 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                 <span>{post.comments?.length || 0} comments</span>
               </div>
             </div>
-            <div className="flex items-center border-t border-gray-800 pt-4">
+            <div className="flex items-center border-t border-gray-200 pt-4">
               <div 
                 className="relative flex flex-1 items-center justify-center"
                 onMouseEnter={() => setShowReactions(true)}
                 onMouseLeave={() => setShowReactions(false)}
               >
                 <button 
-                  className={`flex items-center justify-center gap-2 py-3 text-gray-400 transition-colors w-full ${currentUserReaction ? 'text-blue-400' : 'hover:text-blue-400'}`}
+                  className={`flex items-center justify-center gap-2 py-3 text-gray-600 transition-colors w-full ${currentUserReaction ? 'text-blue-600' : 'hover:text-blue-600'}`}
                 >
                   <span className={`flex items-center justify-center text-2xl ${currentUserReaction ? 'scale-110' : 'hover:scale-110'}`} style={{ minWidth: 28, minHeight: 28 }}>
                     {currentUserReaction ? REACTION_EMOJIS[currentUserReaction] || '👍' : <ThumbsUp className="h-5 w-5" />}
                   </span>
-                  <span className={`font-medium ml-1 ${currentUserReaction ? 'text-blue-400' : ''}`} style={{ lineHeight: '28px', fontSize: '18px' }}>
+                  <span className={`font-medium ml-1 ${currentUserReaction ? 'text-blue-600' : ''}`} style={{ lineHeight: '28px', fontSize: '18px' }}>
                     {currentUserReaction ? currentUserReaction.charAt(0) + currentUserReaction.slice(1).toLowerCase() : 'Like'}
                   </span>
                 </button>
                 {showReactions && (
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 z-10 p-1">
-                    <div className="flex items-center gap-3 bg-gray-800/95 backdrop-blur-xl border border-gray-700/50 rounded-full px-6 py-4 shadow-2xl">
+                    <div className="flex items-center gap-3 bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-full px-6 py-4 shadow-2xl">
                       {[
                         { emoji: "👍", label: "Like", color: "bg-blue-500", type: "LIKE" },
                         { emoji: "❤️", label: "Love", color: "bg-red-500", type: "HEART" },
@@ -393,13 +393,13 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                             await handleReact(reaction.type);
                             setShowReactions(false);
                           }}
-                          className={`w-14 h-14 rounded-full bg-transparent hover:bg-gray-700/50 transition-all duration-200 flex items-center justify-center text-white text-3xl group relative overflow-hidden ${currentUserReaction === reaction.type ? 'ring-4 ring-blue-400 scale-110' : 'hover:scale-125'}`}
+                          className={`w-14 h-14 rounded-full bg-transparent hover:bg-gray-100/50 transition-all duration-200 flex items-center justify-center text-gray-900 text-3xl group relative overflow-hidden ${currentUserReaction === reaction.type ? 'ring-4 ring-blue-400 scale-110' : 'hover:scale-125'}`}
                           aria-label={reaction.label}
                         >
                           <span className="group-hover:scale-110 transition-transform duration-200">
                             {reaction.emoji}
                           </span>
-                          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-full"></div>
+                          <div className="absolute inset-0 bg-gray-100/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-full"></div>
                         </button>
                       ))}
                     </div>
@@ -408,14 +408,14 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
               </div>
               
               <button 
-                className="flex flex-1 items-center justify-center gap-2 py-3 text-gray-400 hover:text-green-400 transition-colors group"
+                className="flex flex-1 items-center justify-center gap-2 py-3 text-gray-600 hover:text-green-600 transition-colors group"
                 onClick={() => setShowAllComments((v) => !v)}
               >
                 <MessageCircle className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 <span className="font-medium">Comment</span>
               </button>
               <button 
-                className="flex flex-1 items-center justify-center gap-2 py-3 text-gray-400 hover:text-purple-400 transition-colors group"
+                className="flex flex-1 items-center justify-center gap-2 py-3 text-gray-600 hover:text-purple-600 transition-colors group"
                 onClick={() => setShowShareModal(true)}
               >
                 <Share2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
@@ -430,9 +430,9 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
             />
           </div>
 
-          <footer className="mt-16 pt-8 border-t border-gray-800">
+          <footer className="mt-16 pt-8 border-t border-gray-200">
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-gray-600">
                 Published on {new Date(post.createdAt).toLocaleString("en-GB", {
                   day: "2-digit",
                   month: "2-digit",
@@ -443,7 +443,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
               </div>
               <Link
                 href="/blog"
-                className="text-blue-400 hover:text-blue-300 transition-colors"
+                className="text-blue-600 hover:text-blue-700 transition-colors"
               >
                 ← Back to all posts
               </Link>
