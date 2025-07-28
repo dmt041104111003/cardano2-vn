@@ -8,7 +8,7 @@ export default function LoginFooter() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.4, duration: 0.5 }}
-      className="mt-16 md:mt-24 text-center"
+      className="mt-8 md:mt-12 text-center"
     >
       <div className="flex items-center justify-center relative z-10">
         <div className="flex-1 border-t-4 border-gray-600 h-0 shadow-sm"></div>
