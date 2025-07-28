@@ -26,7 +26,7 @@ export function PostTable({
 
   const handleConfirmDelete = () => {
     if (selectedPostToDelete) {
-      onDelete(selectedPostToDelete.id);
+      onDelete(selectedPostToDelete.slug || selectedPostToDelete.id);
       setIsDeleteModalOpen(false);
       setSelectedPostToDelete(null);
     }

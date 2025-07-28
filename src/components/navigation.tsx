@@ -97,7 +97,7 @@ export default function Navigation({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
           <input
             type="text"
-            placeholder="Search projects..."
+            placeholder={typeFilter === "project" ? "Search projects..." : "Search catalyst..."}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-white/20 rounded-sm bg-white dark:bg-gray-800/50 backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -178,33 +178,35 @@ export default function Navigation({
         </Link>
       </div>
 
-      <div className="mt-6">
-        <div
-          role="tablist"
-          aria-orientation="vertical"
-          className="items-center justify-center rounded-sm text-accent-foreground mb-2 flex w-full flex-row gap-2 overflow-x-auto bg-transparent p-0 md:flex-col md:overflow-visible"
-          data-orientation="vertical"
-        >
-          {years.map((year, key) => (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              aria-selected={selectedYear === year ? "true" : "false"}
-              aria-controls={`content-${year}`}
-              id={`trigger-${year}`}
-              onClick={() => onYearChange(year)}
-              className={`inline-flex items-center whitespace-nowrap w-full justify-start rounded-sm border px-4 py-3 text-left text-sm font-medium backdrop-blur-sm transition-all ${
-                selectedYear === year 
-                  ? "bg-blue-600 text-white border-blue-600 dark:border-white/20" 
-                  : "bg-gray-100 dark:bg-gray-800/50 text-gray-900 dark:text-white border-gray-200 dark:border-white/20 hover:bg-gray-200 dark:hover:bg-gray-700/50"
-              }`}
-            >
-              {year}
-            </button>
-          ))}
+      {typeFilter !== "project" && (
+        <div className="mt-6">
+          <div
+            role="tablist"
+            aria-orientation="vertical"
+            className="items-center justify-center rounded-sm text-accent-foreground mb-2 flex w-full flex-row gap-2 overflow-x-auto bg-transparent p-0 md:flex-col md:overflow-visible"
+            data-orientation="vertical"
+          >
+            {years.map((year, key) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={selectedYear === year ? "true" : "false"}
+                aria-controls={`content-${year}`}
+                id={`trigger-${year}`}
+                onClick={() => onYearChange(year)}
+                className={`inline-flex items-center whitespace-nowrap w-full justify-start rounded-sm border px-4 py-3 text-left text-sm font-medium backdrop-blur-sm transition-all ${
+                  selectedYear === year 
+                    ? "bg-blue-600 text-white border-blue-600 dark:border-white/20" 
+                    : "bg-gray-100 dark:bg-gray-800/50 text-gray-900 dark:text-white border-gray-200 dark:border-white/20 hover:bg-gray-200 dark:hover:bg-gray-700/50"
+                }`}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

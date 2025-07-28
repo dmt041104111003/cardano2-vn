@@ -100,17 +100,30 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || typeof session !== 'object' || !('user' in session) || typeof session.user !== 'object' || !session.user || !('address' in session.user) || typeof session.user.address !== 'string') {
+    if (!session || typeof session !== 'object' || !('user' in session) || typeof session.user !== 'object' || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const wallet = session.user.address;
-    const currentUser = await prisma.user.findUnique({
-      where: { wallet },
-      include: { role: true },
-    });
-    if (!currentUser || String(currentUser.role.name).toUpperCase() !== 'ADMIN') {
+    
+    // Support all 3 providers: Google, GitHub, Cardano
+    const sessionUser = session.user as { address?: string; email?: string };
+    let currentUser = null;
+    
+    if (sessionUser.address) {
+      currentUser = await prisma.user.findUnique({
+        where: { wallet: sessionUser.address },
+        include: { role: true },
+      });
+    } else if (sessionUser.email) {
+      currentUser = await prisma.user.findUnique({
+        where: { email: sessionUser.email },
+        include: { role: true },
+      });
+    }
+    
+    if (!currentUser || !currentUser.role || String(currentUser.role.name).toUpperCase() !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+    
     const body = await request.json();
     const { title, content, excerpt, status, tags, media, createdAt, updatedAt } = body;
     if (!title || !content || !status) {
