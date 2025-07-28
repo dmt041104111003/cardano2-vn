@@ -33,6 +33,9 @@ export default function WalletList({ wallets }: WalletListProps) {
     } else if (walletId === "google") {
       showInfo("Connecting...", "Please wait while we connect to your Google account.");
       await signIn("google", { callbackUrl: "/" });
+    } else if (walletId === "github") {
+      showInfo("Connecting...", "Please wait while we connect to your GitHub account.");
+      await signIn("github", { callbackUrl: "/" });
     } else {
       console.log(`Connecting to ${walletId}...`);
     }

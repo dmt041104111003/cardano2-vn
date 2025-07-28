@@ -99,12 +99,13 @@ export default function Header() {
                   ) : (
                     <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
                   )}
-                  <span className="text-sm text-gray-700 dark:text-white font-mono">
-                    {(session.user as { address?: string })?.address ? 
-                      formatWalletAddress((session.user as { address?: string }).address || "") :
-                      (session.user as { name?: string })?.name || "User"
-                    }
-                  </span>
+                              <span className="text-sm text-gray-700 dark:text-white font-mono">
+              {(session.user as { address?: string })?.address ?
+                formatWalletAddress((session.user as { address?: string }).address || "") :
+                (session.user as { email?: string })?.email || 
+                (session.user as { name?: string })?.name || "User"
+              }
+            </span>
                 </div>
                 <button onClick={() => signOut()} className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white">
                   Sign out

@@ -12,10 +12,20 @@ export async function DELETE(
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const user = await prisma.user.findUnique({
-      where: { wallet: session.user.address },
-      include: { role: true }
-    });
+    const sessionUser = session.user as { address?: string; email?: string };
+    let user = null;
+    
+    if (sessionUser.address) {
+      user = await prisma.user.findUnique({
+        where: { wallet: sessionUser.address },
+        include: { role: true }
+      });
+    } else if (sessionUser.email) {
+      user = await prisma.user.findUnique({
+        where: { email: sessionUser.email },
+        include: { role: true }
+      });
+    }
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }

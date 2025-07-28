@@ -13,7 +13,7 @@ model User {
   email     String?    @unique
   name      String?
   image     String?
-  provider  String?    // "google", "cardano", etc.
+  provider  String?    // "google", "github", "cardano", etc.
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   roleId    String

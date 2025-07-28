@@ -10,6 +10,8 @@ interface User {
   role: string;
   isAdmin: boolean;
   address: string;
+  email?: string;
+  provider?: string;
 }
 
 export function useUser() {

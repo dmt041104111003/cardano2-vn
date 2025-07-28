@@ -5,17 +5,26 @@ import { authOptions } from "~/app/api/auth/[...nextauth]/route";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  const address = (session?.user as { address?: string })?.address;
-  if (!session?.user || !address) {
+  const sessionUser = session?.user as { address?: string; email?: string };
+  if (!session?.user || (!sessionUser.address && !sessionUser.email)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  
+  // Support all 3 providers: Google, GitHub, Cardano
+  let user = null;
+  if (sessionUser.address) {
+    user = await prisma.user.findUnique({ where: { wallet: sessionUser.address } });
+  } else if (sessionUser.email) {
+    user = await prisma.user.findUnique({ where: { email: sessionUser.email } });
+  }
+  
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+  
   const { postId, type } = await req.json();
   if (!postId || !type) {
     return NextResponse.json({ error: "Missing postId or type" }, { status: 400 });
-  }
-  const user = await prisma.user.findUnique({ where: { wallet: address } });
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   await prisma.reaction.deleteMany({
@@ -45,11 +54,19 @@ export async function GET(req: NextRequest) {
   const me = req.nextUrl.searchParams.get("me");
   if (me === "1") {
     const session = await getServerSession(authOptions);
-    const address = (session?.user as { address?: string })?.address;
-    if (!session?.user || !address) {
+    const sessionUser = session?.user as { address?: string; email?: string };
+    if (!session?.user || (!sessionUser.address && !sessionUser.email)) {
       return NextResponse.json({ currentUserReaction: null });
     }
-    const user = await prisma.user.findUnique({ where: { wallet: address } });
+    
+    // Support all 3 providers: Google, GitHub, Cardano
+    let user = null;
+    if (sessionUser.address) {
+      user = await prisma.user.findUnique({ where: { wallet: sessionUser.address } });
+    } else if (sessionUser.email) {
+      user = await prisma.user.findUnique({ where: { email: sessionUser.email } });
+    }
+    
     if (!user) {
       return NextResponse.json({ currentUserReaction: null });
     }

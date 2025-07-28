@@ -5,17 +5,26 @@ import { authOptions } from "~/app/api/auth/[...nextauth]/route";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  const address = (session?.user as { address?: string })?.address;
-  if (!session?.user || !address) {
+  const sessionUser = session?.user as { address?: string; email?: string };
+  if (!session?.user || (!sessionUser.address && !sessionUser.email)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  
+  // Support all 3 providers: Google, GitHub, Cardano
+  let user = null;
+  if (sessionUser.address) {
+    user = await prisma.user.findUnique({ where: { wallet: sessionUser.address } });
+  } else if (sessionUser.email) {
+    user = await prisma.user.findUnique({ where: { email: sessionUser.email } });
+  }
+  
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+  
   const { postId, content, parentCommentId } = await req.json();
   if (!postId || !content || !content.trim()) {
     return NextResponse.json({ error: "Missing postId or content" }, { status: 400 });
-  }
-  const user = await prisma.user.findUnique({ where: { wallet: address } });
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
   const comment = await prisma.comment.create({
     data: {
@@ -41,17 +50,26 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  const address = (session?.user as { address?: string })?.address;
-  if (!session?.user || !address) {
+  const sessionUser = session?.user as { address?: string; email?: string };
+  if (!session?.user || (!sessionUser.address && !sessionUser.email)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  
+  // Support all 3 providers: Google, GitHub, Cardano
+  let user = null;
+  if (sessionUser.address) {
+    user = await prisma.user.findUnique({ where: { wallet: sessionUser.address }, include: { role: true } });
+  } else if (sessionUser.email) {
+    user = await prisma.user.findUnique({ where: { email: sessionUser.email }, include: { role: true } });
+  }
+  
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+  
   const { id } = await req.json();
   if (!id) {
     return NextResponse.json({ error: "Missing comment id" }, { status: 400 });
-  }
-  const user = await prisma.user.findUnique({ where: { wallet: address }, include: { role: true } });
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
   const comment = await prisma.comment.findUnique({ where: { id } });
   if (!comment) {
@@ -67,17 +85,26 @@ export async function DELETE(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  const address = (session?.user as { address?: string })?.address;
-  if (!session?.user || !address) {
+  const sessionUser = session?.user as { address?: string; email?: string };
+  if (!session?.user || (!sessionUser.address && !sessionUser.email)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  
+  // Support all 3 providers: Google, GitHub, Cardano
+  let user = null;
+  if (sessionUser.address) {
+    user = await prisma.user.findUnique({ where: { wallet: sessionUser.address } });
+  } else if (sessionUser.email) {
+    user = await prisma.user.findUnique({ where: { email: sessionUser.email } });
+  }
+  
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+  
   const { id, content } = await req.json();
   if (!id || !content || !content.trim()) {
     return NextResponse.json({ error: "Missing id or content" }, { status: 400 });
-  }
-  const user = await prisma.user.findUnique({ where: { wallet: address } });
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
   const comment = await prisma.comment.findUnique({ where: { id } });
   if (!comment) {
