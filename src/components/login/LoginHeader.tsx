@@ -5,7 +5,7 @@ import { routers } from "~/constants/routers";
 
 export default function LoginHeader() {
   return (
-    <div className="flex items-center justify-between mb-16 md:mb-24 w-full max-w-4xl px-4 md:px-0">
+    <div className="flex items-center justify-between mb-8 md:mb-12 w-full max-w-4xl px-4 md:px-0">
       <div className="flex items-center gap-3">
         <Link href={routers.home}>
           <Image

@@ -10,9 +10,9 @@ import Action from "~/components/action";
 export default function LandingSection() {
   return (
     <section id="Landing" className="relative flex min-h-screen items-center overflow-hidden">
-      <div className="absolute -left-40 top-1/2 -translate-y-1/2 transform opacity-5">
+      {/* <div className="absolute -left-40 top-1/2 -translate-y-1/2 transform opacity-5">
         <Image loading="lazy" className="h-[50vh] w-auto" style={{ color: "transparent" }} decoding="async" src={images.logo} alt="cardano2vn" />
-      </div>
+      </div> */}
       <div className="absolute inset-0 flex items-center justify-center opacity-5">
         <div className="text-center">
           <div className="text-9xl font-bold text-gray-300 dark:text-white/10">CARDANO</div>

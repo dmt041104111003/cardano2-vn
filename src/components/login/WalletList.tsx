@@ -62,97 +62,118 @@ export default function WalletList({ wallets }: WalletListProps) {
     }
   }, [hasLoggedIn, walletUser, showSuccess]);
 
+  const isActiveWallet = (walletId: string) => {
+    return ["eternal", "google", "github"].includes(walletId);
+  };
+
   return (
     <div className="flex-1">
-      <div className="space-y-3 h-[356px] overflow-y-auto pr-2">
-        {wallets.map((wallet) => (
-          <button
-            key={wallet.id}
-            onClick={() => handleWalletClick(wallet.id)}
-            disabled={wallet.id === "eternal" && isConnecting}
-            className={`w-full p-3 rounded-lg border border-gray-200 hover:bg-gray-100 hover:border-gray-300 hover:shadow-sm transition-all duration-200 flex items-center gap-3 bg-white ${
-              wallet.id === "eternal" && isConnecting ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            <span className="text-sm text-gray-700 font-medium flex-1">
-              {wallet.name}
-            </span>
-            {wallet.id === "eternal" ? (
-              isConnecting ? (
-                <div className="w-8 h-8 flex items-center justify-center">
-                  <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-              ) : (
+      <div className="space-y-3 h-[280px] overflow-y-auto pr-2">
+        {wallets.map((wallet) => {
+          const isActive = isActiveWallet(wallet.id);
+          
+          return (
+            <button
+              key={wallet.id}
+              onClick={() => handleWalletClick(wallet.id)}
+              disabled={wallet.id === "eternal" && isConnecting || !isActive}
+              className={`w-full p-3 rounded-lg border transition-all duration-200 flex items-center gap-3 ${
+                isActive 
+                  ? "border-gray-200 hover:bg-gray-100 hover:border-gray-300 hover:shadow-sm bg-white" 
+                  : "border-gray-100 bg-gray-50 cursor-not-allowed opacity-60"
+              } ${
+                wallet.id === "eternal" && isConnecting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              <span className={`text-sm font-medium flex-1 ${
+                isActive ? "text-gray-700" : "text-gray-500"
+              }`}>
+                {wallet.name}
+              </span>
+              
+              {!isActive && (
+                <span className="text-xs bg-gray-400 text-white px-2 py-1 rounded-full">
+                  BETA
+                </span>
+              )}
+              
+              {wallet.id === "eternal" ? (
+                isConnecting ? (
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : (
+                  <Image
+                    src="/images/wallets/eternal.png"
+                    alt="Eternal Wallet"
+                    width={32}
+                    height={32}
+                    className="w-8 h-8"
+                    loading="lazy"
+                  />
+                )
+              ) : wallet.id === "google" ? (
                 <Image
-                  src="/images/wallets/eternal.png"
-                  alt="Eternal Wallet"
+                  src="/images/wallets/google.png"
+                  alt="Google"
                   width={32}
                   height={32}
                   className="w-8 h-8"
                   loading="lazy"
                 />
-              )
-            ) : wallet.id === "sol" ? (
-              <Image
-                src="/images/wallets/solana.png"
-                alt="Sol Wallet"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-                loading="lazy"
-              />
-            ) : wallet.id === "facebook" ? (
-              <Image
-                src="/images/wallets/facebook.png"
-                alt="Facebook"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-                loading="lazy"
-              />
-            ) : wallet.id === "google" ? (
-              <Image
-                src="/images/wallets/google.png"
-                alt="Google"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-                loading="lazy"
-              />
-            ) : wallet.id === "github" ? (
-              <Image
-                src="/images/wallets/github.png"
-                alt="GitHub"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-                loading="lazy"
-              />
-            ) : wallet.id === "phantom" ? (
-              <Image
-                src="/images/wallets/phantom.png"
-                alt="Phantom"
-                width={32}
-                height={32}
-                className="w-8 h-8 rounded-none"
-                loading="lazy"
-              />
-            ) : wallet.id === "metamask" ? (
-              <Image
-                src="/images/wallets/metamask.png"
-                alt="MetaMask"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-                loading="lazy"
-              />
-            ) : (
-              <div className={`w-8 h-8 rounded-full ${wallet.color} flex items-center justify-center text-white text-sm font-bold`}>
-                {wallet.logo}
-              </div>
-            )}
-          </button>
-        ))}
+              ) : wallet.id === "github" ? (
+                <Image
+                  src="/images/wallets/github.png"
+                  alt="GitHub"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                  loading="lazy"
+                />
+              ) : wallet.id === "sol" ? (
+                <Image
+                  src="/images/wallets/solana.png"
+                  alt="Sol Wallet"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                  loading="lazy"
+                />
+              ) : wallet.id === "facebook" ? (
+                <Image
+                  src="/images/wallets/facebook.png"
+                  alt="Facebook"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                  loading="lazy"
+                />
+              ) : wallet.id === "phantom" ? (
+                <Image
+                  src="/images/wallets/phantom.png"
+                  alt="Phantom"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 rounded-none"
+                  loading="lazy"
+                />
+              ) : wallet.id === "metamask" ? (
+                <Image
+                  src="/images/wallets/metamask.png"
+                  alt="MetaMask"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                  loading="lazy"
+                />
+              ) : (
+                <div className={`w-8 h-8 rounded-full ${wallet.color} flex items-center justify-center text-white text-sm font-bold`}>
+                  {wallet.logo}
+                </div>
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
