@@ -41,6 +41,13 @@ export default function Header() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  const formatEmail = (email: string) => {
+    if (!email) return "";
+    const [username, domain] = email.split('@');
+    if (!domain) return email;
+    return `${username.slice(0, 3)}...@${domain}`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -102,8 +109,9 @@ export default function Header() {
                               <span className="text-sm text-gray-700 dark:text-white font-mono">
               {(session.user as { address?: string })?.address ?
                 formatWalletAddress((session.user as { address?: string }).address || "") :
-                (session.user as { email?: string })?.email || 
-                (session.user as { name?: string })?.name || "User"
+                (session.user as { email?: string })?.email ?
+                  formatEmail((session.user as { email?: string }).email || "") :
+                  (session.user as { name?: string })?.name || "User"
               }
             </span>
                 </div>
@@ -181,7 +189,9 @@ export default function Header() {
                       <span className="text-sm text-gray-700 dark:text-white font-mono">
                         {(session.user as { address?: string })?.address ? 
                           formatWalletAddress((session.user as { address?: string }).address || "") :
-                          (session.user as { name?: string })?.name || "User"
+                          (session.user as { email?: string })?.email ?
+                            formatEmail((session.user as { email?: string }).email || "") :
+                            (session.user as { name?: string })?.name || "User"
                         }
                       </span>
                     </div>
