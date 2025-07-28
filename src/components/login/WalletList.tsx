@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { signIn } from "next-auth/react";
 import { useCardanoWallet } from "~/hooks/useCardanoWallet";
 import { useToastContext } from "~/components/toast-provider";
 
@@ -29,6 +30,9 @@ export default function WalletList({ wallets }: WalletListProps) {
         showInfo("Connecting...", "Please wait while we connect to your Cardano wallet.");
         await connect();
       }
+    } else if (walletId === "google") {
+      showInfo("Connecting...", "Please wait while we connect to your Google account.");
+      await signIn("google", { callbackUrl: "/" });
     } else {
       console.log(`Connecting to ${walletId}...`);
     }

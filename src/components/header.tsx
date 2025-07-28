@@ -21,6 +21,11 @@ export default function Header() {
   const { isAdmin } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  
+  // Debug session
+  console.log("[Header] Session user:", session?.user);
+  console.log("[Header] Session user image:", (session?.user as any)?.image);
+  
   if (pathname.startsWith("/docs")) return null;
 
   const toggleMenu = () => {
@@ -79,8 +84,27 @@ export default function Header() {
             {session && (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
-                  <span className="text-sm text-gray-700 dark:text-white font-mono">{formatWalletAddress((session.user as { address?: string })?.address || "")}</span>
+                  {(session.user as { image?: string })?.image ? (
+                    <Image
+                      src={(session.user as { image?: string }).image!}
+                      alt="User Avatar"
+                      width={32}
+                      height={32}
+                      className="w-8 h-8 rounded-full border border-gray-300 dark:border-white"
+                      onError={(e) => {
+                        console.error("[Header] Image load error:", e);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
+                  )}
+                  <span className="text-sm text-gray-700 dark:text-white font-mono">
+                    {(session.user as { address?: string })?.address ? 
+                      formatWalletAddress((session.user as { address?: string }).address || "") :
+                      (session.user as { name?: string })?.name || "User"
+                    }
+                  </span>
                 </div>
                 <button onClick={() => signOut()} className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white">
                   Sign out
@@ -142,9 +166,22 @@ export default function Header() {
                 {session && (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
+                      {(session.user as { image?: string })?.image ? (
+                        <Image
+                          src={(session.user as { image?: string }).image!}
+                          alt="User Avatar"
+                          width={32}
+                          height={32}
+                          className="w-8 h-8 rounded-full border border-gray-300 dark:border-white"
+                        />
+                      ) : (
+                        <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
+                      )}
                       <span className="text-sm text-gray-700 dark:text-white font-mono">
-                        {formatWalletAddress((session.user as { address?: string })?.address || "")}
+                        {(session.user as { address?: string })?.address ? 
+                          formatWalletAddress((session.user as { address?: string }).address || "") :
+                          (session.user as { name?: string })?.name || "User"
+                        }
                       </span>
                     </div>
                     <button
