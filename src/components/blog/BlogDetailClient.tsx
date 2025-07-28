@@ -143,11 +143,16 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
       showError('You need to sign in to react!');
       return;
     }
-    await fetch("/api/blog/react", {
+    const res = await fetch("/api/blog/react", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ postId: post.id, type }),
+      body: JSON.stringify({ postId: slug, type }),
     });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      showError(data?.error || "Failed to react. Please login and try again.");
+      return;
+    }
     await refetchReactions();
     await refetchCurrentUserReaction();
   };
