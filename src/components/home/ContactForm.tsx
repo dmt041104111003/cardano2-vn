@@ -1,0 +1,162 @@
+import React from 'react';
+import { ContactFormData, FormErrors } from '~/types/contact';
+
+interface ContactFormProps {
+  formData: ContactFormData;
+  errors: FormErrors;
+  isSubmitting: boolean;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onSubmit: (e: React.FormEvent) => void;
+}
+
+export function ContactForm({ formData, errors, isSubmitting, onInputChange, onSubmit }: ContactFormProps) {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <form onSubmit={onSubmit} className="p-8 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Full Name *
+            </label>
+            <input
+              type="text"
+              name="your-name"
+              placeholder="Enter your full name"
+              value={formData["your-name"]}
+              onChange={onInputChange}
+              onKeyPress={(e) => {
+                const allowedChars = /[a-zA-ZÀ-ỹ\s'-]/;
+                if (!allowedChars.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 ${
+                errors["your-name"] 
+                  ? "border-red-500 focus:ring-red-500/20 focus:border-red-500" 
+                  : "border-gray-300 dark:border-gray-600"
+              }`}
+            />
+            {errors["your-name"] && (
+              <p className="text-red-500 text-sm mt-2 flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {errors["your-name"]}
+              </p>
+            )}
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              name="your-number"
+              placeholder="+84 123 456 789"
+              value={formData["your-number"]}
+              onChange={onInputChange}
+              onKeyPress={(e) => {
+                const allowedChars = /[0-9+\-()\s]/;
+                if (!allowedChars.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="your-email"
+              placeholder="your.email@example.com"
+              value={formData["your-email"]}
+              onChange={onInputChange}
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Event Location
+            </label>
+            <select
+              name="event-location"
+              value={formData["event-location"]}
+              onChange={onInputChange}
+              aria-label="Event Location"
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+            >
+              <option value="">Select Event Location</option>
+              <option value="Ha Noi">Ha Noi</option>
+              <option value="HCM">HCM</option>
+              <option value="Da Nang">Da Nang</option>
+            </select>
+          </div>
+          
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Wallet Address
+            </label>
+            <input
+              type="text"
+              name="address-wallet"
+              placeholder="addr1qy..."
+              value={formData["address-wallet"]}
+              onChange={onInputChange}
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+            />
+          </div>
+          
+          {errors.contact && (
+            <div className="md:col-span-2">
+              <p className="text-red-500 text-sm flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {errors.contact}
+              </p>
+            </div>
+          )}
+          
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Message
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              placeholder="Tell us about your inquiry..."
+              value={formData.message}
+              onChange={onInputChange}
+              rows={4}
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 resize-none"
+            />
+          </div>
+        </div>
+        
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:text-success text-xl bg-blue-600 dark:bg-white px-8 py-4 font-semibold text-white dark:text-blue-900 shadow-xl hover:bg-blue-700 dark:hover:bg-gray-100 w-full"
+        >
+          {isSubmitting ? (
+            <div className="flex items-center justify-center">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white dark:text-blue-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Sending...
+            </div>
+          ) : (
+            "Send Message"
+          )}
+        </button>
+      </form>
+    </div>
+  );
+} 
