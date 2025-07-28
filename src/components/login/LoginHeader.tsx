@@ -11,7 +11,7 @@ export default function LoginHeader() {
           <Image
             src={images.logo}
             alt="Cardano2vn"
-            className="h-16 md:h-20 w-auto"
+            className="h-12 md:h-16 w-auto"
             loading="lazy"
           />
         </Link>
