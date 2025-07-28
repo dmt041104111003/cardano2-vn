@@ -56,18 +56,18 @@ export default function WalletList({ wallets }: WalletListProps) {
   }, [hasLoggedIn, walletUser, showSuccess]);
 
   return (
-    <div className="flex-1 max-w-full md:max-w-24">
+    <div className="flex-1">
       <div className="space-y-3 h-[356px] overflow-y-auto pr-2">
         {wallets.map((wallet) => (
           <button
             key={wallet.id}
             onClick={() => handleWalletClick(wallet.id)}
             disabled={wallet.id === "eternal" && isConnecting}
-            className={`w-full p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-sm transition-all duration-200 flex items-center gap-3 bg-white dark:bg-gray-700 ${
+            className={`w-full p-3 rounded-lg border border-gray-200 hover:bg-gray-100 hover:border-gray-300 hover:shadow-sm transition-all duration-200 flex items-center gap-3 bg-white ${
               wallet.id === "eternal" && isConnecting ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            <span className="text-sm text-gray-700 dark:text-gray-300 font-medium flex-1">
+            <span className="text-sm text-gray-700 font-medium flex-1">
               {wallet.name}
             </span>
             {wallet.id === "eternal" ? (
