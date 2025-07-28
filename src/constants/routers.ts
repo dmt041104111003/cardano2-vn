@@ -3,8 +3,6 @@ import { LayoutDashboard, FileText, LayoutTemplate, Users, Settings } from "luci
 export const routers = {
   home: "/",
   about: "/about",
-  member: "/about/member",
-  technology: "/about/technology",
   login: "/login",
 };
 
