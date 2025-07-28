@@ -7,17 +7,26 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession();
     const { searchParams } = new URL(request.url);
-    const sessionUser = session?.user as { address?: string };
+    const sessionUser = session?.user as { address?: string; email?: string };
     const address = searchParams.get("address") || sessionUser?.address;
+    const email = searchParams.get("email") || sessionUser?.email;
 
-    if (!address) {
+    if (!address && !email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    let user = await prisma.user.findUnique({
-      where: { wallet: address },
-      include: { role: true },
-    });
+    let user = null;
+    if (address) {
+      user = await prisma.user.findUnique({
+        where: { wallet: address },
+        include: { role: true },
+      });
+    } else if (email) {
+      user = await prisma.user.findUnique({
+        where: { email: email },
+        include: { role: true },
+      });
+    }
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -45,6 +54,7 @@ export async function GET(request: NextRequest) {
         name: user.name,
         image: user.image,
         address: user.wallet,
+        email: user.email,
         role: user.role.name,
         isAdmin: isAdmin,
       }

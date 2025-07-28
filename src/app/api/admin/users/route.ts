@@ -30,6 +30,8 @@ export async function GET() {
         id: user.id,
         name: user.name || '',
         address: user.wallet,
+        email: user.email,
+        provider: user.provider,
         role: user.role.name,
         status,
         createdAt: user.createdAt.toISOString(),

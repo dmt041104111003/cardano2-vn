@@ -22,14 +22,22 @@ export function useUser() {
       if (status === "loading") return;
       
       const address = session?.user && (session.user as { address?: string }).address;
-      if (!address) {
+      const email = session?.user && (session.user as { email?: string }).email;
+      
+      if (!address && !email) {
         setUser(null);
         setLoading(false);
         return;
       }
 
       try {
-        const url = `/api/auth/me?address=${encodeURIComponent(address)}`;
+        let url = '';
+        if (address) {
+          url = `/api/auth/me?address=${encodeURIComponent(address)}`;
+        } else if (email) {
+          url = `/api/auth/me?email=${encodeURIComponent(email)}`;
+        }
+        
         const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();

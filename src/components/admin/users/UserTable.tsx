@@ -41,7 +41,7 @@ export function UserTable({
               User
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Address
+              Provider
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Role
@@ -83,14 +83,29 @@ export function UserTable({
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-900 font-mono" title={user.address}>{shortenAddress(user.address, 6)}</span>
-                  <button
-                    onClick={() => {navigator.clipboard.writeText(user.address); showSuccess('Copied!');}}
-                    className="p-1 hover:bg-gray-100 rounded"
-                    title="Copy address"
-                  >
-                    <CopyIcon className="h-4 w-4 text-gray-400 hover:text-gray-700" />
-                  </button>
+                  {user.provider === 'google' ? (
+                    <>
+                      <span className="text-sm text-gray-900" title={user.email}>{user.email}</span>
+                      <button
+                        onClick={() => {navigator.clipboard.writeText(user.email || ''); showSuccess('Copied!');}}
+                        className="p-1 hover:bg-gray-100 rounded"
+                        title="Copy email"
+                      >
+                        <CopyIcon className="h-4 w-4 text-gray-400 hover:text-gray-700" />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-sm text-gray-900 font-mono" title={user.address}>{shortenAddress(user.address, 6)}</span>
+                      <button
+                        onClick={() => {navigator.clipboard.writeText(user.address); showSuccess('Copied!');}}
+                        className="p-1 hover:bg-gray-100 rounded"
+                        title="Copy address"
+                      >
+                        <CopyIcon className="h-4 w-4 text-gray-400 hover:text-gray-700" />
+                      </button>
+                    </>
+                  )}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">

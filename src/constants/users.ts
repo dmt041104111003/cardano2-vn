@@ -2,6 +2,8 @@ export interface User {
   id: string;
   name: string;
   address: string;
+  email?: string;
+  provider?: string;
   role: 'USER' | 'ADMIN';
   status: 'active' | 'inactive';
   createdAt: string;
