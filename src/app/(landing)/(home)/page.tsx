@@ -74,7 +74,7 @@ export default function HomePage() {
                   </Link>
                   <Link
                     href={routers.home}
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-100 dark:bg-primary border-gray-300 dark:border-white/50 px-8 py-4 text-lg font-semibold text-gray-900 dark:text-white shadow-lg hover:bg-gray-200 dark:hover:bg-white/10 dark:hover:text-white"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-white/50 px-8 py-4 text-lg font-semibold text-gray-900 dark:text-white shadow-lg hover:bg-gray-200 dark:hover:bg-gray-700"
                   >
                     View Documents
                   </Link>
@@ -304,7 +304,7 @@ export default function HomePage() {
                 <h2 className="text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">Built on Cardano</h2>
               </div>
               <p className="mb-10 text-xl text-gray-700 dark:text-gray-300">Leveraging the security and sustainability of the Cardano blockchain.</p>
-              <div className="relative rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-gray-100 p-8 text-gray-900 dark:text-gray-900 backdrop-blur-sm">
+              <div className="relative rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-gray-800 p-8 text-gray-900 dark:text-gray-100 backdrop-blur-sm">
                 <Image
                   alt="Cardano"
                   loading="lazy"
@@ -315,9 +315,9 @@ export default function HomePage() {
                   className="mb-8 h-12 brightness-125 filter text-transparent"
                   src={images.cardano}
                 />
-                <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-800">
+                <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200">
                   Andamio harnesses Cardanos proof-of-stake blockchain to provide secure, energy-efficient, and transparent credentialing. Every
-                  certificate and achievement is <strong className="text-black dark:text-black">immutably recorded</strong>, ensuring your credentials are always
+                  certificate and achievement is <strong className="text-black dark:text-white">immutably recorded</strong>, ensuring your credentials are always
                   verifiable and portable.
                 </p>
               </div>
@@ -354,7 +354,7 @@ export default function HomePage() {
                   </button>
                 </Link>
                 <Link href="https://docs.andamio.io/docs/">
-                  <button className="inline-flex items-center justify-center whitespace-nowrap rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-100 dark:bg-transparent text-xl border-gray-300 dark:border-white/70 px-8 py-4 font-semibold text-gray-900 dark:text-white shadow-lg hover:bg-gray-200 dark:hover:bg-white/20 dark:hover:text-white">
+                  <button className="inline-flex items-center justify-center whitespace-nowrap rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-100 dark:bg-gray-800 text-xl border-gray-300 dark:border-white/70 px-8 py-4 font-semibold text-gray-900 dark:text-white shadow-lg hover:bg-gray-200 dark:hover:bg-gray-700">
                     View Documentation
                   </button>
                 </Link>

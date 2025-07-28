@@ -1,0 +1,52 @@
+export interface Wallet {
+  id: string;
+  name: string;
+  logo: string;
+  color: string;
+}
+
+export interface Network {
+  id: string;
+  name: string;
+  icon: string;
+  isActive: boolean;
+}
+
+export const NETWORKS: Network[] = [
+  { id: "c2vn", name: "C2VN", icon: "🔷", isActive: true },
+  { id: "social", name: "Social", icon: "💧", isActive: false },
+  { id: "phantom", name: "Phantom", icon: "∞", isActive: false },
+  { id: "metamask", name: "MetaMask", icon: "🔥", isActive: false },
+];
+
+export const C2VN_WALLETS: Wallet[] = [
+  { id: "sol", name: "Solana Wallet", logo: "S", color: "bg-purple-500" },
+  { id: "eternal", name: "Eternal Wallet", logo: "E", color: "bg-green-500" },
+];
+
+export const SOCIAL_WALLETS: Wallet[] = [
+  { id: "facebook", name: "Facebook", logo: "F", color: "bg-blue-600" },
+  { id: "google", name: "Google", logo: "G", color: "bg-red-500" },
+  { id: "github", name: "GitHub", logo: "GH", color: "bg-gray-800" },
+];
+
+export const PHANTOM_WALLETS: Wallet[] = [
+  { id: "phantom", name: "Phantom", logo: "P", color: "bg-purple-600" },
+];
+
+export const METAMASK_WALLETS: Wallet[] = [
+  { id: "metamask", name: "MetaMask", logo: "M", color: "bg-orange-500" },
+];
+
+export const getWalletsByNetwork = (selectedNetwork: string): Wallet[] => {
+  switch (selectedNetwork) {
+    case "social":
+      return SOCIAL_WALLETS;
+    case "phantom":
+      return PHANTOM_WALLETS;
+    case "metamask":
+      return METAMASK_WALLETS;
+    default:
+      return C2VN_WALLETS;
+  }
+}; 
