@@ -72,7 +72,7 @@ export function PostsPageClient() {
   const paginatedPosts = filteredPosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handleEdit = async (post: Post) => {
-    const res = await fetch(`/api/admin/posts/${post.id}`);
+    const res = await fetch(`/api/admin/posts/${post.slug || post.id}`);
     const data = await res.json();
     setEditingPost(data.post);
     setActiveTab('create');
@@ -80,9 +80,9 @@ export function PostsPageClient() {
 
   const { showSuccess, showError } = useToastContext();
 
-  const handleDelete = async (postId: string) => {
+  const handleDelete = async (postSlug: string) => {
     try {
-      const res = await fetch(`/api/admin/posts/${postId}`, {
+      const res = await fetch(`/api/admin/posts/${postSlug}`, {
         method: 'DELETE',
       });
       if (res.ok) {
@@ -123,8 +123,8 @@ export function PostsPageClient() {
           ? newPost.media.map(m => ({ ...m, type: m.type.toUpperCase() }))
           : [],
       };
-      if (editingPost && editingPost.id) {
-        const res = await fetch(`/api/admin/posts/${editingPost.id}`, {
+      if (editingPost && editingPost.slug) {
+        const res = await fetch(`/api/admin/posts/${editingPost.slug}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(backendPost),

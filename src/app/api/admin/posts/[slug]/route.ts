@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '~/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '~/app/api/auth/[...nextauth]/route';
+import { createUniqueSlug } from '~/lib/slug';
 
 function getYoutubeIdFromUrl(url: string) {
   if (!url) return '';
@@ -127,6 +128,17 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
     console.log('PATCH body:', body);
     const isUUID = (str: string) => /^[0-9a-fA-F-]{36}$/.test(str);
 
+    const existingPost = await prisma.post.findUnique({
+      where: { slug: params.slug },
+      select: { id: true }
+    });
+
+    if (!existingPost) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+
+    const postId = existingPost.id;
+
     let tagIds: string[] = [];
     if (body.tags && body.tags.length > 0) {
       if (isUUID(body.tags[0])) {
@@ -141,12 +153,12 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
     }
     console.log('PATCH tagIds:', tagIds);
     await prisma.postTag.deleteMany({
-      where: { postId: params.slug }
+      where: { postId: postId }
     });
     if (tagIds.length > 0) {
       await prisma.postTag.createMany({
         data: tagIds.map((tagId: string) => ({
-          postId: params.slug,
+          postId: postId,
           tagId,
         })),
         skipDuplicates: true,
@@ -154,7 +166,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
     }
 
     try {
-      await prisma.media.deleteMany({ where: { postId: params.slug } });
+      await prisma.media.deleteMany({ where: { postId: postId } });
       let mappedMedia = [];
       if (Array.isArray(body.media) && body.media.length > 0) {
         mappedMedia = body.media.map((m: { id: string; url: string; type: string }) => {
@@ -170,7 +182,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
           return {
             url: m.url,
             type,
-            postId: params.slug,
+            postId: postId,
             mediaId,
           };
         });
@@ -183,12 +195,27 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
           }
         }
       }
+
+      let newSlug = params.slug;
+      if (body.title) {
+        const existingSlugs = await prisma.post.findMany({
+          where: { 
+            slug: { not: params.slug }
+          },
+          select: { slug: true }
+        });
+        
+        const slugList = existingSlugs.map(p => p.slug);
+        newSlug = await createUniqueSlug(body.title, slugList);
+      }
+
       const updated = await prisma.post.update({
-        where: { slug: params.slug },
+        where: { id: postId },
         data: {
           title: body.title,
           content: body.content,
           status: body.status,
+          slug: newSlug,
         },
         include: {
           tags: { include: { tag: true } },
