@@ -9,10 +9,20 @@ export async function GET() {
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const user = await prisma.user.findUnique({
-      where: { wallet: session.user.address },
-      include: { role: true }
-    });
+    const sessionUser = session.user as { address?: string; email?: string };
+    let user = null;
+    
+    if (sessionUser.address) {
+      user = await prisma.user.findUnique({
+        where: { wallet: sessionUser.address },
+        include: { role: true }
+      });
+    } else if (sessionUser.email) {
+      user = await prisma.user.findUnique({
+        where: { email: sessionUser.email },
+        include: { role: true }
+      });
+    }
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -95,11 +105,21 @@ export async function POST(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    // Check if user is admin
-    const user = await prisma.user.findUnique({
-      where: { wallet: session.user.address },
-      include: { role: true }
-    });
+    // Check if user is admin - Support all 3 providers
+    const sessionUser = session.user as { address?: string; email?: string };
+    let user = null;
+    
+    if (sessionUser.address) {
+      user = await prisma.user.findUnique({
+        where: { wallet: sessionUser.address },
+        include: { role: true }
+      });
+    } else if (sessionUser.email) {
+      user = await prisma.user.findUnique({
+        where: { email: sessionUser.email },
+        include: { role: true }
+      });
+    }
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }

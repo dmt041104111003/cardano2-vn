@@ -49,13 +49,26 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || typeof session !== 'object' || !('user' in session) || typeof session.user !== 'object' || !session.user || !('address' in session.user) || typeof session.user.address !== 'string') {
+    if (!session || typeof session !== 'object' || !('user' in session) || typeof session.user !== 'object' || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const currentUser = await prisma.user.findUnique({
-      where: { wallet: session.user.address },
-      include: { role: true },
-    });
+    
+    // Support all 3 providers: Google, GitHub, Cardano
+    const sessionUser = session.user as { address?: string; email?: string };
+    let currentUser = null;
+    
+    if (sessionUser.address) {
+      currentUser = await prisma.user.findUnique({
+        where: { wallet: sessionUser.address },
+        include: { role: true },
+      });
+    } else if (sessionUser.email) {
+      currentUser = await prisma.user.findUnique({
+        where: { email: sessionUser.email },
+        include: { role: true },
+      });
+    }
+    
     if (!currentUser || currentUser.role.name !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -91,13 +104,26 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || typeof session !== 'object' || !('user' in session) || typeof session.user !== 'object' || !session.user || !('address' in session.user) || typeof session.user.address !== 'string') {
+    if (!session || typeof session !== 'object' || !('user' in session) || typeof session.user !== 'object' || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const currentUser = await prisma.user.findUnique({
-      where: { wallet: session.user.address },
-      include: { role: true },
-    });
+    
+    // Support all 3 providers: Google, GitHub, Cardano
+    const sessionUser = session.user as { address?: string; email?: string };
+    let currentUser = null;
+    
+    if (sessionUser.address) {
+      currentUser = await prisma.user.findUnique({
+        where: { wallet: sessionUser.address },
+        include: { role: true },
+      });
+    } else if (sessionUser.email) {
+      currentUser = await prisma.user.findUnique({
+        where: { email: sessionUser.email },
+        include: { role: true },
+      });
+    }
+    
     if (!currentUser || currentUser.role.name !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -119,13 +145,26 @@ export async function DELETE(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || typeof session !== 'object' || !('user' in session) || typeof session.user !== 'object' || !session.user || !('address' in session.user) || typeof session.user.address !== 'string') {
+    if (!session || typeof session !== 'object' || !('user' in session) || typeof session.user !== 'object' || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const currentUser = await prisma.user.findUnique({
-      where: { wallet: session.user.address },
-      include: { role: true },
-    });
+    
+    // Support all 3 providers: Google, GitHub, Cardano
+    const sessionUser = session.user as { address?: string; email?: string };
+    let currentUser = null;
+    
+    if (sessionUser.address) {
+      currentUser = await prisma.user.findUnique({
+        where: { wallet: sessionUser.address },
+        include: { role: true },
+      });
+    } else if (sessionUser.email) {
+      currentUser = await prisma.user.findUnique({
+        where: { email: sessionUser.email },
+        include: { role: true },
+      });
+    }
+    
     if (!currentUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

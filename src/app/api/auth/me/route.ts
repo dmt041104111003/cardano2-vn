@@ -55,6 +55,7 @@ export async function GET(request: NextRequest) {
         image: user.image,
         address: user.wallet,
         email: user.email,
+        provider: user.provider,
         role: user.role.name,
         isAdmin: isAdmin,
       }

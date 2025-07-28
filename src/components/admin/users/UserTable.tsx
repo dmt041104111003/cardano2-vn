@@ -83,7 +83,7 @@ export function UserTable({
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center gap-2">
-                  {user.provider === 'google' ? (
+                  {user.provider === 'google' || user.provider === 'github' ? (
                     <>
                       <span className="text-sm text-gray-900" title={user.email}>{user.email}</span>
                       <button

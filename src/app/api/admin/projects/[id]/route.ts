@@ -14,11 +14,22 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { wallet: (session.user as any).address },
-      include: { role: true }
-    });
-
+    // Support all 3 providers: Google, GitHub, Cardano
+    const sessionUser = session.user as { address?: string; email?: string };
+    let user = null;
+    
+    if (sessionUser.address) {
+      user = await prisma.user.findUnique({
+        where: { wallet: sessionUser.address },
+        include: { role: true }
+      });
+    } else if (sessionUser.email) {
+      user = await prisma.user.findUnique({
+        where: { email: sessionUser.email },
+        include: { role: true }
+      });
+    }
+    
     if (!user || user.role.name !== "ADMIN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -52,11 +63,22 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { wallet: (session.user as any).address },
-      include: { role: true }
-    });
-
+    // Support all 3 providers: Google, GitHub, Cardano
+    const sessionUser = session.user as { address?: string; email?: string };
+    let user = null;
+    
+    if (sessionUser.address) {
+      user = await prisma.user.findUnique({
+        where: { wallet: sessionUser.address },
+        include: { role: true }
+      });
+    } else if (sessionUser.email) {
+      user = await prisma.user.findUnique({
+        where: { email: sessionUser.email },
+        include: { role: true }
+      });
+    }
+    
     if (!user || user.role.name !== "ADMIN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -105,11 +127,22 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { wallet: (session.user as any).address },
-      include: { role: true }
-    });
-
+    // Support all 3 providers: Google, GitHub, Cardano
+    const sessionUser = session.user as { address?: string; email?: string };
+    let user = null;
+    
+    if (sessionUser.address) {
+      user = await prisma.user.findUnique({
+        where: { wallet: sessionUser.address },
+        include: { role: true }
+      });
+    } else if (sessionUser.email) {
+      user = await prisma.user.findUnique({
+        where: { email: sessionUser.email },
+        include: { role: true }
+      });
+    }
+    
     if (!user || user.role.name !== "ADMIN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
