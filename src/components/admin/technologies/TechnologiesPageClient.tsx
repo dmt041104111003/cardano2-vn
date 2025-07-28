@@ -6,7 +6,6 @@ import { AdminStats } from "~/components/admin/common/AdminStats";
 import { AdminFilters } from "~/components/admin/common/AdminFilters";
 import TechnologyEditor from "~/components/admin/technologies/TechnologyEditor";
 import AboutEditor from "~/components/admin/about/AboutEditor";
-import DeleteConfirmModal from "~/components/admin/technologies/DeleteConfirmModal";
 import { TechnologyTable } from "~/components/admin/technologies/TechnologyTable";
 import TechnologyDetailsModal from "~/components/admin/technologies/TechnologyDetailsModal";
 import Modal from "~/components/admin/common/Modal";
@@ -31,8 +30,7 @@ export default function TechnologiesPageClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showEditor, setShowEditor] = useState(false);
   const [editingTechnology, setEditingTechnology] = useState<Technology | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deletingTechnology, setDeletingTechnology] = useState<Technology | null>(null);
+
   const [showTechnologyModal, setShowTechnologyModal] = useState<Technology | null>(null);
   const [activeTab, setActiveTab] = useState<'technologies' | 'about'>('technologies');
   const { showSuccess, showError } = useToastContext();
@@ -62,10 +60,7 @@ export default function TechnologiesPageClient() {
     setShowEditor(true);
   };
 
-  const handleDeleteTechnology = (technology: Technology) => {
-    setDeletingTechnology(technology);
-    setShowDeleteModal(true);
-  };
+
 
   const handleSaveTechnology = async (technologyData: { title: string; name: string; description: string; href: string; image: string }) => {
     try {
@@ -115,28 +110,7 @@ export default function TechnologiesPageClient() {
     }
   };
 
-  const handleDeleteConfirm = async () => {
-    if (!deletingTechnology) return;
-    try {
-      const response = await fetch(`/api/admin/technologies/${deletingTechnology.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (response.ok) {
-        setShowDeleteModal(false);
-        setDeletingTechnology(null);
-        await fetchTechnologies();
-        showSuccess('Technology deleted', 'Technology has been deleted successfully.');
-      } else {
-        showError('Failed to delete technology');
-      }
-    } catch (error) {
-      showError('Failed to delete technology');
-    }
-  };
+
 
   const filteredTechnologies = technologies.filter(technology => {
     const matchesSearch = technology.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -223,7 +197,25 @@ export default function TechnologiesPageClient() {
               <TechnologyTable
                 technologies={paginatedTechnologies}
                 onEdit={handleEditTechnology}
-                onDelete={handleDeleteTechnology}
+                onDelete={async (technology) => {
+                  try {
+                    const response = await fetch(`/api/admin/technologies/${technology.id}`, {
+                      method: 'DELETE',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                    });
+
+                    if (response.ok) {
+                      await fetchTechnologies();
+                      showSuccess('Technology deleted', 'Technology has been deleted successfully.');
+                    } else {
+                      showError('Failed to delete technology');
+                    }
+                  } catch (error) {
+                    showError('Failed to delete technology');
+                  }
+                }}
                 onViewDetails={setShowTechnologyModal}
               />
               <Pagination
@@ -260,17 +252,7 @@ export default function TechnologiesPageClient() {
         />
       </Modal>
 
-      {showDeleteModal && deletingTechnology && (
-        <DeleteConfirmModal
-          title="Delete Technology"
-          message={`Are you sure you want to delete "${deletingTechnology.title}"? This action cannot be undone.`}
-          onConfirm={handleDeleteConfirm}
-          onCancel={() => {
-            setShowDeleteModal(false);
-            setDeletingTechnology(null);
-          }}
-        />
-      )}
+
 
       <TechnologyDetailsModal
         technology={showTechnologyModal}

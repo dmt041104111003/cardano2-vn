@@ -5,7 +5,6 @@ import { AdminHeader } from "~/components/admin/common/AdminHeader";
 import { AdminStats } from "~/components/admin/common/AdminStats";
 import { AdminFilters } from "~/components/admin/common/AdminFilters";
 import ProjectEditor from "~/components/admin/projects/ProjectEditor";
-import DeleteConfirmModal from "~/components/admin/projects/DeleteConfirmModal";
 import { ProjectTable } from "~/components/admin/projects/ProjectTable";
 import { ProjectDetailsModal } from "~/components/admin/projects/ProjectDetailsModal";
 import Modal from "~/components/admin/common/Modal";
@@ -33,8 +32,7 @@ export default function ProjectsPageClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showEditor, setShowEditor] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deletingProject, setDeletingProject] = useState<Project | null>(null);
+
   const [showProjectModal, setShowProjectModal] = useState<Project | null>(null);
   const { showSuccess, showError } = useToastContext();
 
@@ -61,11 +59,6 @@ export default function ProjectsPageClient() {
   const handleEditProject = (project: Project) => {
     setEditingProject(project);
     setShowEditor(true);
-  };
-
-  const handleDeleteProject = (project: Project) => {
-    setDeletingProject(project);
-    setShowDeleteModal(true);
   };
 
   const handleSaveProject = async (projectData: Partial<Project>) => {
@@ -97,29 +90,7 @@ export default function ProjectsPageClient() {
     }
   };
 
-  const handleDeleteConfirm = async () => {
-    if (!deletingProject) return;
-    
-    try {
-      const response = await fetch(`/api/admin/projects/${deletingProject.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
 
-      if (response.ok) {
-        setShowDeleteModal(false);
-        setDeletingProject(null);
-        await fetchProjects();
-        showSuccess('Project deleted', 'Project has been deleted successfully.');
-      } else {
-        showError('Failed to delete project');
-      }
-    } catch (error) {
-      showError('Failed to delete project');
-    }
-  };
 
   const filteredProjects = projects.filter(project => {
     const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -187,7 +158,25 @@ export default function ProjectsPageClient() {
           <ProjectTable
             projects={paginatedProjects}
             onEdit={handleEditProject}
-            onDelete={handleDeleteProject}
+            onDelete={async (project) => {
+              try {
+                const response = await fetch(`/api/admin/projects/${project.id}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                });
+
+                if (response.ok) {
+                  await fetchProjects();
+                  showSuccess('Project deleted', 'Project has been deleted successfully.');
+                } else {
+                  showError('Failed to delete project');
+                }
+              } catch (error) {
+                showError('Failed to delete project');
+              }
+            }}
             onViewDetails={setShowProjectModal}
           />
 
@@ -220,17 +209,7 @@ export default function ProjectsPageClient() {
         />
       </Modal>
 
-      {showDeleteModal && deletingProject && (
-        <DeleteConfirmModal
-          title="Delete Project"
-          message={`Are you sure you want to delete "${deletingProject.title}"? This action cannot be undone.`}
-          onConfirm={handleDeleteConfirm}
-          onCancel={() => {
-            setShowDeleteModal(false);
-            setDeletingProject(null);
-          }}
-        />
-      )}
+
 
       <ProjectDetailsModal
         project={showProjectModal}

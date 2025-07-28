@@ -62,7 +62,6 @@ export function TagsPageClient() {
   };
 
   const handleDelete = async (tagId: string) => {
-    if (!window.confirm('Are you sure you want to delete this tag?')) return;
     try {
       const res = await fetch('/api/admin/tags', {
         method: 'DELETE',

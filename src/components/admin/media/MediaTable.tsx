@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Image as ImageIcon, Trash2, Download, Eye } from 'lucide-react';
 import { useToastContext } from '~/components/toast-provider';
-import { DeleteConfirmModal } from './DeleteConfirmModal';
 import Modal from '~/components/admin/common/Modal';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -28,11 +27,8 @@ interface MediaTableProps {
 }
 
 export function MediaTable({ media, onDelete }: MediaTableProps) {
-  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; mediaId: string; mediaName: string }>({
-    isOpen: false,
-    mediaId: '',
-    mediaName: '',
-  });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedMediaToDelete, setSelectedMediaToDelete] = useState<Media | null>(null);
   const { showSuccess, showError } = useToastContext();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [previewYoutube, setPreviewYoutube] = useState<string | null>(null);
@@ -288,11 +284,8 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
                         showError('Cannot delete', 'This media is being used in posts and cannot be deleted.');
                         return;
                       }
-                      setDeleteModal({
-                        isOpen: true,
-                        mediaId: item.id,
-                        mediaName: item.originalName,
-                      });
+                      setSelectedMediaToDelete(item);
+                      setIsDeleteModalOpen(true);
                     }}
                     className={`${
                       !!item.usageCount
@@ -316,12 +309,58 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
       </table>
     </div>
 
-      <DeleteConfirmModal
-        isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, mediaId: '', mediaName: '' })}
-        onConfirm={() => onDelete(deleteModal.mediaId)}
-        mediaName={deleteModal.mediaName}
-      />
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete Media"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full">
+              <Trash2 className="w-5 h-5 text-red-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Delete Media</h3>
+              <p className="text-sm text-gray-600">Are you sure you want to delete this media file?</p>
+            </div>
+          </div>
+          
+          {selectedMediaToDelete && (
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-sm text-gray-500">Media to delete:</p>
+              <p className="font-medium text-gray-900">{selectedMediaToDelete.originalName}</p>
+              <p className="text-sm text-gray-500">{getFileType(selectedMediaToDelete.mimeType)}</p>
+              <p className="text-sm text-gray-500">{selectedMediaToDelete.usageCount || 0} posts using this media</p>
+            </div>
+          )}
+          
+          <p className="text-sm text-red-600 font-medium">
+            This action cannot be undone.
+          </p>
+          
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <button
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                if (selectedMediaToDelete) {
+                  onDelete(selectedMediaToDelete.id);
+                  setIsDeleteModalOpen(false);
+                  setSelectedMediaToDelete(null);
+                }
+              }}
+              className="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
       {previewImage && (
         previewImage.startsWith('data:image') ? (
           <Modal isOpen={!!previewImage} onClose={() => setPreviewImage(null)} title="Image Preview" maxWidth="max-w-2xl">
