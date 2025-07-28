@@ -18,43 +18,43 @@ export default function LoginHeader() {
       </div>
       
       <div className="flex items-center gap-2 md:gap-4">
-        <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:opacity-80 transition-opacity">
+        <div className="w-4 h-4 md:w-6 md:h-6 flex items-center justify-center hover:opacity-80 transition-opacity">
           <Image
             src="/images/wallets/google.png"
             alt="Google"
-            width={32}
-            height={32}
-            className="w-8 h-8 md:w-10 md:h-10"
+            width={16}
+            height={16}
+            className="w-4 h-4 md:w-6 md:h-6"
             loading="lazy"
           />
         </div>
-        <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:opacity-80 transition-opacity">
+        <div className="w-4 h-4 md:w-6 md:h-6 flex items-center justify-center hover:opacity-80 transition-opacity">
           <Image
             src="/images/wallets/github.png"
             alt="GitHub"
-            width={32}
-            height={32}
-            className="w-8 h-8 md:w-10 md:h-10"
+            width={16}
+            height={16}
+            className="w-4 h-4 md:w-6 md:h-6"
             loading="lazy"
           />
         </div>
-        <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:opacity-80 transition-opacity">
+        <div className="w-4 h-4 md:w-6 md:h-6 flex items-center justify-center hover:opacity-80 transition-opacity">
           <Image
             src="/images/wallets/telegram.png"
             alt="Telegram"
-            width={32}
-            height={32}
-            className="w-8 h-8 md:w-10 md:h-10"
+            width={16}
+            height={16}
+            className="w-4 h-4 md:w-6 md:h-6"
             loading="lazy"
           />
         </div>
-        <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:opacity-80 transition-opacity">
+        <div className="w-4 h-4 md:w-6 md:h-6 flex items-center justify-center hover:opacity-80 transition-opacity">
           <Image
             src="/images/wallets/discord.png"
             alt="Discord"
-            width={32}
-            height={32}
-            className="w-8 h-8 md:w-10 md:h-10"
+            width={16}
+            height={16}
+            className="w-4 h-4 md:w-6 md:h-6"
             loading="lazy"
           />
         </div>

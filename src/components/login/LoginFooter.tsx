@@ -11,14 +11,14 @@ export default function LoginFooter() {
       className="mt-16 md:mt-24 text-center"
     >
       <div className="flex items-center justify-center relative z-10">
-        <div className="flex-1 border-t-4 border-gray-600 dark:border-gray-300 h-0 shadow-sm"></div>
-        <span className="px-6 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 text-base font-medium">
+        <div className="flex-1 border-t-4 border-gray-600 h-0 shadow-sm"></div>
+        <span className="px-6 text-gray-700 bg-transparent text-base font-medium">
           Web2 Login Powered by{" "}
           <span className="inline-flex items-center gap-2 text-[#003C8C] font-semibold">
             CARDANO2VN
           </span>
         </span>
-        <div className="flex-1 border-t-4 border-gray-600 dark:border-gray-300 h-0 shadow-sm"></div>
+        <div className="flex-1 border-t-4 border-gray-600 h-0 shadow-sm"></div>
       </div>
         
       <div className="flex items-center justify-center gap-6 mb-6 mt-6">
@@ -51,10 +51,10 @@ export default function LoginFooter() {
       </div>
         
       <div className="space-y-3">
-        <Link href="/help" className="text-gray-900 dark:text-gray-100 underline text-sm hover:text-orange-500 dark:hover:text-orange-400 transition-colors">
+        <Link href="/help" className="text-gray-900 underline text-sm hover:text-red-500 transition-colors">
           Help Center
         </Link>
-        <p className="text-gray-500 dark:text-gray-400 text-xs">
+        <p className="text-gray-500 text-xs">
           @Cardano2vn Network Foundation LTD.
         </p>
       </div>

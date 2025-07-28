@@ -17,7 +17,7 @@ interface NetworkSelectorProps {
 export default function NetworkSelector({ networks, selectedNetwork, onNetworkSelect }: NetworkSelectorProps) {
   return (
     <div className="flex-shrink-0">
-      <div className="flex md:flex-col gap-3 md:space-y-3">
+      <div className="flex flex-col gap-3">
         {networks.map((network) => (
           <button
             key={network.id}
@@ -25,7 +25,7 @@ export default function NetworkSelector({ networks, selectedNetwork, onNetworkSe
             className={`w-14 h-14 rounded-lg border-2 transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
               selectedNetwork === network.id
                 ? "border-blue-500 bg-blue-100 shadow-sm"
-                : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700"
+                : "border-gray-200 hover:border-gray-300 bg-white"
             }`}
           >
             <div className="text-base">

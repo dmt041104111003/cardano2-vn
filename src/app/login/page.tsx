@@ -15,7 +15,7 @@ export default function LoginPage() {
   const wallets = getWalletsByNetwork(selectedNetwork);
 
     return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-pink-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
 
@@ -26,11 +26,11 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 md:p-6 max-w-lg w-full mx-4 md:mx-0"
+                      className="bg-white rounded-2xl shadow-xl p-4 md:p-6 max-w-md w-full mx-4 md:mx-0"
         >
           <LoginCardHeader />
 
-          <div className="flex flex-col md:flex-row gap-3">
+          <div className="flex flex-row gap-3">
             <NetworkSelector 
               networks={NETWORKS}
               selectedNetwork={selectedNetwork}
