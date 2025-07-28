@@ -72,7 +72,6 @@ export function UsersPageClient() {
   const handleDelete = async (userId: string) => {
     const user = users.find(u => u.id === userId);
     if (!user) return;
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
       const res = await fetch('/api/admin/users', {
         method: 'DELETE',

@@ -1,6 +1,8 @@
 import { Edit, Trash2 } from 'lucide-react';
 import { Post } from '~/constants/posts';
 import { Tag } from '~/constants/tags';
+import { useState } from 'react';
+import Modal from '../common/Modal';
 
 interface PostTableProps {
   posts: Post[];
@@ -14,6 +16,21 @@ export function PostTable({
   onEdit,
   onDelete,
 }: PostTableProps) {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedPostToDelete, setSelectedPostToDelete] = useState<Post | null>(null);
+
+  const handleDeleteClick = (post: Post) => {
+    setSelectedPostToDelete(post);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedPostToDelete) {
+      onDelete(selectedPostToDelete.id);
+      setIsDeleteModalOpen(false);
+      setSelectedPostToDelete(null);
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -108,7 +125,7 @@ export function PostTable({
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => onDelete(post.id)}
+                    onClick={() => handleDeleteClick(post)}
                     className="text-red-600 hover:text-red-900"
                     title={`Delete ${post.title}`}
                   >
@@ -120,6 +137,52 @@ export function PostTable({
           ))}
         </tbody>
       </table>
+      
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete Post"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full">
+              <Trash2 className="w-5 h-5 text-red-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Delete Post</h3>
+              <p className="text-sm text-gray-600">Are you sure you want to delete this post?</p>
+            </div>
+          </div>
+          
+          {selectedPostToDelete && (
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-sm text-gray-500">Post to delete:</p>
+              <p className="font-medium text-gray-900">{selectedPostToDelete.title}</p>
+              <p className="text-sm text-gray-500">Author: {selectedPostToDelete.author}</p>
+            </div>
+          )}
+          
+          <p className="text-sm text-red-600 font-medium">
+            This action cannot be undone.
+          </p>
+          
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <button
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              className="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 } 

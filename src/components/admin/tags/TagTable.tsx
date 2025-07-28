@@ -1,5 +1,7 @@
 import { Edit, Trash2 } from 'lucide-react';
 import { Tag } from '~/constants/tags';
+import { useState } from 'react';
+import Modal from '../common/Modal';
 
 interface TagTableProps {
   tags: Tag[];
@@ -24,6 +26,22 @@ export function TagTable({
   onDelete,
   onCancel,
 }: TagTableProps) {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedTagToDelete, setSelectedTagToDelete] = useState<Tag | null>(null);
+
+  const handleDeleteClick = (tag: Tag) => {
+    setSelectedTagToDelete(tag);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedTagToDelete) {
+      onDelete(selectedTagToDelete.id);
+      setIsDeleteModalOpen(false);
+      setSelectedTagToDelete(null);
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-[600px] md:min-w-full divide-y divide-gray-200">
@@ -90,7 +108,7 @@ export function TagTable({
                     </button>
                   )}
                   <button
-                    onClick={() => onDelete(tag.id)}
+                    onClick={() => handleDeleteClick(tag)}
                     className="text-red-600 hover:text-red-900"
                     title="Delete tag"
                   >
@@ -102,6 +120,52 @@ export function TagTable({
           ))}
         </tbody>
       </table>
+      
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete Tag"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full">
+              <Trash2 className="w-5 h-5 text-red-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Delete Tag</h3>
+              <p className="text-sm text-gray-600">Are you sure you want to delete this tag?</p>
+            </div>
+          </div>
+          
+          {selectedTagToDelete && (
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-sm text-gray-500">Tag to delete:</p>
+              <p className="font-medium text-gray-900">{selectedTagToDelete.name}</p>
+              <p className="text-sm text-gray-500">{selectedTagToDelete.postCount} posts using this tag</p>
+            </div>
+          )}
+          
+          <p className="text-sm text-red-600 font-medium">
+            This action cannot be undone.
+          </p>
+          
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <button
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              className="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 } 
