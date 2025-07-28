@@ -7,6 +7,7 @@ import TrustSection from '~/components/home/TrustSection';
 import ProtocolSection from '~/components/home/ProtocolSection';
 import CardanoSection from '~/components/home/CardanoSection';
 import CTASection from '~/components/home/CTASection';
+import ContactFormSection from '~/components/home/ContactFormSection';
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -33,6 +34,7 @@ export default function HomePage() {
       <ProtocolSection />
       <CardanoSection />
       <CTASection />
+      <ContactFormSection />
     </main>
   );
 }
