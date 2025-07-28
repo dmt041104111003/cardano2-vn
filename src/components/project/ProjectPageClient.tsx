@@ -111,7 +111,7 @@ export default function ProjectPageClient() {
                 />
                 <div className="mt-6 flex-1 md:-mt-12">
                   {typeFilter === "project" ? (
-                    <TechnologyPageClient />
+                    <TechnologyPageClient isEmbedded={true} searchTerm={searchTerm} />
                   ) : (
                     <div
                       data-state="active"
