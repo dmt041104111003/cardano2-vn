@@ -13,10 +13,11 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
   const params = await context.params;
   try {
     const post = await prisma.post.findUnique({
-      where: { id: params.id },
+      where: { slug: params.slug },
       select: {
         id: true,
         title: true,
+        slug: true,
         content: true,
         createdAt: true,
         updatedAt: true,
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
       },
     });
     const comments = await prisma.comment.findMany({
-      where: { postId: params.id },
+      where: { postId: post?.id || '' },
       select: {
         id: true,
         content: true,
@@ -61,7 +62,6 @@ export async function DELETE(request: NextRequest, context: { params: Promise<Re
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    // Support all 3 providers: Google, GitHub, Cardano
     const sessionUser = session.user as { address?: string; email?: string };
     let currentUser = null;
     
@@ -80,9 +80,13 @@ export async function DELETE(request: NextRequest, context: { params: Promise<Re
     if (!currentUser || !currentUser.role || String(currentUser.role.name).toUpperCase() !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
-    await prisma.post.delete({ where: { id: params.id } });
-    return NextResponse.json({ success: true });
-  } catch {
+
+    await prisma.post.delete({
+      where: { slug: params.slug },
+    });
+    return NextResponse.json({ message: 'Post deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting post:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -95,7 +99,6 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    // Support all 3 providers: Google, GitHub, Cardano
     const sessionUser = session.user as { address?: string; email?: string };
     let currentUser = null;
     
@@ -138,12 +141,12 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
     }
     console.log('PATCH tagIds:', tagIds);
     await prisma.postTag.deleteMany({
-      where: { postId: params.id }
+      where: { postId: params.slug }
     });
     if (tagIds.length > 0) {
       await prisma.postTag.createMany({
         data: tagIds.map((tagId: string) => ({
-          postId: params.id,
+          postId: params.slug,
           tagId,
         })),
         skipDuplicates: true,
@@ -151,7 +154,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
     }
 
     try {
-      await prisma.media.deleteMany({ where: { postId: params.id } });
+      await prisma.media.deleteMany({ where: { postId: params.slug } });
       let mappedMedia = [];
       if (Array.isArray(body.media) && body.media.length > 0) {
         mappedMedia = body.media.map((m: { id: string; url: string; type: string }) => {
@@ -167,7 +170,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
           return {
             url: m.url,
             type,
-            postId: params.id,
+            postId: params.slug,
             mediaId,
           };
         });
@@ -181,7 +184,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
         }
       }
       const updated = await prisma.post.update({
-        where: { id: params.id },
+        where: { slug: params.slug },
         data: {
           title: body.title,
           content: body.content,
@@ -194,15 +197,12 @@ export async function PATCH(request: NextRequest, context: { params: Promise<Rec
       });
       console.log('PATCH updated post:', updated);
       return NextResponse.json({ post: updated });
-    } catch (err) {
-      let message = 'Prisma error';
-      if (err && typeof err === 'object' && 'message' in err && typeof (err as Record<string, unknown>).message === 'string') {
-        message = (err as Record<string, unknown>).message as string;
-      }
-      console.error('Prisma update error:', err);
-      return NextResponse.json({ error: message }, { status: 500 });
+    } catch (error) {
+      console.error('Error updating post:', error);
+      return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
     }
-  } catch {
-
+  } catch (error) {
+    console.error('Error in PATCH:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 } 
