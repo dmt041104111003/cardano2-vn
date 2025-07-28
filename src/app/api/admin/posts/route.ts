@@ -3,6 +3,7 @@ import { prisma } from '~/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '~/app/api/auth/[...nextauth]/route';
 import cloudinary from '~/lib/cloudinary';
+import { createUniqueSlug } from '~/lib/slug';
 
 function getYoutubeIdFromUrl(url: string) {
   if (!url) return '';
@@ -30,6 +31,7 @@ export async function GET(request: NextRequest) {
         select: {
           id: true,
           title: true,
+          slug: true,
           createdAt: true,
           status: true,
           author: { select: { name: true } },
@@ -39,7 +41,7 @@ export async function GET(request: NextRequest) {
       });
       const mapped = posts.map(p => ({
         ...p,
-        slug: p.id,
+        slug: p.slug || p.id,
         author: p.author?.name || 'Admin',
         media: Array.isArray(p.media)
           ? p.media.map((m: { url: string; type: string; id: string }) =>
@@ -57,6 +59,7 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         title: true,
+        slug: true,
         status: true,
         shares: true,
         createdAt: true,
@@ -75,6 +78,7 @@ export async function GET(request: NextRequest) {
       return {
         id: post.id,
         title: post.title,
+        slug: post.slug || post.id,
         status: post.status,
         shares: post.shares,
         createdAt: post.createdAt,
@@ -116,6 +120,13 @@ export async function POST(request: NextRequest) {
     if (exist) {
       return NextResponse.json({ error: 'Title already exists' }, { status: 409 });
     }
+
+    // Create unique slug from title
+    const existingSlugs = await prisma.post.findMany({
+      select: { slug: true }
+    });
+    const slug = createUniqueSlug(title, existingSlugs.map(p => p.slug || ''));
+
     let tagIds: string[] = [];
     if (Array.isArray(tags) && tags.length > 0) {
       const foundTags = await prisma.tag.findMany({ where: { name: { in: tags } } });
@@ -133,6 +144,7 @@ export async function POST(request: NextRequest) {
     }
     type PostCreateInput = {
       title: string;
+      slug: string;
       content: string;
       excerpt?: string;
       status: PostStatus;
@@ -144,6 +156,7 @@ export async function POST(request: NextRequest) {
     };
     const data: PostCreateInput = {
       title,
+      slug,
       content,
       excerpt,
       status: status as PostStatus,
@@ -171,19 +184,16 @@ export async function POST(request: NextRequest) {
     if (tagIds.length > 0) {
       data.tags = { create: tagIds.map(tagId => ({ tagId })) };
     }
-    console.log('DEBUG POST DATA:', JSON.stringify(data, null, 2));
-    try {
-      const post = await prisma.post.create({ data });
-      return NextResponse.json({ post });
-    } catch (err: unknown) {
-      let message = 'Unknown error';
-      if (err instanceof Error) message = err.message;
-      else if (typeof err === 'object' && err && 'message' in err) message = String((err as { message?: unknown }).message);
-      else message = String(err);
-      console.error('PRISMA CREATE ERROR:', message);
-      return NextResponse.json({ error: message }, { status: 500 });
-    }
-  } catch {
+    const post = await prisma.post.create({
+      data,
+      include: {
+        tags: { include: { tag: true } },
+        media: true,
+      },
+    });
+    return NextResponse.json({ post });
+  } catch (error) {
+    console.error('Error creating post:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

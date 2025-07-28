@@ -38,6 +38,7 @@ model Role {
 model Post {
   id           String     @id @default(uuid())
   title        String
+  slug         String     @unique
   content      String
   status       PostStatus @default(DRAFT)
   authorId     String
@@ -56,6 +57,7 @@ model Post {
   @@index([status])
   @@index([authorId])
   @@index([createdAt])
+  @@index([slug])
 }
 
 model Comment {
