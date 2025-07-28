@@ -10,7 +10,6 @@ import { Menu, X } from "lucide-react";
 import { navbars } from "~/constants/navbars";
 import { images } from "~/public/images";
 import { routers } from "~/constants/routers";
-import CardanoWalletButton from "~/components/CardanoWalletButton";
 import { useUser } from "~/hooks/useUser";
 import { WalletAvatar } from "~/components/WalletAvatar";
 import { ThemeToggle } from "~/components/ui/theme-toggle";
@@ -59,9 +58,11 @@ export default function Header() {
 
           <section className="hidden md:flex items-center space-x-8">
             {navbars.map((navbar: NavbarType) => (
-              <Link href={navbar.href} key={navbar.id} className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white">
-                {navbar.title}
-              </Link>
+              (navbar.title === "Login" && session) ? null : (
+                <Link href={navbar.href} key={navbar.id} className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white">
+                  {navbar.title}
+                </Link>
+              )
             ))}
             
             <ThemeToggle />
@@ -75,7 +76,7 @@ export default function Header() {
               </Link>
             )}
             
-            {session ? (
+            {session && (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
@@ -85,8 +86,6 @@ export default function Header() {
                   Sign out
                 </button>
               </div>
-            ) : (
-              <CardanoWalletButton />
             )}
           </section>
 
@@ -111,14 +110,16 @@ export default function Header() {
             <div className="px-6 py-4 space-y-4">
               <div className="space-y-3">
                 {navbars.map((navbar: NavbarType) => (
-                  <Link
-                    href={navbar.href}
-                    key={navbar.id}
-                    onClick={closeMenu}
-                    className="block font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white py-2"
-                  >
-                    {navbar.title}
-                  </Link>
+                  (navbar.title === "Login" && session) ? null : (
+                    <Link
+                      href={navbar.href}
+                      key={navbar.id}
+                      onClick={closeMenu}
+                      className="block font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white py-2"
+                    >
+                      {navbar.title}
+                    </Link>
+                  )
                 ))}
                 <div className="py-2">
                   <ThemeToggle />
@@ -138,7 +139,7 @@ export default function Header() {
                   </div>
                 )}
                 
-                {session ? (
+                {session && (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
@@ -156,8 +157,6 @@ export default function Header() {
                       Sign out
                     </button>
                   </div>
-                ) : (
-                  <CardanoWalletButton />
                 )}
               </div>
             </div>

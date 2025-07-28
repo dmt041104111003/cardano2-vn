@@ -24,4 +24,9 @@ export const navbars = [
     title: "Lms",
     href: "/lms",
   },
+  {
+    id: 6,
+    title: "Login",
+    href: "/login",
+  },
 ];

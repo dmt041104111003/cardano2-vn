@@ -49,6 +49,22 @@ export const authOptions = {
       };
       if (account?.provider === "cardano-wallet") {
         try {
+          let retries = 3;
+          while (retries > 0) {
+            try {
+              await prisma.$connect();
+              break;
+            } catch (connectError) {
+              retries--;
+              if (retries === 0) {
+                console.error("[NextAuth] Failed to connect to database after 3 retries:", connectError);
+                return true;
+              }
+              console.warn(`[NextAuth] Database connection failed, retrying... (${retries} attempts left)`);
+              await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+            }
+          }
+          
           let dbUser = await prisma.user.findUnique({
             where: { wallet: user.address },
             include: { role: true }
@@ -125,7 +141,13 @@ export const authOptions = {
           
           return true;
         } catch (e) {
-          console.error(e);
+          console.error("[NextAuth] Database error during signIn:", e);
+          
+          if (e instanceof Error && e.message.includes("Can't reach database server")) {
+            console.warn("[NextAuth] Database server unreachable, allowing authentication without DB operations");
+            return true; 
+          }
+          
           return false;
         }
       }
@@ -133,6 +155,22 @@ export const authOptions = {
     },
     async signOut({ token }: { token: Record<string, unknown> }) {
       try {
+        let retries = 3;
+        while (retries > 0) {
+          try {
+            await prisma.$connect();
+            break;
+          } catch (connectError) {
+            retries--;
+            if (retries === 0) {
+              console.error("[NextAuth] Failed to connect to database during signOut after 3 retries:", connectError);
+              return;
+            }
+            console.warn(`[NextAuth] Database connection failed during signOut, retrying... (${retries} attempts left)`);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+          }
+        }
+        
         const address = (token as TokenWithAddress).address;
         if (address) {
           const user = await prisma.user.findUnique({
@@ -148,6 +186,10 @@ export const authOptions = {
         }
       } catch (error) {
         console.error("[NextAuth] Error in signOut callback:", error);
+        
+        if (error instanceof Error && error.message.includes("Can't reach database server")) {
+          console.warn("[NextAuth] Database server unreachable during signOut, allowing signOut without DB operations");
+        }
       }
     },
   },
