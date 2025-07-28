@@ -127,7 +127,7 @@ export default function ContactFormSection() {
 
     setIsSubmitting(true);
 
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbz6KMsSFojWj69wosE9Vl-RNesNoGsfKGPnXOJ2PI89RGnlbtpBcKgun_MV-ONc959MWA/exec';
+    const scriptURL = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL_1 || '';
     
     try {
       const formDataToSend = new FormData();
