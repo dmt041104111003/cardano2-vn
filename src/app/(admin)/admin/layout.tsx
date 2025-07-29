@@ -1,79 +1,67 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { 
-  FileText, 
-  Users, 
-  Tags, 
-  Menu,
-  X,
-  Home,
-  LogOut,
-  Image,
-  FolderOpen,
-  Cpu,
-  Info,
-  UserPlus
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useUser } from '~/hooks/useUser';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
-import Loading from '~/components/ui/Loading';
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { FileText, Users, Tags, Menu, X, Home, LogOut, Image, FolderOpen, Cpu, Info, UserPlus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useUser } from "~/hooks/useUser";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+import Loading from "~/components/ui/Loading";
 
 const adminNavItems = [
   {
-    title: 'Posts',
-    href: '/admin/posts',
+    title: "Posts",
+    href: "/admin/posts",
     icon: FileText,
   },
   {
-    title: 'Projects',
-    href: '/admin/projects',
+    title: "Projects",
+    href: "/admin/projects",
     icon: FolderOpen,
   },
   {
-    title: 'Technologies',
-    href: '/admin/technologies',
+    title: "Technologies",
+    href: "/admin/technologies",
     icon: Cpu,
   },
   {
-    title: 'Members',
-    href: '/admin/members',
+    title: "Members",
+    href: "/admin/members",
     icon: UserPlus,
   },
   {
-    title: 'Users',
-    href: '/admin/users',
+    title: "Users",
+    href: "/admin/users",
     icon: Users,
   },
   {
-    title: 'Tags',
-    href: '/admin/tags',
+    title: "Tags",
+    href: "/admin/tags",
     icon: Tags,
   },
   {
-    title: 'Media',
-    href: '/admin/media',
+    title: "Video Section",
+    href: "/admin/video-section",
+    icon: Info,
+  },
+  {
+    title: "Media",
+    href: "/admin/media",
     icon: Image,
   },
 ];
 
 function compact(str?: string | null) {
-  if (!str) return '';
+  if (!str) return "";
   return str.length > 12 ? `${str.slice(0, 6)}...${str.slice(-4)}` : str;
 }
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.remove("dark");
   }, []);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
@@ -82,7 +70,7 @@ export default function AdminLayout({
 
   useEffect(() => {
     if (!loading && !isAdmin) {
-      router.replace('/');
+      router.replace("/");
     }
   }, [loading, isAdmin, router]);
 
@@ -98,7 +86,7 @@ export default function AdminLayout({
           alt="Cardano2VN Logo"
           className="w-[1200px] h-[1200px] object-contain"
           draggable={false}
-          style={{ objectPosition: 'left center' }}
+          style={{ objectPosition: "left center" }}
         />
       </div>
       <AnimatePresence>
@@ -119,7 +107,7 @@ export default function AdminLayout({
               initial={{ x: -320, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -320, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-white shadow-xl"
               suppressHydrationWarning
             >
@@ -130,17 +118,13 @@ export default function AdminLayout({
                   <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">U</div>
                 )}
                 <div className="flex flex-col min-w-0">
-                <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+                  <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
                   <div className="flex flex-col items-start w-[160px] mt-1">
-                    <span className="text-xs text-gray-400 w-full">{user?.id ? compact(user.id) : 'No ID'}</span>
-                    <span className="text-xs text-gray-400 w-full">{user?.address ? compact(user.address) : 'No address'}</span>
+                    <span className="text-xs text-gray-400 w-full">{user?.id ? compact(user.id) : "No ID"}</span>
+                    <span className="text-xs text-gray-400 w-full">{user?.address ? compact(user.address) : "No address"}</span>
                   </div>
                 </div>
-                <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                  title="Close sidebar"
-                >
+                <button onClick={() => setSidebarOpen(false)} className="text-gray-400 hover:text-gray-600" title="Close sidebar">
                   <X className="h-6 w-6" />
                 </button>
               </div>
@@ -171,9 +155,7 @@ export default function AdminLayout({
                       href={item.href}
                       onClick={() => setSidebarOpen(false)}
                       className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                        isActive
-                          ? 'bg-blue-100 text-blue-900'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        isActive ? "bg-blue-100 text-blue-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }`}
                     >
                       <item.icon className="mr-3 h-5 w-5" />
@@ -195,19 +177,15 @@ export default function AdminLayout({
               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">U</div>
             )}
             <div className="flex flex-col min-w-0">
-            <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+              <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
               <div className="flex flex-col items-start w-[160px] mt-1">
-                <span className="text-xs text-gray-400 w-full">{user?.id ? compact(user.id) : 'No ID'}</span>
-                <span className="text-xs text-gray-400 w-full">{user?.address ? compact(user.address) : 'No address'}</span>
+                <span className="text-xs text-gray-400 w-full">{user?.id ? compact(user.id) : "No ID"}</span>
+                <span className="text-xs text-gray-400 w-full">{user?.address ? compact(user.address) : "No address"}</span>
               </div>
             </div>
           </div>
           <div className="flex flex-col gap-2 p-4 border-b border-gray-100">
-            <Link
-              href="/"
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
-              title="Back to Home"
-            >
+            <Link href="/" className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition" title="Back to Home">
               <Home className="h-5 w-5" />
               <span>Home</span>
             </Link>
@@ -228,9 +206,7 @@ export default function AdminLayout({
                   key={item.href}
                   href={item.href}
                   className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                    isActive
-                      ? 'bg-blue-100 text-blue-900'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    isActive ? "bg-blue-100 text-blue-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
                   <item.icon className="mr-3 h-5 w-5" />
@@ -242,13 +218,11 @@ export default function AdminLayout({
         </div>
       </div>
       <div className="lg:pl-64" suppressHydrationWarning>
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm lg:hidden" suppressHydrationWarning>
-          <button
-            type="button"
-            className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-            title="Open sidebar"
-          >
+        <div
+          className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm lg:hidden"
+          suppressHydrationWarning
+        >
+          <button type="button" className="-m-2.5 p-2.5 text-gray-700 lg:hidden" onClick={() => setSidebarOpen(true)} title="Open sidebar">
             <Menu className="h-6 w-6" />
           </button>
         </div>
@@ -260,4 +234,4 @@ export default function AdminLayout({
       </div>
     </div>
   );
-} 
+}

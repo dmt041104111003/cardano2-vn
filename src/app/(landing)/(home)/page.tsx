@@ -1,13 +1,15 @@
 "use client";
 
-import Loading from '~/components/ui/Loading';
-import { useEffect, useState } from 'react';
-import LandingSection from '~/components/home/LandingSection';
-import TrustSection from '~/components/home/TrustSection';
-import ProtocolSection from '~/components/home/ProtocolSection';
-import CardanoSection from '~/components/home/CardanoSection';
-import CTASection from '~/components/home/CTASection';
-import ContactFormSection from '~/components/home/ContactFormSection';
+import Loading from "~/components/ui/Loading";
+import { useEffect, useState } from "react";
+import LandingSection from "~/components/home/LandingSection";
+import TrustSection from "~/components/home/TrustSection";
+import ProtocolSection from "~/components/home/ProtocolSection";
+import CardanoSection from "~/components/home/CardanoSection";
+import CTASection from "~/components/home/CTASection";
+import VideoSection from "~/components/home/VideoSection";
+
+import ContactFormSection from "~/components/home/ContactFormSection";
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -25,15 +27,17 @@ export default function HomePage() {
           alt="Cardano2VN Logo"
           className="w-[1200px] h-[1200px] object-contain"
           draggable={false}
-          style={{ objectPosition: 'left center' }}
+          style={{ objectPosition: "left center" }}
         />
       </div>
-      
+
       <LandingSection />
+      <VideoSection />
       <TrustSection />
       <ProtocolSection />
       <CardanoSection />
       <CTASection />
+   
       <ContactFormSection />
     </main>
   );

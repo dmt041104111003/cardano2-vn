@@ -11,7 +11,7 @@ export default function Footer() {
           <div className="grid w-full grid-cols-1 gap-12 sm:grid-cols-2 md:grid-cols-3">
             <div className="relative">
               <div className="absolute -top-2 left-0 h-1 w-8 bg-gradient-to-r from-blue-500 to-transparent opacity-60"></div>
-              <h3 className="mb-6 text-lg font-bold uppercase tracking-wider text-white">Stay Connected with Andamio</h3>
+              <h3 className="mb-6 text-lg font-bold uppercase tracking-wider text-white">Stay Connected with Cardano2VN</h3>
               <ul className="space-y-4">
                 <li>
                   <Link
@@ -24,7 +24,7 @@ export default function Footer() {
                 <li>
                   <Link
                     className="group flex items-center text-gray-300 transition-colors duration-200 hover:text-white"
-                    href="mailto:hello@andamio.com"
+                    href="mailto:hello@cardano2vn.com"
                   >
                     <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>Contact Us
                   </Link>
@@ -32,7 +32,7 @@ export default function Footer() {
                 <li>
                   <Link
                     className="group flex items-center text-gray-300 transition-colors duration-200 hover:text-white"
-                    href="https://docs.andamio.io"
+                    href="https://docs.cardano2vn.com"
                   >
                     <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>Docs
                   </Link>
@@ -46,7 +46,7 @@ export default function Footer() {
                 <li>
                   <Link
                     className="group flex items-center text-gray-300 transition-colors duration-200 hover:text-white"
-                    href="https://www.linkedin.com/company/andamio-platform"
+                    href="https://www.linkedin.com/company/cardano2vn"
                   >
                     <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>LinkedIn
                   </Link>
@@ -54,7 +54,7 @@ export default function Footer() {
                 <li>
                   <Link
                     className="group flex items-center text-gray-300 transition-colors duration-200 hover:text-white"
-                    href="https://twitter.com/AndamioPlatform"
+                    href="https://twitter.com/cardano2vn"
                   >
                     <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>Twitter
                   </Link>
@@ -103,7 +103,7 @@ export default function Footer() {
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <span className="rounded-sm border border-white/10 bg-gray-800/50 px-2 py-1 font-mono text-xs">v0.3.3</span>
                 <span>|</span>
-                <span>© 2025 Andamio. All rights reserved.</span>
+                <span>© 2025 Cardano2VN. All rights reserved.</span>
               </div>
             </div>
           </div>

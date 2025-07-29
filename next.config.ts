@@ -7,7 +7,20 @@ const withMDX = createMDX();
 const config: NextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["res.cloudinary.com", "img.youtube.com"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.youtube.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+      },
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,

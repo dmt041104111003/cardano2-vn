@@ -171,13 +171,13 @@ export async function POST(request: NextRequest) {
 
     const post = await prisma.post.create({
       data: {
-        title,
-        slug,
-        content,
+      title,
+      slug,
+      content,
         status: status.toUpperCase(),
-        authorId: currentUser.id,
-        createdAt: createdAt ? new Date(createdAt) : undefined,
-        updatedAt: updatedAt ? new Date(updatedAt) : undefined,
+      authorId: currentUser.id,
+      createdAt: createdAt ? new Date(createdAt) : undefined,
+      updatedAt: updatedAt ? new Date(updatedAt) : undefined,
       },
       include: {
         tags: { include: { tag: true } },
@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
           await prisma.media.create({
             data: mediaData,
           });
-        }
+    }
       }
     }
 

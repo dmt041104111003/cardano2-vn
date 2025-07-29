@@ -116,43 +116,43 @@ export default function BlogPageClient() {
             }}
           />
         ) : (
-          <section className="grid gap-8 lg:grid-cols-2">
-            {posts.length === 0 ? (
-              Array.from({ length: 4 }).map((_, i) => <BlogCardSkeleton key={i} />)
-            ) : (
-              paginatedPosts.map((post) => {
-                let imageUrl = "/images/common/loading.png";
-                if (Array.isArray(post.media) && post.media.length > 0) {
-                  const youtubeMedia = post.media.find((m: Media) => m.type === 'YOUTUBE');
-                  if (youtubeMedia) {
-                    const videoId = getYoutubeIdFromUrl(youtubeMedia.url);
-                    if (videoId) {
-                      imageUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-                    }
-                  } else {
-                    imageUrl = post.media[0].url;
+        <section className="grid gap-8 lg:grid-cols-2">
+          {posts.length === 0 ? (
+            Array.from({ length: 4 }).map((_, i) => <BlogCardSkeleton key={i} />)
+          ) : (
+            paginatedPosts.map((post) => {
+              let imageUrl = "/images/common/loading.png";
+              if (Array.isArray(post.media) && post.media.length > 0) {
+                const youtubeMedia = post.media.find((m: Media) => m.type === 'YOUTUBE');
+                if (youtubeMedia) {
+                  const videoId = getYoutubeIdFromUrl(youtubeMedia.url);
+                  if (videoId) {
+                    imageUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
                   }
+                } else {
+                  imageUrl = post.media[0].url;
                 }
-                return (
-                  <Blog
-                    key={post.id}
-                    image={imageUrl}
-                    title={post.title}
-                    author={post.author || "Admin"}
-                    slug={post.slug || post.id}
-                    datetime={new Date(post.createdAt).toLocaleString("en-GB", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    })}
-                    tags={post.tags || []}
-                  />
-                );
-              })
-            )}
-          </section>
+              }
+              return (
+                <Blog
+                  key={post.id}
+                  image={imageUrl}
+                  title={post.title}
+                  author={post.author || "Admin"}
+                  slug={post.slug || post.id}
+                  datetime={new Date(post.createdAt).toLocaleString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  })}
+                  tags={post.tags || []}
+                />
+              );
+            })
+          )}
+        </section>
         )}
         <Pagination
           currentPage={currentPage}
