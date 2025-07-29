@@ -114,8 +114,8 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
     console.log('Setting new media:', newMedia);
     setPostState(prev => {
       const newState = {
-        ...prev,
-        media: [newMedia]
+      ...prev,
+      media: [newMedia]
       };
       console.log('New postState:', newState);
       return newState;

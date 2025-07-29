@@ -32,11 +32,12 @@ export default function HomePage() {
       </div>
 
       <LandingSection />
+      <VideoSection />
       <TrustSection />
       <ProtocolSection />
       <CardanoSection />
       <CTASection />
-      <VideoSection />
+   
       <ContactFormSection />
     </main>
   );

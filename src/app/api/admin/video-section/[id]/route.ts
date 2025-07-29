@@ -25,7 +25,7 @@ export async function DELETE(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const id = req.nextUrl.pathname.split("/").pop();
   const body = await req.json();
-  const { isFeatured, isSlideshow } = body;
+  const { isFeatured } = body;
 
   if (!id) {
     return NextResponse.json({ error: "Missing video ID" }, { status: 400 });
@@ -52,7 +52,6 @@ export async function PATCH(req: NextRequest) {
       where: { id },
       data: {
         ...(isFeatured !== undefined && { isFeatured }),
-        ...(isSlideshow !== undefined && { isSlideshow }),
       },
     });
 
