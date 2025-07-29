@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Image as ImageIcon, Trash2, Download, Eye } from 'lucide-react';
 import { useToastContext } from '~/components/toast-provider';
 import Modal from '~/components/admin/common/Modal';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 interface Media {
@@ -153,26 +152,24 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
                     {item.mimeType.startsWith('image/') ? (
-                      item.path.startsWith('data:image') ? (
-                        <img
-                          className="h-10 w-10 rounded-lg object-cover"
-                          src={item.path}
-                          alt={item.originalName}
-                        />
-                      ) : (
-                        <Image
-                          className="h-10 w-10 rounded-lg object-cover"
-                          src={item.path}
-                          alt={item.originalName}
-                          width={40}
-                          height={40}
-                        />
-                      )
+                      <img
+                        className="h-10 w-10 rounded-lg object-cover"
+                        src={item.path}
+                        alt={item.originalName}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
                     ) : (
                       <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center">
                         <span className="text-lg">{getFileIcon(item.mimeType)}</span>
                       </div>
                     )}
+                    <div className="hidden h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                      <span className="text-xs text-gray-400">Error</span>
+                    </div>
                   </div>
                   <div className="ml-4 flex-1 min-w-0">
                     <div
@@ -362,65 +359,46 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
         </div>
       </Modal>
       {previewImage && (
-        previewImage.startsWith('data:image') ? (
-          <Modal isOpen={!!previewImage} onClose={() => setPreviewImage(null)} title="Image Preview" maxWidth="max-w-2xl">
-            <div className="flex flex-col items-center gap-4">
-              <img src={previewImage} alt="Preview" className="max-h-[70vh] rounded shadow-lg" />
-              <div className="flex items-center gap-2 mt-2">
-                <span
-                  className="text-xs text-gray-700 cursor-pointer hover:underline"
-                  title={previewImage}
-                  onClick={() => {
-                    navigator.clipboard.writeText(previewImage);
-                    showSuccess('Copied!', previewImage);
-                  }}
-                  style={{maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block'}}
-                >
-                  {previewImage.split('/').pop()}
-                </span>
-                <button
-                  className="p-1 text-xs rounded border border-emerald-500 text-emerald-600 hover:bg-emerald-50"
-                  onClick={() => {
-                    navigator.clipboard.writeText(previewImage);
-                    showSuccess('Copied!', previewImage);
-                  }}
-                  title="Copy image link"
-                >
-                  Copy
-                </button>
-              </div>
+        <Modal isOpen={!!previewImage} onClose={() => setPreviewImage(null)} title="Image Preview" maxWidth="max-w-2xl">
+          <div className="flex flex-col items-center gap-4">
+            <img 
+              src={previewImage} 
+              alt="Preview" 
+              className="max-h-[70vh] rounded shadow-lg" 
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+            <div className="hidden w-full max-h-[70vh] bg-gray-100 flex items-center justify-center rounded shadow-lg">
+              <span className="text-gray-400">Image not available</span>
             </div>
-          </Modal>
-        ) : (
-          <Modal isOpen={!!previewImage} onClose={() => setPreviewImage(null)} title="Image Preview" maxWidth="max-w-2xl">
-            <div className="flex flex-col items-center gap-4">
-              <Image src={previewImage} alt="Preview" width={600} height={400} className="max-h-[70vh] rounded shadow-lg" />
-              <div className="flex items-center gap-2 mt-2">
-                <span
-                  className="text-xs text-gray-700 cursor-pointer hover:underline"
-                  title={previewImage}
-                  onClick={() => {
-                    navigator.clipboard.writeText(previewImage);
-                    showSuccess('Copied!', previewImage);
-                  }}
-                  style={{maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block'}}
-                >
-                  {previewImage.split('/').pop()}
-                </span>
-                <button
-                  className="p-1 text-xs rounded border border-emerald-500 text-emerald-600 hover:bg-emerald-50"
-                  onClick={() => {
-                    navigator.clipboard.writeText(previewImage);
-                    showSuccess('Copied!', previewImage);
-                  }}
-                  title="Copy image link"
-                >
-                  Copy
-                </button>
-              </div>
+            <div className="flex items-center gap-2 mt-2">
+              <span
+                className="text-xs text-gray-700 cursor-pointer hover:underline"
+                title={previewImage}
+                onClick={() => {
+                  navigator.clipboard.writeText(previewImage);
+                  showSuccess('Copied!', previewImage);
+                }}
+                style={{maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block'}}
+              >
+                {previewImage.split('/').pop()}
+              </span>
+              <button
+                className="p-1 text-xs rounded border border-emerald-500 text-emerald-600 hover:bg-emerald-50"
+                onClick={() => {
+                  navigator.clipboard.writeText(previewImage);
+                  showSuccess('Copied!', previewImage);
+                }}
+                title="Copy image link"
+              >
+                Copy
+              </button>
             </div>
-          </Modal>
-        )
+          </div>
+        </Modal>
       )}
       {previewYoutube && (
         <Modal isOpen={!!previewYoutube} onClose={() => setPreviewYoutube(null)} title="YouTube Preview" maxWidth="max-w-2xl">

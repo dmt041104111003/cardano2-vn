@@ -7,13 +7,12 @@ export default function Project({
   description,
   href,
   image,
-
   results,
 }: {
   title: string;
   description: string;
   href: string;
-  image: string | StaticImageData;
+  image: string;
   results?: Result[];
 }) {
   const Component = function ({ Icon, title, description }: { Icon: React.ComponentType; title: string; description: string }) {
@@ -39,17 +38,20 @@ export default function Project({
         </ul>
       </div>
       <Link href={href} className="flex justify-center lg:w-1/2">
-        <Image
-          alt="Smart Contract"
+        <img
+          alt={title}
           loading="lazy"
-          width="1200"
-          height="1200"
-          decoding="async"
-          data-nimg="1"
           className="w-full max-w-lg cursor-pointer transition-transform duration-300 hover:scale-105 sm:max-w-xl md:max-w-2xl"
           src={image}
-          style={{ color: "transparent" }}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            target.nextElementSibling?.classList.remove('hidden');
+          }}
         />
+        <div className="hidden w-full max-w-lg h-48 bg-gray-100 flex items-center justify-center rounded-lg border border-gray-200 sm:max-w-xl md:max-w-2xl">
+          <span className="text-gray-400">Image not available</span>
+        </div>
       </Link>
     </section>
   );

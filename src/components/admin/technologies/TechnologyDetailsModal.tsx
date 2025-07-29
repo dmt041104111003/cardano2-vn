@@ -29,12 +29,22 @@ export default function TechnologyDetailsModal({ technology, isOpen, onClose }: 
     >
       <div className="space-y-6">
         <div className="flex items-center space-x-4">
-          {technology.image && (
+          {technology.image ? (
             <img 
               src={technology.image} 
               alt={technology.title}
               className="h-20 w-20 rounded-lg object-cover border border-gray-200"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }}
             />
+          ) : null}
+          {!technology.image && (
+            <div className="h-20 w-20 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200">
+              <span className="text-gray-400 text-xs">No image</span>
+            </div>
           )}
           <div>
             <h3 className="text-xl font-bold text-gray-900">{technology.title}</h3>
