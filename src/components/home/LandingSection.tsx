@@ -71,7 +71,7 @@ export default function LandingSection() {
                   <div className="absolute left-12 top-0 z-10 h-48 w-56 -rotate-2 transform overflow-hidden border-8 border-gray-200 dark:border-white shadow-2xl">
                     <div
                       className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                      style={{ backgroundImage: 'url("/images/landings/01.png")' }}
+                      style={{ backgroundImage: `url(${images.landing01.src})` }}
                     ></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-800/40 to-transparent"></div>
                     <div className="relative flex h-full flex-col justify-end p-4">
@@ -85,7 +85,7 @@ export default function LandingSection() {
                   <div className="absolute right-8 top-8 z-20 h-64 w-64 rotate-1 transform overflow-hidden border-8 border-gray-200 dark:border-white shadow-2xl">
                     <div
                       className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                      style={{ backgroundImage: 'url("/images/landings/02.png")' }}
+                      style={{ backgroundImage: `url(${images.landing02.src})` }}
                     ></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-cyan-900/80 via-cyan-800/40 to-transparent"></div>
                     <div className="relative flex h-full flex-col justify-end p-4">
@@ -99,7 +99,7 @@ export default function LandingSection() {
                   <div className="absolute bottom-24 left-4 z-30 h-60 w-72 -rotate-1 transform overflow-hidden border-8 border-gray-200 dark:border-white shadow-2xl">
                     <div
                       className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                      style={{ backgroundImage: 'url("/images/landings/03.png")' }}
+                      style={{ backgroundImage: `url(${images.landing03.src})` }}
                     ></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-purple-900/80 via-purple-800/40 to-transparent"></div>
                     <div className="relative flex h-full flex-col justify-end p-4">
@@ -113,7 +113,7 @@ export default function LandingSection() {
                   <div className="absolute bottom-12 right-12 z-40 h-52 w-52 rotate-3 transform overflow-hidden border-8 border-gray-200 dark:border-white shadow-2xl">
                     <div
                       className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                      style={{ backgroundImage: 'url("/images/landings/04.png")' }}
+                      style={{ backgroundImage: `url(${images.landing04.src})` }}
                     ></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-green-900/80 via-green-800/40 to-transparent"></div>
                     <div className="relative flex h-full flex-col justify-end p-4">
