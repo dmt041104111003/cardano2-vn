@@ -43,6 +43,8 @@ export function VideoSectionPageClient() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [showAddModal, setShowAddModal] = React.useState(false);
   const [newVideoUrl, setNewVideoUrl] = React.useState("");
+  const [newVideoTitle, setNewVideoTitle] = React.useState("");
+  const [newChannelName, setNewChannelName] = React.useState("");
   const [isValidUrl, setIsValidUrl] = React.useState<boolean | null>(null);
   const [isAdding, setIsAdding] = React.useState(false);
   const [modifiedVideos, setModifiedVideos] = React.useState<{ [id: string]: Partial<VideoItem> }>({});
@@ -57,37 +59,35 @@ export function VideoSectionPageClient() {
   });
 
   async function handleAddVideo() {
-    const match = newVideoUrl.match(/(?:v=|\/embed\/|youtu.be\/)([\w-]+)/);
-    const videoId = match?.[1];
-    if (!videoId) {
-      showError("Invalid YouTube URL.");
-      setIsValidUrl(false);
+    if (!newVideoUrl.trim() || !newVideoTitle.trim() || !newChannelName.trim()) {
+      showError("Please fill in all fields");
       return;
     }
 
+    setIsAdding(true);
     try {
-      setIsAdding(true);
       const res = await fetch("/api/admin/video-section", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ videoUrl: newVideoUrl }),
+        body: JSON.stringify({
+          videoUrl: newVideoUrl,
+          title: newVideoTitle,
+          channelName: newChannelName,
+        }),
       });
 
-      if (res.ok) {
-        showSuccess("Video added successfully!");
-        setNewVideoUrl("");
-        setIsValidUrl(null);
-        setShowAddModal(false);
-        refetch(); 
-        queryClient.invalidateQueries({ queryKey: ["video-section"] });
-        queryClient.invalidateQueries({ queryKey: ["admin-videos"] });
-      } else {
+      if (!res.ok) {
         const error = await res.json();
-        showError(error.error || "Failed to add video.");
-        setIsValidUrl(false);
+        throw new Error(error.error || "Failed to add video");
       }
+
+      showSuccess("Video added successfully!");
+      handleCloseModal();
+      refetch();
+      queryClient.invalidateQueries({ queryKey: ["video-section"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-videos"] });
     } catch (err) {
-      showError("Error fetching video data.");
+      showError((err as Error).message || "Error adding video.");
       setIsValidUrl(false);
     } finally {
       setIsAdding(false);
@@ -168,9 +168,19 @@ export function VideoSectionPageClient() {
     setIsValidUrl(match ? true : url ? false : null);
   };
 
+  const handleVideoTitleChange = (title: string) => {
+    setNewVideoTitle(title);
+  };
+
+  const handleChannelNameChange = (channel: string) => {
+    setNewChannelName(channel);
+  };
+
   const handleCloseModal = () => {
     setShowAddModal(false);
     setNewVideoUrl("");
+    setNewVideoTitle("");
+    setNewChannelName("");
     setIsValidUrl(null);
   };
 
@@ -309,9 +319,13 @@ export function VideoSectionPageClient() {
         isOpen={showAddModal}
         onClose={handleCloseModal}
         videoUrl={newVideoUrl}
+        videoTitle={newVideoTitle}
+        channelName={newChannelName}
         isValidUrl={isValidUrl}
         isAdding={isAdding}
         onVideoUrlChange={handleVideoUrlChange}
+        onVideoTitleChange={handleVideoTitleChange}
+        onChannelNameChange={handleChannelNameChange}
         onAddVideo={handleAddVideo}
       />
     </div>

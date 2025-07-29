@@ -8,9 +8,13 @@ interface VideoSectionEditorProps {
   isOpen: boolean;
   onClose: () => void;
   videoUrl: string;
+  videoTitle: string;
+  channelName: string;
   isValidUrl: boolean | null;
   isAdding: boolean;
   onVideoUrlChange: (url: string) => void;
+  onVideoTitleChange: (title: string) => void;
+  onChannelNameChange: (channel: string) => void;
   onAddVideo: () => void;
 }
 
@@ -18,9 +22,13 @@ export function VideoSectionEditor({
   isOpen,
   onClose,
   videoUrl,
+  videoTitle,
+  channelName,
   isValidUrl,
   isAdding,
   onVideoUrlChange,
+  onVideoTitleChange,
+  onChannelNameChange,
   onAddVideo,
 }: VideoSectionEditorProps) {
   const [videoId, setVideoId] = React.useState<string | null>(null);
@@ -57,6 +65,28 @@ export function VideoSectionEditor({
           )}
         </div>
 
+        <div>
+          <label className="block text-sm font-medium mb-2">Video Title</label>
+          <input
+            type="text"
+            placeholder="Enter video title..."
+            value={videoTitle}
+            onChange={(e) => onVideoTitleChange(e.target.value)}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Channel Name</label>
+          <input
+            type="text"
+            placeholder="Enter channel name..."
+            value={channelName}
+            onChange={(e) => onChannelNameChange(e.target.value)}
+            className="w-full px-3 py-2 border rounded-md"
+          />
+        </div>
+
         {videoId && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
@@ -89,7 +119,7 @@ export function VideoSectionEditor({
           <button
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             onClick={onAddVideo} 
-            disabled={!isValidUrl || isAdding}
+            disabled={!isValidUrl || isAdding || !videoTitle.trim() || !channelName.trim()}
           >
             {isAdding ? "Adding..." : "Add Video"}
           </button>
