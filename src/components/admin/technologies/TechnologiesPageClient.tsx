@@ -13,6 +13,7 @@ import { Pagination } from "~/components/ui/pagination";
 import { useToastContext } from "~/components/toast-provider";
 import { useQuery } from "@tanstack/react-query";
 import AdminTableSkeleton from "~/components/admin/common/AdminTableSkeleton";
+import NotFoundInline from "~/components/ui/not-found-inline";
 
 interface Technology {
   id: string;
@@ -189,9 +190,12 @@ export default function TechnologiesPageClient() {
           {loadingTechnologies ? (
             <AdminTableSkeleton columns={5} rows={6} />
           ) : filteredTechnologies.length === 0 ? (
-            <div className="p-8 text-center">
-              <p className="text-gray-600">No technologies found.</p>
-            </div>
+            <NotFoundInline 
+              onClearFilters={() => {
+                setSearchTerm('');
+                // setStatusFilter('all'); // This line was not in the new_code, so I'm not adding it.
+              }}
+            />
           ) : (
             <div className="bg-white rounded-lg shadow">
               <TechnologyTable

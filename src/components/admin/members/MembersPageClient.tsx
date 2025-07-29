@@ -10,6 +10,7 @@ import { Pagination } from "~/components/ui/pagination";
 import AdminTableSkeleton from "~/components/admin/common/AdminTableSkeleton";
 import Modal from "~/components/admin/common/Modal";
 import { useMembers } from "~/components/admin/members/useMembers";
+import NotFoundInline from "~/components/ui/not-found-inline";
 
 export default function MembersPageClient() {
   const {
@@ -65,19 +66,22 @@ export default function MembersPageClient() {
       />
 
       {loadingMembers ? (
-        <AdminTableSkeleton columns={4} rows={6} />
-      ) : members.length === 0 ? (
-        <div className="p-8 text-center">
-          <p className="text-gray-600">No members found.</p>
-        </div>
+        <AdminTableSkeleton columns={6} rows={5} />
+      ) : paginatedMembers.length === 0 ? (
+        <NotFoundInline 
+          onClearFilters={() => {
+            setSearchTerm('');
+          }}
+        />
       ) : (
-        <>
+        <div className="bg-white rounded-lg shadow">
           <MembersTable
             members={paginatedMembers}
-            onView={handleViewMember}
             onEdit={handleEditMember}
             onDelete={handleDeleteMember}
+            onView={handleViewMember}
           />
+
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -85,7 +89,7 @@ export default function MembersPageClient() {
             itemsPerPage={ITEMS_PER_PAGE}
             onPageChange={handlePageChange}
           />
-        </>
+        </div>
       )}
 
       <Modal

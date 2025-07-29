@@ -12,6 +12,7 @@ import { Pagination } from "~/components/ui/pagination";
 import { useToastContext } from "~/components/toast-provider";
 import { useQuery } from "@tanstack/react-query";
 import AdminTableSkeleton from "~/components/admin/common/AdminTableSkeleton";
+import NotFoundInline from "~/components/ui/not-found-inline";
 
 interface Project {
   id: string;
@@ -153,6 +154,13 @@ export default function ProjectsPageClient() {
 
       {loadingProjects ? (
         <AdminTableSkeleton columns={7} rows={5} />
+      ) : filteredProjects.length === 0 ? (
+        <NotFoundInline 
+          onClearFilters={() => {
+            setSearchTerm('');
+            setStatusFilter('all');
+          }}
+        />
       ) : (
         <div className="bg-white rounded-lg shadow">
           <ProjectTable

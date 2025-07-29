@@ -11,6 +11,7 @@ import Modal from '~/components/admin/common/Modal';
 import { useToastContext } from '~/components/toast-provider';
 import { useQuery } from '@tanstack/react-query';
 import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
+import NotFoundInline from '~/components/ui/not-found-inline';
 
 export function TagsPageClient() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -198,6 +199,13 @@ export function TagsPageClient() {
 
       {loading ? (
         <AdminTableSkeleton columns={4} rows={5} />
+      ) : filteredTags.length === 0 ? (
+        <NotFoundInline 
+          onClearFilters={() => {
+            setSearchTerm('');
+            setFilterType('all');
+          }}
+        />
       ) : (
         <div className="bg-white rounded-lg shadow">
           <TagTable

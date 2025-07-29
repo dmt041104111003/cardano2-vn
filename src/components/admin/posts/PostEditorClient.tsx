@@ -105,15 +105,21 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
   }
 
   const handleMediaAdd = (media: { type: 'image' | 'youtube' | 'video'; url: string; id: string }) => {
+    console.log('handleMediaAdd called with:', media);
     let newMedia = media;
     if (media.type === 'youtube') {
       const ytId = getYoutubeIdFromUrl(media.url);
       newMedia = { ...media, id: ytId };
     }
-    setPostState(prev => ({
-      ...prev,
-      media: [newMedia]
-    }));
+    console.log('Setting new media:', newMedia);
+    setPostState(prev => {
+      const newState = {
+        ...prev,
+        media: [newMedia]
+      };
+      console.log('New postState:', newState);
+      return newState;
+    });
   };
 
   const handleRemoveMedia = () => {
@@ -134,6 +140,8 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
 
   const handleSave = async () => {
 
+    console.log('handleSave called, postState:', postState);
+
     if (!postState.title || !postState.title.trim()) {
       showError('Title is required!');
       return;
@@ -151,9 +159,11 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       return;
     }
     if (!postState.media || postState.media.length === 0) {
+      console.log('Media validation failed:', postState.media);
       showError('Image or YouTube media is required!');
       return;
     }
+    console.log('Media validation passed:', postState.media);
     const normalizedMedia =
       Array.isArray(postState.media)
         ? postState.media.map(m => ({
@@ -162,6 +172,7 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
             id: m.type === 'youtube' ? getYoutubeIdFromUrl(m.url) : m.id,
           }))
         : [];
+    console.log('Normalized media:', normalizedMedia);
     const postData: Post = {
       id: post && typeof post.id === 'string' ? post.id : '',
       title: postState.title && postState.title.trim() ? postState.title : 'New Post',

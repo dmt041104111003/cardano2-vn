@@ -11,6 +11,7 @@ import Modal from '~/components/admin/common/Modal';
 import { useToastContext } from '~/components/toast-provider';
 import { useQuery } from '@tanstack/react-query';
 import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
+import NotFoundInline from '~/components/ui/not-found-inline';
 
 export function UsersPageClient() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -143,8 +144,8 @@ export function UsersPageClient() {
   };
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.address.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (user.address?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     let matchesFilter = true;
     switch (filterType) {
       case 'active':
@@ -232,6 +233,13 @@ export function UsersPageClient() {
       />
       {loading ? (
         <AdminTableSkeleton columns={5} rows={5} />
+      ) : filteredUsers.length === 0 ? (
+        <NotFoundInline 
+          onClearFilters={() => {
+            setSearchTerm('');
+            setFilterType('all');
+          }}
+        />
       ) : (
       <div className="bg-white rounded-lg shadow">
         <UserTable
