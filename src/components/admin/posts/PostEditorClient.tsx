@@ -5,7 +5,7 @@ import { Save, Tag, User, X } from 'lucide-react';
 import { TipTapEditor, TipTapPreview } from '~/components/ui/tiptap-editor';
 import MediaInput from '~/components/ui/media-input';
 import { useToastContext } from '~/components/toast-provider';
-import Image from 'next/image';
+
 import type { Post } from '~/constants/posts';
 
 interface Tag {
@@ -428,13 +428,19 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
                         </div>
                       ) : (
                         <div className="flex justify-center">
-                          <Image
+                          <img
                             src={media.url}
                             alt={`Media ${index + 1}`}
-                            width={300}
-                            height={200}
-                            className="max-w-full max-h-64 rounded-lg shadow-md"
+                            className="max-w-full max-h-64 rounded-lg shadow-md object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.nextElementSibling?.classList.remove('hidden');
+                            }}
                           />
+                          <div className="hidden max-w-full max-h-64 rounded-lg shadow-md bg-gray-100 flex items-center justify-center">
+                            <span className="text-gray-400">Image not available</span>
+                          </div>
                         </div>
                       )}
                     </div>

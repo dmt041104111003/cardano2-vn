@@ -1,4 +1,4 @@
-import Image, { StaticImageData } from "next/image";
+import { StaticImageData } from "next/image";
 
 export default function Member({
   name,
@@ -18,13 +18,19 @@ export default function Member({
       <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-gray-200/20 dark:from-white/20 to-gray-100/10 dark:to-white/10 opacity-0 blur-lg transition-all duration-500 group-hover:opacity-30"></div>
       <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-white/20 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm transition-all duration-500 group-hover:scale-105 group-hover:shadow-2xl hover:shadow-gray-400/25 dark:hover:shadow-white/25">
         <div className="relative h-64 overflow-hidden">
-          <Image
-            src={image}
+          <img
+            src={typeof image === 'string' ? image : image.src}
             alt={name}
-            width={400}
-            height={256}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              target.nextElementSibling?.classList.remove('hidden');
+            }}
           />
+          <div className="hidden h-full w-full bg-gray-100 flex items-center justify-center">
+            <span className="text-gray-400">Image not available</span>
+          </div>
           
           <div className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-gray-400/60 dark:from-white/60 to-gray-300/30 dark:to-white/30"></div>
         </div>

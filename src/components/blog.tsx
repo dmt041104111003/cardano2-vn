@@ -1,4 +1,4 @@
-import Image, { StaticImageData } from "next/image";
+import { StaticImageData } from "next/image";
 import Link from "next/link";
 
 export default function Blog({
@@ -61,31 +61,36 @@ export default function Blog({
               className="h-full w-full object-cover rounded"
             />
           ) : (
-            imgUrl ? (
-              <Image
-                alt={title}
-                loading="lazy"
-                width="800"
-                height="400"
-                decoding="async"
-                data-nimg="1"
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                style={{ color: "transparent" }}
-                src={imgUrl}
-              />
-            ) : (
-              <Image
-                alt={title}
-                loading="lazy"
-                width="800"
-                height="400"
-                decoding="async"
-                data-nimg="1"
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                style={{ color: "transparent" }}
-                src={"/images/common/logo.png"}
-              />
-            )
+            <>
+              {imgUrl ? (
+                <img
+                  alt={title}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  src={imgUrl}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+              ) : (
+                <img
+                  alt={title}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  src={"/images/common/logo.png"}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+              )}
+              <div className="hidden h-full w-full bg-gray-100 flex items-center justify-center">
+                <span className="text-gray-400">Image not available</span>
+              </div>
+            </>
           )}
         </div>
 
