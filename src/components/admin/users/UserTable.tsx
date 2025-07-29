@@ -1,7 +1,6 @@
 import { Edit, Trash2, Shield, User as UserIcon, Copy as CopyIcon } from 'lucide-react';
 import { User } from '~/constants/users';
 import { WalletAvatar } from '~/components/WalletAvatar';
-import Image from 'next/image';
 import { useToastContext } from "../../toast-provider";
 import { useState } from 'react';
 import Modal from '../common/Modal';
@@ -24,6 +23,33 @@ function formatDateTime(dateString: string) {
   const date = new Date(dateString);
   const pad = (n: number) => n.toString().padStart(2, '0');
   return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+function UserAvatar({ user }: { user: User }) {
+  const [imageError, setImageError] = useState(false);
+  
+  if (user.avatar && !imageError) {
+    return (
+      <img
+        src={user.avatar}
+        alt={user.name || 'User avatar'}
+        className="h-10 w-10 rounded-full object-cover"
+        onError={() => setImageError(true)}
+      />
+    );
+  }
+  
+  if (user.address) {
+    return <WalletAvatar address={user.address} size={40} />;
+  }
+  
+  return (
+    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+      <span className="text-gray-600 text-sm font-medium">
+        {user.name?.charAt(0) || 'U'}
+      </span>
+    </div>
+  );
 }
 
 export function UserTable({
@@ -81,17 +107,7 @@ export function UserTable({
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
-                    {user.avatar ? (
-                      <Image
-                        src={user.avatar}
-                        alt={user.name}
-                        width={40}
-                        height={40}
-                        className="h-10 w-10 rounded-full"
-                      />
-                    ) : (
-                      <WalletAvatar address={user.address} size={40} />
-                    )}
+                    <UserAvatar user={user} />
                   </div>
                   <div className="ml-4">
                     <div className="text-sm font-medium text-gray-900">{user.name}</div>

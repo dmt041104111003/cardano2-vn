@@ -4,7 +4,6 @@ import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { navbars } from "~/constants/navbars";
@@ -16,15 +15,35 @@ import { ThemeToggle } from "~/components/ui/theme-toggle";
 
 type NavbarType = { id: number; title: string; href: string };
 
+function UserAvatar({ session }: { session: any }) {
+  const [imageError, setImageError] = useState(false);
+  
+  if ((session.user as { image?: string })?.image && !imageError) {
+    return (
+      <img
+        src={(session.user as { image?: string }).image!}
+        alt="User Avatar"
+        className="w-8 h-8 rounded-full border border-gray-300 dark:border-white object-cover"
+        onError={() => setImageError(true)}
+      />
+    );
+  }
+  
+  // Fallback to wallet avatar
+  return (
+    <WalletAvatar 
+      address={(session.user as { address?: string })?.address || null} 
+      size={32} 
+      className="border border-gray-300 dark:border-white" 
+    />
+  );
+}
+
 export default function Header() {
   const { data: session } = useSession();
   const { isAdmin } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  
-  // Debug session
-  console.log("[Header] Session user:", session?.user);
-  console.log("[Header] Session user image:", (session?.user as any)?.image);
   
   if (pathname.startsWith("/docs")) return null;
 
@@ -75,7 +94,7 @@ export default function Header() {
             className="flex items-center"
           >
             <Link href={routers.home} className="flex items-center gap-3">
-              <Image className="text-xl h-10 w-auto font-bold text-gray-900 dark:text-white" loading="lazy" src={images.logo} alt="Cardano2vn" />
+              <img className="text-xl h-10 w-auto font-bold text-gray-900 dark:text-white" loading="lazy" src={images.logo.src} alt="Cardano2vn" />
             </Link>
           </motion.section>
 
@@ -120,21 +139,7 @@ export default function Header() {
             {session && (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  {(session.user as { image?: string })?.image ? (
-                    <Image
-                      src={(session.user as { image?: string }).image!}
-                      alt="User Avatar"
-                      width={32}
-                      height={32}
-                      className="w-8 h-8 rounded-full border border-gray-300 dark:border-white"
-                      onError={(e) => {
-                        console.error("[Header] Image load error:", e);
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
-                  )}
+                  <UserAvatar session={session} />
                               <span className="text-sm text-gray-700 dark:text-white font-mono">
               {(session.user as { address?: string })?.address ?
                 formatWalletAddress((session.user as { address?: string }).address || "") :
@@ -209,17 +214,7 @@ export default function Header() {
                 {session && (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      {(session.user as { image?: string })?.image ? (
-                        <Image
-                          src={(session.user as { image?: string }).image!}
-                          alt="User Avatar"
-                          width={32}
-                          height={32}
-                          className="w-8 h-8 rounded-full border border-gray-300 dark:border-white"
-                        />
-                      ) : (
-                        <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
-                      )}
+                      <UserAvatar session={session} />
                       <span className="text-sm text-gray-700 dark:text-white font-mono">
                         {(session.user as { address?: string })?.address ? 
                           formatWalletAddress((session.user as { address?: string }).address || "") :
