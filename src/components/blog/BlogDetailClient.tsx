@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
+
 import Link from "next/link";
 import { ArrowLeft, MessageCircle, Share2, ThumbsUp } from "lucide-react";
 import Header from "~/components/header";
@@ -345,23 +345,32 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                     className="w-full h-full"
                   />
                 ) : (
-                  <Image
+                  <img
                     src={post.media[0].url}
                     alt={post.title}
                     className="object-cover w-full h-full"
-                    fill
-                    priority
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.nextElementSibling?.classList.remove('hidden');
+                    }}
                   />
                 )
               ) : (
-                <Image
+                <img
                   src="/images/common/loading.png"
                   alt={post.title}
-                  fill
-                  className="object-cover"
-                  priority
+                  className="object-cover w-full h-full"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling?.classList.remove('hidden');
+                  }}
                 />
               )}
+              <div className="hidden w-full h-full bg-gray-100 flex items-center justify-center">
+                <span className="text-gray-400">Image not available</span>
+              </div>
             </div>
           </div>
           <TipTapPreview content={post.content} />

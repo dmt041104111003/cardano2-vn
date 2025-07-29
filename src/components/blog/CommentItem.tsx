@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 
 import { ReplySkeleton } from "./CommentSkeleton";
-import Image from "next/image";
+
 import { useToastContext } from "../toast-provider";
 import { EMOJIS } from "../../constants/emoji";
 import { useUser } from '~/hooks/useUser';
@@ -242,7 +242,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
         <div className={`space-y-3 transition-colors duration-200 ${isParentHighlight ? 'bg-blue-100/50 dark:bg-blue-900/30' : ''}`} style={{wordBreak: 'break-word'}}>
           <div className="flex items-start gap-3">
             {avatarUrl ? (
-              <Image src={avatarUrl} alt="avatar" width={32} height={32} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+              <img src={avatarUrl} alt="avatar" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
             ) : (
               <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${comment.avatar || 'from-blue-500 to-purple-600'} flex-shrink-0`}></div>
             )}
@@ -359,7 +359,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
               <div className="bg-gray-100 dark:bg-gray-800/30 rounded-2xl p-3 border border-gray-200 dark:border-gray-700/50">
                 <div className="flex items-start gap-3">
                   {user?.image ? (
-                    <Image src={user.image} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
+                    <img src={user.image} alt="avatar" className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
                   ) : (
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex-shrink-0"></div>
                   )}

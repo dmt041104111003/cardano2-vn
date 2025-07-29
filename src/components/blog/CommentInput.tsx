@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Image from 'next/image';
+
 import { EMOJIS } from "../../constants/emoji";
 
 interface CommentInputProps {
@@ -65,11 +65,9 @@ export default function CommentInput({ onSubmit, user }: CommentInputProps) {
       <div className="flex items-start gap-3">
         <div className="relative">
           {user && user.image ? (
-            <Image
+            <img
               src={user.image}
               alt="avatar"
-              width={32}
-              height={32}
               className="w-8 h-8 rounded-full object-cover flex-shrink-0"
             />
           ) : (

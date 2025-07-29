@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
+
 import { EMOJIS } from "../../constants/emoji";
 
 interface Comment {
@@ -97,7 +97,7 @@ export default function CommentReply({
     <div className="space-y-3">
       <div className="flex items-start gap-3">
         {avatarUrl ? (
-          <Image src={avatarUrl} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
+          <img src={avatarUrl} alt="avatar" className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
         ) : (
           <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${reply.avatar || 'from-blue-500 to-purple-600'} flex-shrink-0`}></div>
         )}

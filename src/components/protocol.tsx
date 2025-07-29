@@ -1,4 +1,4 @@
-import Image, { StaticImageData } from "next/image";
+import { StaticImageData } from "next/image";
 
 export default function Protocol({
   color,
@@ -19,11 +19,19 @@ export default function Protocol({
       <div
         className={`relative aspect-square overflow-hidden rounded-sm border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-900 shadow-2xl transition-all duration-500 hover:shadow-${color}-500/10`}
       >
-        <Image
+        <img
           alt="Protocol Image"
-          src={image}
+          src={typeof image === 'string' ? image : image.src}
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700 ease-out group-hover:scale-110"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            target.nextElementSibling?.classList.remove('hidden');
+          }}
         />
+        <div className="hidden absolute inset-0 bg-gray-100 flex items-center justify-center">
+          <span className="text-gray-400">Image not available</span>
+        </div>
         <div className={`absolute inset-0 bg-gradient-to-t from-${color}-900/90 via-${color}-800/50 to-transparent`}></div>
         <div className={`absolute inset-0 bg-gradient-to-r from-${color}-900/40 to-transparent`}></div>
         <div className="absolute inset-0 flex flex-col justify-end p-6">

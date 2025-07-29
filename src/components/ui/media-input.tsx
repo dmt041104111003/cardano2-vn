@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import Image from 'next/image';
+
 
 interface Media {
   type: 'youtube' | 'image';
@@ -121,13 +121,19 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
           )}
           {currentMedia?.type === 'image' && currentMedia.url && (
             <div className="flex justify-center">
-              <Image
+              <img
                 src={currentMedia.url}
                 alt="Preview"
-                width={200}
-                height={100}
                 className="max-w-full max-h-48 rounded-lg shadow-md"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.classList.remove('hidden');
+                }}
               />
+              <div className="hidden max-w-full max-h-48 rounded-lg shadow-md bg-gray-100 flex items-center justify-center">
+                <span className="text-gray-400">Image not available</span>
+              </div>
             </div>
           )}
         </>
