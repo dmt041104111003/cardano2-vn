@@ -9,6 +9,7 @@ import { MediaUpload } from './MediaUpload';
 import { MediaTable } from './MediaTable';
 import { useMediaData } from './useMediaData';
 import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
+import NotFoundInline from '~/components/ui/not-found-inline';
 
 export default function MediaPageClient() {
   const {
@@ -83,6 +84,13 @@ export default function MediaPageClient() {
 
         {loading ? (
           <AdminTableSkeleton columns={5} rows={5} />
+        ) : filteredMedia.length === 0 ? (
+          <NotFoundInline 
+            onClearFilters={() => {
+              setSearchTerm('');
+              setFilterType('all');
+            }}
+          />
         ) : (
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">

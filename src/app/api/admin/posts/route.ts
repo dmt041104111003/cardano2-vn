@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { title, content, excerpt, status, tags, media, createdAt, updatedAt } = body;
+    const { title, content, status, tags, media, createdAt, updatedAt } = body;
     if (!title || !content || !status) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
@@ -145,6 +145,7 @@ export async function POST(request: NextRequest) {
       const foundTags = await prisma.tag.findMany({ where: { name: { in: tags } } });
       tagIds = foundTags.map(t => t.id);
     }
+
     enum PostStatus {
       DRAFT = 'DRAFT',
       PUBLISHED = 'PUBLISHED',
@@ -167,44 +168,73 @@ export async function POST(request: NextRequest) {
       media?: { create: Array<{ url: string; type: MediaType }> };
       tags?: { create: Array<{ tagId: string }> };
     };
-    const data: PostCreateInput = {
-      title,
-      slug,
-      content,
-      excerpt,
-      status: status as PostStatus,
-      authorId: currentUser.id,
-      createdAt: createdAt ? new Date(createdAt) : undefined,
-      updatedAt: updatedAt ? new Date(updatedAt) : undefined,
-    };
-    if (Array.isArray(media) && media.length > 0) {
-      const uploadedMedia = await Promise.all(
-        (media as Array<{ url: string; type: MediaType }> ).map(async (m) => {
-          if (m.type === 'IMAGE' && /^data:image\//.test(m.url)) {
-            try {
-              const uploadRes = await cloudinary.uploader.upload(m.url, { resource_type: 'image' });
-              return { url: uploadRes.url, type: m.type };
-            } catch (e) {
-              console.error('Cloudinary upload failed:', e);
-              return null;
-            }
-          }
-          return m;
-        })
-      );
-      data.media = { create: (uploadedMedia.filter(Boolean) as { url: string; type: MediaType }[]) };
-    }
-    if (tagIds.length > 0) {
-      data.tags = { create: tagIds.map(tagId => ({ tagId })) };
-    }
+
     const post = await prisma.post.create({
-      data,
+      data: {
+        title,
+        slug,
+        content,
+        status: status.toUpperCase(),
+        authorId: currentUser.id,
+        createdAt: createdAt ? new Date(createdAt) : undefined,
+        updatedAt: updatedAt ? new Date(updatedAt) : undefined,
+      },
       include: {
         tags: { include: { tag: true } },
         media: true,
       },
     });
-    return NextResponse.json({ post });
+
+    if (Array.isArray(media) && media.length > 0) {
+      for (const mediaItem of media) {
+        if (mediaItem.url && mediaItem.type) {
+          let mediaData: any = {
+            url: mediaItem.url,
+            type: mediaItem.type.toUpperCase(),
+            postId: post.id,
+            uploadedBy: currentUser.id,
+          };
+
+          if (mediaItem.type.toUpperCase() === 'YOUTUBE' && mediaItem.id) {
+            mediaData.mediaId = mediaItem.id;
+          }
+
+          if (mediaItem.type.toUpperCase() === 'IMAGE' && /^data:image\//.test(mediaItem.url)) {
+            try {
+              const uploadRes = await cloudinary.uploader.upload(mediaItem.url, { resource_type: 'image' });
+              mediaData.url = uploadRes.url;
+            } catch (e) {
+              console.error('Cloudinary upload failed:', e);
+              continue; // Skip this media item if upload fails
+            }
+          }
+
+          await prisma.media.create({
+            data: mediaData,
+          });
+        }
+      }
+    }
+
+    if (tagIds.length > 0) {
+      await prisma.postTag.createMany({
+        data: tagIds.map(tagId => ({
+          postId: post.id,
+          tagId,
+        })),
+        skipDuplicates: true,
+      });
+    }
+
+    const completePost = await prisma.post.findUnique({
+      where: { id: post.id },
+      include: {
+        tags: { include: { tag: true } },
+        media: true,
+      },
+    });
+
+    return NextResponse.json({ post: completePost });
   } catch (error) {
     console.error('Error creating post:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

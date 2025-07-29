@@ -4,6 +4,8 @@ export const routers = {
   home: "/",
   about: "/about",
   login: "/login",
+  docs: "/docs",
+  projects: "/project",
 };
 
 export const adminRouters = [

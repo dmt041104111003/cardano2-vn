@@ -13,6 +13,7 @@ import { useToastContext } from '~/components/toast-provider';
 import { AdminStats } from '~/components/admin/common/AdminStats';
 import { useQuery } from '@tanstack/react-query';
 import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
+import NotFoundInline from '~/components/ui/not-found-inline';
 
 export function PostsPageClient() {
   const [isClient, setIsClient] = useState(false);
@@ -33,6 +34,12 @@ export function PostsPageClient() {
     }
   });
   const posts: Post[] = queryData?.posts || [];
+  
+  useEffect(() => {
+    console.log('Posts data:', posts);
+    console.log('Posts statuses:', posts.map(p => ({ id: p.id, status: p.status, title: p.title })));
+  }, [posts]);
+  
   useEffect(() => {
     if (activeTab === 'management') {
       fetchPosts();
@@ -45,20 +52,20 @@ export function PostsPageClient() {
   const postsOfYear = useMemo(() => posts.filter(p => new Date(p.createdAt).getFullYear() === selectedYear), [posts, selectedYear]);
 
   const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.author.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (post.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (post.content?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (post.author?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     
     let matchesFilter = true;
     switch (filterType) {
       case 'published':
-        matchesFilter = post.status === 'published';
+        matchesFilter = (post.status?.toLowerCase() || '') === 'published';
         break;
       case 'draft':
-        matchesFilter = post.status === 'draft';
+        matchesFilter = (post.status?.toLowerCase() || '') === 'draft';
         break;
       case 'archived':
-        matchesFilter = post.status === 'archived';
+        matchesFilter = (post.status?.toLowerCase() || '') === 'archived';
         break;
       default:
         matchesFilter = true;
@@ -243,6 +250,13 @@ export function PostsPageClient() {
 
           {loading ? (
             <AdminTableSkeleton columns={6} rows={5} />
+          ) : filteredPosts.length === 0 ? (
+            <NotFoundInline 
+              onClearFilters={() => {
+                setSearchTerm('');
+                setFilterType('all');
+              }}
+            />
           ) : (
             <div className="bg-white rounded-lg shadow" suppressHydrationWarning>
               <PostTable

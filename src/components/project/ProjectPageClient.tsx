@@ -7,6 +7,7 @@ import { Pagination } from "~/components/ui/pagination";
 import Navigation from "~/components/navigation";
 import Title from "~/components/title";
 import TechnologyPageClient from "~/components/technology/TechnologyPageClient";
+import NotFoundInline from "~/components/ui/not-found-inline";
 
 export default function ProjectPageClient() {
   const [year, setYear] = useState(new Date().getFullYear());
@@ -135,6 +136,14 @@ export default function ProjectPageClient() {
                             <ProjectSkeleton />
                             <ProjectSkeleton />
                           </>
+                        ) : filteredProjects.length === 0 ? (
+                          <NotFoundInline 
+                            onClearFilters={() => {
+                              setSearchTerm('');
+                              setStatusFilter('all');
+                              setFundFilter('all');
+                            }}
+                          />
                         ) : (
                           <>
                             {paginatedProjects.map((proposal: any, index: number) => (

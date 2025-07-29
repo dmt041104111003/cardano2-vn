@@ -30,6 +30,28 @@ export default function AboutEditor({ initialData, onSave, onCancel, isLoading }
     buttonUrl: ""
   });
 
+  const convertToEmbedUrl = (url: string): string => {
+    if (!url) return "";
+    
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/,
+      /youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]+)/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) {
+        return `https://www.youtube.com/embed/${match[1]}`;
+      }
+    }
+    
+    if (url.includes('youtube.com/embed/')) {
+      return url;
+    }
+    
+    return url;
+  };
+
   const { data: aboutData, isLoading: loadingAbout } = useQuery({
     queryKey: ['admin-about'],
     queryFn: async () => {
@@ -136,11 +158,25 @@ export default function AboutEditor({ initialData, onSave, onCancel, isLoading }
           id="youtubeUrl"
           type="text"
           value={formData.youtubeUrl}
-          onChange={(e) => setFormData({ ...formData, youtubeUrl: e.target.value })}
-          placeholder="https://www.youtube.com/embed/_GrbIRoT3mU"
+          onChange={(e) => {
+            const inputValue = e.target.value;
+            const embedUrl = convertToEmbedUrl(inputValue);
+            setFormData({ ...formData, youtubeUrl: embedUrl });
+          }}
+          onBlur={(e) => {
+            const inputValue = e.target.value;
+            const embedUrl = convertToEmbedUrl(inputValue);
+            if (embedUrl !== inputValue) {
+              setFormData({ ...formData, youtubeUrl: embedUrl });
+            }
+          }}
+          placeholder="https://www.youtube.com/watch?v=_GrbIRoT3mU or https://youtu.be/_GrbIRoT3mU"
           required
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
+        {formData.youtubeUrl && !formData.youtubeUrl.includes('youtube.com/embed/') && (
+          <p className="text-sm text-gray-500">URL will be automatically converted to embed URL when you leave the input field</p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
