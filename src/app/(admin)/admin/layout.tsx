@@ -11,6 +11,33 @@ import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Loading from "~/components/ui/Loading";
 
+function compact(str?: string | null) {
+  if (!str) return "";
+  if (str.length <= 10) return str;
+  return str.slice(0, 6) + "..." + str.slice(-4);
+}
+
+function UserAvatar({ user }: { user: any }) {
+  const [imageError, setImageError] = useState(false);
+  
+  if (user?.image && !imageError) {
+    return (
+      <img 
+        src={user.image} 
+        alt="avatar" 
+        className="w-10 h-10 rounded-full object-cover border border-gray-200" 
+        onError={() => setImageError(true)}
+      />
+    );
+  }
+  
+  return (
+    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">
+      {user?.name?.charAt(0) || 'U'}
+    </div>
+  );
+}
+
 const adminNavItems = [
   {
     title: "Posts",
@@ -53,11 +80,6 @@ const adminNavItems = [
     icon: Image,
   },
 ];
-
-function compact(str?: string | null) {
-  if (!str) return "";
-  return str.length > 12 ? `${str.slice(0, 6)}...${str.slice(-4)}` : str;
-}
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -112,11 +134,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               suppressHydrationWarning
             >
               <div className="flex items-center gap-3 px-4 pt-4 pb-2">
-                {user?.image ? (
-                  <img src={user.image} alt="avatar" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">U</div>
-                )}
+                <UserAvatar user={user} />
                 <div className="flex flex-col min-w-0">
                   <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
                   <div className="flex flex-col items-start w-[160px] mt-1">
@@ -171,11 +189,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col" suppressHydrationWarning>
         <div className="flex flex-col flex-grow bg-white border-r border-gray-200" suppressHydrationWarning>
           <div className="flex items-center gap-3 px-4 pt-4 pb-2">
-            {user?.image ? (
-              <img src={user.image} alt="avatar" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">U</div>
-            )}
+            <UserAvatar user={user} />
             <div className="flex flex-col min-w-0">
               <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
               <div className="flex flex-col items-start w-[160px] mt-1">

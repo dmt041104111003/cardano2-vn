@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { prisma } from "~/lib/prisma";
 import cloudinary from '~/lib/cloudinary';
+import { authOptions } from "../[...nextauth]/route";
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const { searchParams } = new URL(request.url);
     const sessionUser = session?.user as { address?: string; email?: string };
     const address = searchParams.get("address") || sessionUser?.address;

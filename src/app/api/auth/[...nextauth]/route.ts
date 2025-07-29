@@ -156,7 +156,7 @@ export const authOptions = {
                 console.log("[NextAuth] Uploaded Google image to Cloudinary:", avatar);
               } catch (uploadError) {
                 console.error("[NextAuth] Failed to upload Google image to Cloudinary:", uploadError);
-                avatar = user.image; 
+                avatar = user.image || null;
               }
             }
 
@@ -278,7 +278,7 @@ export const authOptions = {
                 console.log("[NextAuth] Uploaded GitHub image to Cloudinary:", avatar);
               } catch (uploadError) {
                 console.error("[NextAuth] Failed to upload GitHub image to Cloudinary:", uploadError);
-                avatar = user.image;
+                avatar = user.image || null;
               }
             }
 
