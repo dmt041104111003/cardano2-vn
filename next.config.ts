@@ -7,7 +7,7 @@ const withMDX = createMDX();
 const config: NextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["res.cloudinary.com", "img.youtube.com"],
+    domains: ["res.cloudinary.com", "img.youtube.com", "i.ytimg.com"],
   },
   eslint: {
     ignoreDuringBuilds: true,
