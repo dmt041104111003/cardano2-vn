@@ -3,7 +3,8 @@ import { prisma } from "~/lib/prisma";
 
 export async function GET() {
   try {
-    const videos = await prisma.videoSection.findMany({
+    // @ts-ignore
+    const videos = await prisma.VideoSection.findMany({
       orderBy: {
         createdAt: "desc",
       },
@@ -11,7 +12,7 @@ export async function GET() {
 
     return NextResponse.json(videos);
   } catch (error) {
-    console.error("GET /api/videos error:", error);
+    console.error("GET /api/video-section error:", error);
     return NextResponse.json({ error: "Failed to fetch videos" }, { status: 500 });
   }
 }

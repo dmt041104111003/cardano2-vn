@@ -3,7 +3,7 @@ import { prisma } from "~/lib/prisma";
 
 export async function GET() {
   try {
-    const videos = await prisma.videoSection.findMany({
+    const videos = await prisma.VideoSection.findMany({
       orderBy: {
         createdAt: "desc",
       },
@@ -18,10 +18,14 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { videoUrl } = body;
+  const { videoUrl, title, channelName } = body;
 
   if (!videoUrl) {
     return NextResponse.json({ error: "Missing videoUrl" }, { status: 400 });
+  }
+
+  if (!title || !channelName) {
+    return NextResponse.json({ error: "Missing title or channelName" }, { status: 400 });
   }
 
   const videoId = extractYouTubeVideoId(videoUrl);
@@ -29,7 +33,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid YouTube URL" }, { status: 400 });
   }
 
-  const existing = await prisma.videoSection.findFirst({
+  const existing = await prisma.VideoSection.findFirst({
     where: { videoUrl },
   });
 
@@ -37,11 +41,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Video already exists" }, { status: 409 });
   }
 
-  const title = `Video ${videoId}`;
   const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
-  const channelName = "YouTube";
 
-  const video = await prisma.videoSection.create({
+  const video = await prisma.VideoSection.create({
     data: {
       videoId,
       channelName,
