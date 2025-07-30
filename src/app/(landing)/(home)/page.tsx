@@ -8,6 +8,7 @@ import ProtocolSection from "~/components/home/ProtocolSection";
 import CardanoSection from "~/components/home/CardanoSection";
 import CTASection from "~/components/home/CTASection";
 import VideoSection from "~/components/home/VideoSection";
+import PartnerLogosCarousel from "~/components/home/PartnerLogosCarousel";
 
 import ContactFormSection from "~/components/home/ContactFormSection";
 
@@ -33,6 +34,7 @@ export default function HomePage() {
 
       <LandingSection />
       <VideoSection />
+      <PartnerLogosCarousel />
       <TrustSection />
       <ProtocolSection />
       <CardanoSection />
