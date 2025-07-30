@@ -29,7 +29,7 @@ export default function CardanoSection() {
                 src={images.cardano}
               />
               <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200">
-                Andamio harnesses Cardanos proof-of-stake blockchain to provide secure, energy-efficient, and transparent credentialing. Every
+                Cardano2vn harnesses Cardanos proof-of-stake blockchain to provide secure, energy-efficient, and transparent credentialing. Every
                 certificate and achievement is <strong className="text-black dark:text-white">immutably recorded</strong>, ensuring your credentials are always
                 verifiable and portable.
               </p>

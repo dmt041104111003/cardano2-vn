@@ -3,6 +3,7 @@ export interface ContactFormData {
   "your-number": string;
   "your-email": string;
   "address-wallet": string;
+  "email-intro": string;
   "event-location": string;
   message: string;
 }
@@ -12,6 +13,7 @@ export interface FormErrors {
   "your-number"?: string;
   "your-email"?: string;
   "address-wallet"?: string;
+  "email-intro"?: string;
   "event-location"?: string;
   contact?: string;
 } 

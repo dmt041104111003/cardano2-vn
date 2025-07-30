@@ -14,12 +14,14 @@ export default function ContactFormSection() {
     "your-number": "",
     "your-email": "",
     "address-wallet": "",
+    "email-intro": "",
     "event-location": "",
     message: ""
   });
   
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [captchaValid, setCaptchaValid] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -146,6 +148,7 @@ export default function ContactFormSection() {
           "your-number": "",
           "your-email": "",
           "address-wallet": "",
+          "email-intro": "",
           "event-location": "",
           message: ""
         });
@@ -186,8 +189,10 @@ export default function ContactFormSection() {
               formData={formData}
               errors={errors}
               isSubmitting={isSubmitting}
+              captchaValid={captchaValid}
               onInputChange={handleInputChange}
               onSubmit={handleSubmit}
+              onCaptchaChange={setCaptchaValid}
             />
           </div>
         </div>
