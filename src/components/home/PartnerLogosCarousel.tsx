@@ -30,7 +30,7 @@ export default function PartnerLogosCarousel() {
               <img
                 src={src}
                 alt={`Logo ${idx + 1}`}
-                className="h-20 w-auto object-contain grayscale hover:grayscale-0 transition"
+                className="h-20 w-auto object-contain transition-all duration-300 hover:scale-110"
                 style={{ maxWidth: 120 }}
               />
             </div>
