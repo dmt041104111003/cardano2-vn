@@ -14,6 +14,7 @@ interface Technology {
   description: string;
   href: string;
   image: string;
+  githubRepo?: string;
 }
 
 interface TechnologyPageClientProps {

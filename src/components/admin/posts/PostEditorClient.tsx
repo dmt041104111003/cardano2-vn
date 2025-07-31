@@ -26,6 +26,7 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
     status: 'DRAFT' as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
     content: '',
     media: [] as Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>,
+    githubRepo: '',
   });
 
   const [showTagDropdown, setShowTagDropdown] = useState(false);
@@ -48,6 +49,7 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
         status: (post.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') || 'DRAFT',
         content: typeof post.content === 'string' ? post.content : '',
         media: Array.isArray(post.media) ? post.media : [],
+        githubRepo: typeof post.githubRepo === 'string' ? post.githubRepo : '',
       });
     }
   }, [post]);
@@ -183,6 +185,7 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
         ...m,
         type: m.type.toLowerCase() as 'image' | 'youtube' | 'video', 
       })),
+      githubRepo: postState.githubRepo,
       author: post && typeof post.author === 'string' ? post.author : '',
       createdAt: post && typeof post.createdAt === 'string' ? post.createdAt : new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -284,6 +287,22 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
                   </div>
                 )}
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                GitHub Repository (Optional)
+              </label>
+              <input
+                type="text"
+                value={postState.githubRepo}
+                onChange={e => handleInputChange('githubRepo', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter GitHub repository (e.g., dmt041104111003/cardano2-vn)"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                This will add a GitHub star widget to your post
+              </p>
             </div>
 
             <div>

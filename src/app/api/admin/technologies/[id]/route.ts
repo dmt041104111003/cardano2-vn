@@ -39,7 +39,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { title, name, description, href, image } = body;
+    const { title, name, description, href, image, githubRepo } = body;
 
     const technology = await prisma.technology.update({
       where: { id: params.id },
@@ -49,6 +49,7 @@ export async function PUT(
         description,
         href,
         image,
+        githubRepo: githubRepo || null,
       },
     });
 

@@ -19,6 +19,7 @@ export interface Post {
   comments: number;
   shares: number;
   media: Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>;
+  githubRepo?: string;
   comments_rel?: Array<{ id: string; userId: string }>;
   reactions?: Array<{ type: string; userId: string }>;  
 }

@@ -23,6 +23,7 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
         createdAt: true,
         updatedAt: true,
         status: true,
+        githubRepo: true,
         author: { select: { id: true, name: true, wallet: true } }, 
         media: { select: { url: true, type: true, id: true } },
         tags: { select: { tag: { select: { id: true, name: true } } } },

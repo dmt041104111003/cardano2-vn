@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, name, description, href, image } = body;
+    const { title, name, description, href, image, githubRepo } = body;
 
     const technology = await prisma.technology.create({
       data: {
@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
         description,
         href,
         image,
+        githubRepo: githubRepo || null,
       },
     });
 
