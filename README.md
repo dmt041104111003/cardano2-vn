@@ -20,6 +20,8 @@
 
 ## About Cardano Vietnam Community
 
+![Cardano2VN](https://res.cloudinary.com/ddncuxapm/image/upload/v1753961380/cardano2vn_lhbgol.png)
+
 **Cardano Vietnam (C2VN)** is the official open-source hub and gathering place for Cardano enthusiasts, developers, and learners in Vietnam. We are dedicated to building a vibrant, supportive, and innovative Cardano ecosystem for the Vietnamese community.
 
 ### Our Mission
