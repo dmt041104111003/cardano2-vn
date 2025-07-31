@@ -62,82 +62,84 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
                     <div className="text-gray-200/90 dark:text-white/90 text-xs font-medium">Cardano2VN</div>
                   </div>
                 </div>
-                <div className="w-3/5 p-8 flex flex-col justify-center">
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
-                    className="space-y-6"
-                  >
-       
-                    <div>
-                      <motion.h2
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3, duration: 0.4 }}
-                        className="text-3xl font-bold text-gray-900 dark:text-white mb-3"
-                      >
-                        {member.name}
-                      </motion.h2>
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4, duration: 0.4 }}
-                        className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600"
-                      >
-                        {member.role}
-                      </motion.div>
-                    </div>
-                    <motion.p
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5, duration: 0.4 }}
-                      className="text-gray-600 dark:text-gray-300 leading-relaxed text-base"
-                    >
-                      {member.description}
-                    </motion.p>
-                    {member.skills && member.skills.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6, duration: 0.4 }}
-                        className="space-y-3"
-                      >
-                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Skills</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {member.skills.map((skill: string, index: number) => (
-                            <motion.span
-                              key={skill}
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ delay: 0.7 + index * 0.1, duration: 0.3 }}
-                              className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600"
-                            >
-                              {skill}
-                            </motion.span>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
+                <div className="w-3/5 flex flex-col overflow-hidden">
+                  <div className="p-8 overflow-y-auto flex-1">
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.8, duration: 0.4 }}
-                      className="space-y-2"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                      className="space-y-6"
                     >
-                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Contact</h3>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                          <div className="w-1.5 h-1.5 bg-gray-400/60 dark:bg-white/60 rounded-full"></div>
-                          <span>{member.email || "cardano2vn@gmail.com"}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                          <div className="w-1.5 h-1.5 bg-gray-400/60 dark:bg-white/60 rounded-full"></div>
-                          <span>LinkedIn</span>
-                        </div>
+         
+                      <div>
+                        <motion.h2
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3, duration: 0.4 }}
+                          className="text-3xl font-bold text-gray-900 dark:text-white mb-3"
+                        >
+                          {member.name}
+                        </motion.h2>
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.4, duration: 0.4 }}
+                          className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600"
+                        >
+                          {member.role}
+                        </motion.div>
                       </div>
+                      <motion.p
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5, duration: 0.4 }}
+                        className="text-gray-600 dark:text-gray-300 leading-relaxed text-base"
+                      >
+                        {member.description}
+                      </motion.p>
+                      {member.skills && member.skills.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.6, duration: 0.4 }}
+                          className="space-y-3"
+                        >
+                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Skills</h3>
+                          <div className="flex flex-wrap gap-2">
+                            {member.skills.map((skill: string, index: number) => (
+                              <motion.span
+                                key={skill}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.7 + index * 0.1, duration: 0.3 }}
+                                className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600"
+                              >
+                                {skill}
+                              </motion.span>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.8, duration: 0.4 }}
+                        className="space-y-2"
+                      >
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Contact</h3>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                            <div className="w-1.5 h-1.5 bg-gray-400/60 dark:bg-white/60 rounded-full"></div>
+                            <span>{member.email || "cardano2vn@gmail.com"}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                            <div className="w-1.5 h-1.5 bg-gray-400/60 dark:bg-white/60 rounded-full"></div>
+                            <span>LinkedIn</span>
+                          </div>
+                        </div>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
+                  </div>
                 </div>
               </div>
             </div>
