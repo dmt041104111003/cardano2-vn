@@ -24,14 +24,12 @@ export function AdminStats({ stats }: AdminStatsProps) {
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          {stats.map((stat, index) => (
-            <div key={index} className="text-sm text-gray-500">
-              {stat.label}: <span className={`font-semibold ${getColorClass(stat.color)}`}>{stat.value}</span>
-            </div>
-          ))}
-        </div>
+      <div className="flex flex-wrap items-center gap-4">
+        {stats.map((stat, index) => (
+          <div key={index} className="text-sm text-gray-500">
+            {stat.label}: <span className={`font-semibold ${getColorClass(stat.color)}`}>{stat.value}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
