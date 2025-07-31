@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { title, content, status, tags, media, createdAt, updatedAt } = body;
+    const { title, content, status, tags, media, githubRepo, createdAt, updatedAt } = body;
     if (!title || !content || !status) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
@@ -176,6 +176,7 @@ export async function POST(request: NextRequest) {
       content,
         status: status.toUpperCase(),
       authorId: currentUser.id,
+      githubRepo: githubRepo || null,
       createdAt: createdAt ? new Date(createdAt) : undefined,
       updatedAt: updatedAt ? new Date(updatedAt) : undefined,
       },

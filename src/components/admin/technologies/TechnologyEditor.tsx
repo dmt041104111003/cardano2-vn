@@ -11,11 +11,12 @@ interface Technology {
   description: string;
   href: string;
   image: string;
+  githubRepo?: string;
 }
 
 interface TechnologyEditorProps {
   technology?: Technology;
-  onSave: (data: { title: string; name: string; description: string; href: string; image: string }) => void;
+  onSave: (data: { title: string; name: string; description: string; href: string; image: string; githubRepo?: string }) => void;
   onCancel: () => void;
 }
 
@@ -25,6 +26,7 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
   const [description, setDescription] = useState(technology?.description || "");
   const [href, setHref] = useState(technology?.href || "");
   const [image, setImage] = useState(technology?.image || "");
+  const [githubRepo, setGithubRepo] = useState(technology?.githubRepo || "");
   const [copied, setCopied] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -35,6 +37,7 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
       description,
       href,
       image,
+      githubRepo,
     });
   };
 
@@ -145,6 +148,22 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
             </div>
           )}
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          GitHub Repository (Optional)
+        </label>
+        <input
+          type="text"
+          value={githubRepo}
+          onChange={(e) => setGithubRepo(e.target.value)}
+          placeholder="Enter GitHub repository (e.g., dmt041104111003/cardano2-vn)"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          This will add a GitHub star widget to the technology page
+        </p>
       </div>
 
       <div className="flex justify-end space-x-3">
