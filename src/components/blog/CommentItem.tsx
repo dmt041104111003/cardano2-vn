@@ -8,38 +8,7 @@ import { useToastContext } from "../toast-provider";
 import { EMOJIS } from "../../constants/emoji";
 import { useUser } from '~/hooks/useUser';
 import Modal from '../admin/common/Modal';
-
-const MAX_COMMENT_LENGTH = 200;
-
-interface Comment {
-  id: string;
-  content: string;
-  createdAt: string;
-  userId: string;
-  user?: {
-    wallet?: string;
-    image?: string;
-  } | null;
-  parentCommentId?: string | null;
-  replies?: Comment[];
-  parentUserId?: string;
-  parentAuthor?: string;
-  author?: string;
-  time?: string;
-  avatar?: string;
-  isPostAuthor?: boolean;
-}
-
-interface CommentItemProps {
-  comment: Comment;
-  onSubmitReply: (parentId: string, replyText: string, userInfo: { id?: string; address?: string; image?: string }) => void;
-  user: { id?: string; address?: string; image?: string } | null;
-  activeReplyId: string | null;
-  setActiveReplyId: (id: string | null) => void;
-  depth?: number;
-  hoveredId?: string | null;
-  setHoveredId?: (id: string | null) => void;
-}
+import { Comment, CommentItemProps, MAX_COMMENT_LENGTH } from '~/constants/comment';
 
 
 const formatTime = (iso: string) => {

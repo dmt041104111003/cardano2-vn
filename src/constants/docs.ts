@@ -111,193 +111,36 @@ export interface DocContent {
 }
 
 export const monitoringContent: DocContent = {
-  title: "Monitoring",
-  description: "Learn how to effectively monitor your Cardano stake pool to ensure optimal performance, security, and reliability. This guide covers essential monitoring tools, metrics, and best practices.",
+  title: "Monitoring and Analytics",
+  description: "Learn how to monitor and analyze Cardano network performance and metrics.",
   alerts: [
     {
       type: "info",
-      title: "Important",
-      content: "Proper monitoring is crucial for maintaining a healthy stake pool and ensuring consistent block production.",
-    },
+      title: "Monitoring Tools",
+      content: "Various tools are available for monitoring Cardano network performance."
+    }
   ],
   sections: [
     {
-      title: "Overview",
-      content: "Monitoring your Cardano stake pool involves tracking various metrics and system health indicators to ensure your pool operates efficiently and remains competitive. This includes monitoring node synchronization, block production, system resources, and network connectivity.",
-    },
-    {
-      title: "Key Metrics to Monitor",
-      content: "",
+      title: "Network Monitoring",
+      content: "Monitor network health, performance metrics, and system resources.",
       sections: [
         {
-          title: "Node Synchronization",
-          content: "Ensure your node stays synchronized with the Cardano network:",
-          codeBlocks: [
-            {
-              language: "bash",
-              code: "cardano-cli query tip --mainnet",
-            },
-          ],
-          additionalContent: "This command returns the current tip of the blockchain. Compare the slot and block values with a trusted block explorer to verify synchronization.",
-        },
-        {
-          title: "Block Production",
-          content: "Monitor your pool's block production performance:",
-          lists: [
-            "Track assigned slots vs. produced blocks",
-            "Monitor block production timing",
-            "Check for missed slots and orphaned blocks",
-            "Analyze epoch performance statistics",
-          ],
-        },
-        {
-          title: "System Resources",
-          content: "Keep track of essential system metrics:",
-          gridItems: [
-            { title: "CPU Usage", description: "Monitor CPU utilization to ensure adequate processing power" },
-            { title: "Memory Usage", description: "Track RAM consumption and avoid memory exhaustion" },
-            { title: "Disk I/O", description: "Monitor disk read/write operations and available space" },
-            { title: "Network Traffic", description: "Track incoming and outgoing network connections" },
-          ],
-        },
-      ],
-    },
-    {
-      title: "Monitoring Tools",
-      content: "",
-      sections: [
-        {
-          title: "Prometheus and Grafana",
-          content: "Set up comprehensive monitoring with Prometheus and Grafana:",
-          codeBlocks: [
-            {
-              language: "bash",
-              code: `# Install Prometheus
-wget https://github.com/prometheus/prometheus/releases/download/v2.40.0/prometheus-2.40.0.linux-amd64.tar.gz
-tar xvfz prometheus-*.tar.gz
-cd prometheus-*
-
-# Configure prometheus.yml
-cat > prometheus.yml << EOF
-global:
-  scrape_interval: 15s
-scrape_configs:
-  - job_name: 'cardano-node'
-    static_configs:
-      - targets: ['localhost:12798']
-EOF`,
-            },
-          ],
-        },
-        {
-          title: "Node Exporter",
-          content: "Install Node Exporter to collect system metrics:",
-          codeBlocks: [
-            {
-              language: "bash",
-              code: `wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
-tar xvfz node_exporter-*.tar.gz
-cd node_exporter-*
-./node_exporter &`,
-            },
-          ],
-        },
-        {
-          title: "Custom Scripts",
-          content: "Create custom monitoring scripts for specific checks:",
-          codeBlocks: [
-            {
-              language: "bash",
-              code: `#!/bin/bash
-# sync_check.sh - Check node synchronization
-CURRENT_SLOT=$(cardano-cli query tip --mainnet | jq -r .slot)
-EXPECTED_SLOT=$(curl -s https://explorer.cardano.org/api/blocks/latest | jq -r .slot)
-DIFF=$((EXPECTED_SLOT - CURRENT_SLOT))
-
-if [ $DIFF -gt 100 ]; then
-    echo "WARNING: Node is $DIFF slots behind"
-    # Send alert notification
-else
-    echo "Node is synchronized (diff: $DIFF slots)"
-fi`,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      title: "Alerting and Notifications",
-      content: "Set up proactive alerting to respond quickly to issues:",
-      sections: [
-        {
-          title: "Critical Alerts",
-          content: "Monitor these critical alerts:",
-          lists: [
-            "Node synchronization loss",
-            "Block production failures",
-            "High system resource usage",
-            "Network connectivity issues",
-            "Disk space warnings",
-          ],
-        },
-      ],
-      alerts: [
-        {
-          type: "warning",
-          title: "Warning",
-          content: "Configure alerts with appropriate thresholds to avoid false positives while ensuring critical issues are detected promptly.",
-        },
-      ],
-    },
-    {
-      title: "Best Practices",
-      content: "",
-      sections: [
-        {
-          title: "Regular Health Checks",
-          content: "Perform daily health checks of your node and pool status",
-        },
-        {
-          title: "Automated Monitoring",
-          content: "Use automated tools to continuously monitor critical metrics",
-        },
-        {
-          title: "Log Analysis",
-          content: "Regularly review node logs for errors and performance issues",
-        },
-        {
-          title: "Performance Baselines",
-          content: "Establish performance baselines to identify anomalies",
-        },
-      ],
-    },
-    {
-      title: "Troubleshooting Common Issues",
-      content: "",
-      sections: [
-        {
-          title: "Node Out of Sync",
-          content: "If your node falls behind the network:",
-          lists: [
-            "Check network connectivity",
-            "Verify system resources aren't exhausted",
-            "Review node logs for errors",
-            "Consider restarting the node service",
-          ],
-        },
-        {
-          title: "High Memory Usage",
-          content: "To address memory consumption issues:",
-          lists: [
-            "Monitor for memory leaks",
-            "Adjust RTS options if necessary",
-            "Consider increasing system RAM",
-            "Optimize node configuration",
-          ],
-        },
-      ],
-    },
-  ],
+          title: "Real-time Metrics",
+          content: "Track real-time network metrics including transaction throughput, block production, and node performance.",
+                      codeBlocks: [
+              {
+                title: "Monitoring Script",
+                language: "bash",
+                code: `# Monitor network metrics
+cardano-cli query tip --mainnet
+cardano-cli query protocol-parameters --mainnet`
+              }
+            ]
+        }
+      ]
+    }
+  ]
 };
 
 export interface DocDocument {
@@ -525,4 +368,38 @@ cardano-cli --version`,
       ],
     },
   ],
-}; 
+};
+
+// Docs Components Interfaces
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+export interface DocBreadcrumbProps {
+  items: BreadcrumbItem[];
+}
+
+export interface DocContentComponentProps {
+  content: DocContent;
+}
+
+export interface DocHeaderProps {
+  onMenuClick?: () => void;
+}
+
+export interface DocListItemProps {
+  document: DocDocument;
+  onNavigate: (id: string) => void;
+}
+
+export interface DocSidebarProps {
+  onClose?: () => void;
+}
+
+// Navigation Components Interfaces
+export interface NavDocsProps {
+  previous?: { title: string; href: string };
+  current: { title: string; href: string };
+  next?: { title: string; href: string };
+} 

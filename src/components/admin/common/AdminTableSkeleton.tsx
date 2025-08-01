@@ -1,7 +1,4 @@
-interface AdminTableSkeletonProps {
-  columns: number;
-  rows?: number;
-}
+import { AdminTableSkeletonProps } from '~/constants/admin';
 
 export default function AdminTableSkeleton({ columns, rows = 5 }: AdminTableSkeletonProps) {
   return (

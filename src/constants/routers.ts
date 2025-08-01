@@ -40,3 +40,5 @@ export const adminRouters = [
     icon: Users,
   },
 ];
+
+export type NavbarType = { id: number; title: string; href: string };

@@ -1,13 +1,7 @@
 'use client';
 
 import { Plus } from 'lucide-react';
-
-interface AdminHeaderProps {
-  title: string;
-  description: string;
-  buttonText: string;
-  onAddClick?: () => void;
-}
+import { AdminHeaderProps } from '~/constants/admin';
 
 export function AdminHeader({ title, description, buttonText, onAddClick }: AdminHeaderProps) {
   return (

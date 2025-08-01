@@ -13,18 +13,7 @@ import { VideoSectionStats } from "./VideoSectionStats";
 import { VideoSectionEditor } from "./VideoSectionEditor";
 import AdminTableSkeleton from "../common/AdminTableSkeleton";
 import NotFoundInline from "~/components/ui/not-found-inline";
-
-interface VideoItem {
-  id: string;
-  videoId: string;
-  channelName: string;
-  videoUrl: string;
-  title: string;
-  thumbnailUrl: string;
-  isFeatured: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { VideoItem } from "~/constants/video-section";
 
 const ITEMS_PER_PAGE = 10;
 

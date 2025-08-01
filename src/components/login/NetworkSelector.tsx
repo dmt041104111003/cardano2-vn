@@ -1,18 +1,6 @@
 import Image from "next/image";
 import { images } from "~/public/images";
-
-interface Network {
-  id: string;
-  name: string;
-  icon: string;
-  isActive: boolean;
-}
-
-interface NetworkSelectorProps {
-  networks: Network[];
-  selectedNetwork: string;
-  onNetworkSelect: (networkId: string) => void;
-}
+import { NetworkSelectorProps } from '~/constants/login';
 
 export default function NetworkSelector({ networks, selectedNetwork, onNetworkSelect }: NetworkSelectorProps) {
   return (

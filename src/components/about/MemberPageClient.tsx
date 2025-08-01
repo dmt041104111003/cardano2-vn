@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useSession } from 'next-auth/react';
 import { useToastContext } from '~/components/toast-provider';
-import { ContactFormData, FormErrors } from '~/types/contact';
+import { ContactFormData, FormErrors } from '~/constants/contact';
 import { Pagination } from "~/components/ui/pagination";
 
 interface MemberType {

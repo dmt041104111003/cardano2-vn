@@ -2,12 +2,7 @@
 
 import { generateWalletAvatar } from '../lib/wallet-avatar';
 import Image from 'next/image';
-
-interface WalletAvatarProps {
-  address: string | null;
-  size?: number;
-  className?: string;
-}
+import { WalletAvatarProps } from '~/constants/users';
 
 export function WalletAvatar({ 
   address, 

@@ -1,14 +1,6 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-
-interface BreadcrumbItem {
-  label: string;
-  href?: string;
-}
-
-interface DocBreadcrumbProps {
-  items: BreadcrumbItem[];
-}
+import { DocBreadcrumbProps } from '~/constants/docs';
 
 export default function DocBreadcrumb({ items }: DocBreadcrumbProps) {
   return (

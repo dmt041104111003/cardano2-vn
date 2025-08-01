@@ -6,17 +6,11 @@ import { TipTapEditor, TipTapPreview } from '~/components/ui/tiptap-editor';
 import MediaInput from '~/components/ui/media-input';
 import { useToastContext } from '~/components/toast-provider';
 
-import type { Post } from '~/constants/posts';
+import type { Post, PostEditorClientProps } from '~/constants/posts';
 
 interface Tag {
   id: string;
   name: string;
-}
-
-interface PostEditorClientProps {
-  onSave: (post: Post) => void;
-  post?: Post;
-  onCancel?: () => void;
 }
 
 export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientProps) {

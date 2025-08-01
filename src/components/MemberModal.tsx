@@ -1,25 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-
-interface MemberType {
-  id: string;
-  name: string;
-  role: string;
-  description: string;
-  image: string;
-  email?: string;
-  color?: string;
-  skills?: string[];
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface MemberModalProps {
-  member: MemberType | null;
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { MemberModalProps } from '~/constants/members';
 
 export default function MemberModal({ member, isOpen, onClose }: MemberModalProps) {
   if (!member) return null;

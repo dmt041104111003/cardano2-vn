@@ -57,7 +57,9 @@ export function ReplySkeleton() {
   );
 }
 
-export function CommentSkeletonList({ count = 3 }: { count?: number }) {
+import { CommentSkeletonListProps } from '~/constants/comment';
+
+export function CommentSkeletonList({ count = 3 }: CommentSkeletonListProps) {
   return (
     <div className="space-y-4">
       {Array.from({ length: count }).map((_, index) => (

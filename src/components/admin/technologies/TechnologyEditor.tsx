@@ -3,22 +3,7 @@
 import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 import MediaInput from "~/components/ui/media-input";
-
-interface Technology {
-  id: string;
-  title: string;
-  name: string;
-  description: string;
-  href: string;
-  image: string;
-  githubRepo?: string;
-}
-
-interface TechnologyEditorProps {
-  technology?: Technology;
-  onSave: (data: { title: string; name: string; description: string; href: string; image: string; githubRepo?: string }) => void;
-  onCancel: () => void;
-}
+import { Technology, TechnologyEditorProps } from "~/constants/technologies";
 
 export default function TechnologyEditor({ technology, onSave, onCancel }: TechnologyEditorProps) {
   const [title, setTitle] = useState(technology?.title || "");

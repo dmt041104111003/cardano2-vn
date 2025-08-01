@@ -1,29 +1,9 @@
 import { Edit, Trash2, Shield, User as UserIcon, Copy as CopyIcon } from 'lucide-react';
-import { User } from '~/constants/users';
+import { User, UserTableProps, shortenAddress, formatDateTime } from '~/constants/users';
 import { WalletAvatar } from '~/components/WalletAvatar';
 import { useToastContext } from "../../toast-provider";
 import { useState } from 'react';
 import Modal from '../common/Modal';
-
-interface UserTableProps {
-  users: User[];
-  onEdit: (user: User) => void;
-  onDelete: (userId: string) => void;
-  onRoleChange: (userId: string, role: 'USER' | 'ADMIN') => void;
-  currentUserAddress?: string | null;
-}
-
-function shortenAddress(address: string, chars = 6) {
-  if (!address) return '';
-  if (address.length <= chars * 2 + 3) return address;
-  return address.slice(0, chars) + '...' + address.slice(-chars);
-}
-
-function formatDateTime(dateString: string) {
-  const date = new Date(dateString);
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-}
 
 function UserAvatar({ user }: { user: User }) {
   const [imageError, setImageError] = useState(false);

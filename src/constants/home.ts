@@ -1,5 +1,6 @@
 import { StaticImageData } from "next/image";
 
+// Home Components Interfaces
 export type Skill = {
   id?: number;
   Icon: React.ComponentType;
@@ -25,4 +26,4 @@ export type Project = {
   href: string;
   skills: Skill[];
   results?: Result[];
-};
+}; 

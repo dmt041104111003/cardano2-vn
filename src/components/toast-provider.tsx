@@ -3,22 +3,7 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, Info, XCircle } from "lucide-react";
-
-interface Toast {
-  id: string;
-  type: "success" | "error" | "info";
-  title: string;
-  message?: string;
-  timestamp: number;
-}
-
-interface ToastContextType {
-  toasts: Toast[];
-  showSuccess: (title: string, message?: string) => void;
-  showError: (title: string, message?: string) => void;
-  showInfo: (title: string, message?: string) => void;
-  removeToast: (id: string) => void;
-}
+import { Toast, ToastContextType } from '~/constants/toast';
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 

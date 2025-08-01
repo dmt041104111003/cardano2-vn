@@ -1,22 +1,12 @@
 import { useRef, useState, useEffect } from 'react';
 import { Tag, X } from 'lucide-react';
-
-interface TagType {
-  id: string;
-  name: string;
-}
+import { BlogFiltersProps } from '~/constants/posts';
 
 export default function BlogFilters({
   search, setSearch,
   selectedTags, setSelectedTags,
   allTags
-}: {
-  search: string;
-  setSearch: (v: string) => void;
-  selectedTags: string[];
-  setSelectedTags: (v: string[]) => void;
-  allTags: TagType[];
-}) {
+}: BlogFiltersProps) {
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 

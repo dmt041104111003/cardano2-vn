@@ -1,19 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useCardanoWallet } from "~/hooks/useCardanoWallet";
 import { useToastContext } from "~/components/toast-provider";
-
-interface Wallet {
-  id: string;
-  name: string;
-  logo: string;
-  color: string;
-}
-
-interface WalletListProps {
-  wallets: Wallet[];
-}
+import { WalletListProps } from '~/constants/login';
 
 export default function WalletList({ wallets }: WalletListProps) {
   const { connect, disconnect, isConnecting, error, walletUser, isAuthenticated, isWalletInstalled, hasLoggedIn } = useCardanoWallet();

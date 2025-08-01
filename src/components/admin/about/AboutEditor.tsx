@@ -2,23 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-
-interface AboutContent {
-  id?: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  youtubeUrl: string;
-  buttonText: string;
-  buttonUrl: string;
-}
-
-interface AboutEditorProps {
-  initialData?: AboutContent;
-  onSave: (data: AboutContent) => void;
-  onCancel: () => void;
-  isLoading?: boolean;
-}
+import { AboutContent, AboutEditorProps } from "~/constants/about";
 
 export default function AboutEditor({ initialData, onSave, onCancel, isLoading }: AboutEditorProps) {
   const [formData, setFormData] = useState<AboutContent>({

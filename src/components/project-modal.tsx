@@ -4,25 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import Modal from "~/components/admin/common/Modal";
 import { Metadata } from "next";
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  href?: string;
-  status: 'PROPOSED' | 'APPROVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  year: number;
-  quarterly: string;
-  fund?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ProjectModalProps {
-  project: Project;
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { ProjectModalProps, Project } from '~/constants/projects';
 
 export const generateProjectMetadata = (project: Project): Metadata => ({
   title: `${project.fund || 'Project'}: ${project.title}`,

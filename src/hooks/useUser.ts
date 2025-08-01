@@ -2,21 +2,11 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-
-interface User {
-  id: string;
-  name: string | null;
-  image: string | null;
-  role: string;
-  isAdmin: boolean;
-  address: string;
-  email?: string;
-  provider?: string;
-}
+import { UserHook } from "~/constants/users";
 
 export function useUser() {
   const { data: session, status } = useSession();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserHook | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -6,21 +6,7 @@ import Link from "next/link";
 import TechnologyItem from "./TechnologyItem";
 import { Pagination } from "~/components/ui/pagination";
 import NotFoundInline from "~/components/ui/not-found-inline";
-
-interface Technology {
-  id: string;
-  title: string;
-  name: string;
-  description: string;
-  href: string;
-  image: string;
-  githubRepo?: string;
-}
-
-interface TechnologyPageClientProps {
-  isEmbedded?: boolean;
-  searchTerm?: string;
-}
+import { TechnologyPageClientProps, Technology } from '~/constants/technologies';
 
 export default function TechnologyPageClient({ isEmbedded = false, searchTerm = "" }: TechnologyPageClientProps) {
   const [currentPage, setCurrentPage] = useState(1);

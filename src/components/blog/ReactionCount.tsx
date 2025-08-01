@@ -1,32 +1,14 @@
 "use client";
 
 import { useState } from "react";
-
-interface ReactionCountProps {
-  reactions: { [type: string]: number };
-}
-
-const ICONS: Record<string, string> = {
-  LIKE: "👍",
-  like: "👍",
-  HEART: "❤️",
-  heart: "❤️",
-  HAHA: "😂",
-  haha: "😂",
-  WOW: "😮",
-  wow: "😮",
-  SAD: "😢",
-  sad: "😢",
-  ANGRY: "😠",
-  angry: "😠"
-};
+import { ReactionCountProps, REACTION_ICONS } from '~/constants/posts';
 
 export default function ReactionCount({ reactions }: ReactionCountProps) {
   const [showDetails, setShowDetails] = useState(false);
   const totalReactions = Object.values(reactions).reduce((sum, count) => sum + count, 0);
 
   const topTypes = Object.entries(reactions)
-    .filter(([type, count]) => count > 0 && ICONS[type] !== undefined)
+    .filter(([type, count]) => count > 0 && REACTION_ICONS[type] !== undefined)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 3);
 
@@ -45,7 +27,7 @@ export default function ReactionCount({ reactions }: ReactionCountProps) {
               className="h-12 w-12 rounded-full bg-transparent border border-gray-700 flex items-center justify-center hover:scale-110 transition-transform"
               style={{ zIndex: topTypes.length - index }}
             >
-              <span className="text-lg">{ICONS[type]}</span>
+              <span className="text-lg">{REACTION_ICONS[type]}</span>
             </div>
           ))}
         </div>

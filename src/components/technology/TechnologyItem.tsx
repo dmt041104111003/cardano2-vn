@@ -2,16 +2,7 @@ import Skill from "~/components/skill";
 import Project from "~/components/project";
 import FeatureCards from "./FeatureCards";
 import { Verify, Onboarding, Decentralized } from "~/components/icons";
-
-interface Technology {
-  id: string;
-  title: string;
-  name: string;
-  description: string;
-  href: string;
-  image: string;
-  githubRepo?: string;
-}
+import { TechnologyItemProps } from '~/constants/about';
 
 const defaultResults = [
   {
@@ -33,10 +24,6 @@ const defaultResults = [
     color: "purple"
   }
 ];
-
-interface TechnologyItemProps {
-  technology: Technology;
-}
 
 export default function TechnologyItem({ technology }: TechnologyItemProps) {
   return (

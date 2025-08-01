@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic';
-import type { Post } from '~/constants/posts';
+import type { Post, PostEditorProps } from '~/constants/posts';
 
 const PostEditorClient = dynamic(() => import('./PostEditorClient').then(mod => ({ default: mod.PostEditorClient })), {
   ssr: false,
@@ -46,11 +46,7 @@ const PostEditorClient = dynamic(() => import('./PostEditorClient').then(mod => 
   ),
 });
 
-interface PostEditorProps {
-  onSave: (post: Post) => void;
-  post?: Post;
-  onCancel?: () => void;
-}
+
 
 export function PostEditor({ onSave, post, onCancel }: PostEditorProps) {
   return <PostEditorClient onSave={onSave} post={post} onCancel={onCancel} />;

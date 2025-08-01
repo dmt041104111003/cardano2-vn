@@ -1,16 +1,6 @@
 import React from 'react';
-import { ContactFormData, FormErrors } from '~/types/contact';
+import { ContactFormData, FormErrors, ContactFormProps } from '~/constants/contact';
 import { Captcha } from '~/components/ui/captcha';
-
-interface ContactFormProps {
-  formData: ContactFormData;
-  errors: FormErrors;
-  isSubmitting: boolean;
-  captchaValid: boolean;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  onCaptchaChange: (isValid: boolean) => void;
-}
 
 export function ContactForm({ formData, errors, isSubmitting, captchaValid, onInputChange, onSubmit, onCaptchaChange }: ContactFormProps) {
   return (

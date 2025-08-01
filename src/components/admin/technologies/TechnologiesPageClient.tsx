@@ -15,17 +15,7 @@ import { useToastContext } from "~/components/toast-provider";
 import { useQuery } from "@tanstack/react-query";
 import AdminTableSkeleton from "~/components/admin/common/AdminTableSkeleton";
 import NotFoundInline from "~/components/ui/not-found-inline";
-
-interface Technology {
-  id: string;
-  title: string;
-  name: string;
-  description: string;
-  href: string;
-  image: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Technology } from "~/constants/technologies";
 
 export default function TechnologiesPageClient() {
   const [searchTerm, setSearchTerm] = useState("");

@@ -3,24 +3,7 @@
 import { Edit, Trash2, Eye } from "lucide-react";
 import { useState } from 'react';
 import Modal from '../common/Modal';
-
-interface Technology {
-  id: string;
-  title: string;
-  name: string;
-  description: string;
-  href: string;
-  image: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface TechnologyTableProps {
-  technologies: Technology[];
-  onEdit: (technology: Technology) => void;
-  onDelete: (technology: Technology) => void;
-  onViewDetails: (technology: Technology) => void;
-}
+import { Technology, TechnologyTableProps } from "~/constants/technologies";
 
 export function TechnologyTable({ technologies, onEdit, onDelete, onViewDetails }: TechnologyTableProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -112,22 +95,22 @@ export function TechnologyTable({ technologies, onEdit, onDelete, onViewDetails 
                 </a>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {new Date(technology.createdAt).toLocaleString('en-GB', {
+                {technology.createdAt ? new Date(technology.createdAt).toLocaleString('en-GB', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
                   hour: '2-digit',
                   minute: '2-digit'
-                })}
+                }) : '-'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {new Date(technology.updatedAt).toLocaleString('en-GB', {
+                {technology.updatedAt ? new Date(technology.updatedAt).toLocaleString('en-GB', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
                   hour: '2-digit',
                   minute: '2-digit'
-                })}
+                }) : '-'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div className="flex items-center justify-end space-x-2">

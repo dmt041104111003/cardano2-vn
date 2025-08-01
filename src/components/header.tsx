@@ -8,12 +8,10 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { navbars } from "~/constants/navbars";
 import { images } from "~/public/images";
-import { routers } from "~/constants/routers";
+import { routers, NavbarType } from "~/constants/routers";
 import { useUser } from "~/hooks/useUser";
 import { WalletAvatar } from "~/components/WalletAvatar";
 import { ThemeToggle } from "~/components/ui/theme-toggle";
-
-type NavbarType = { id: number; title: string; href: string };
 
 function UserAvatar({ session }: { session: any }) {
   const [imageError, setImageError] = useState(false);

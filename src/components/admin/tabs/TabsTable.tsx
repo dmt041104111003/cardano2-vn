@@ -3,38 +3,7 @@
 import { Edit, Trash2, Eye } from "lucide-react";
 import { useState } from 'react';
 import Modal from '../common/Modal';
-
-interface Tab {
-  id: string;
-  name: string;
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  members?: Member[];
-}
-
-interface Member {
-  id: string;
-  name: string;
-  role: string;
-  description: string;
-  image: string;
-  email?: string;
-  color?: string;
-  skills?: string[];
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface TabsTableProps {
-  tabs: Tab[];
-  onEdit: (tab: Tab) => void;
-  onDelete: (tabId: string) => void;
-  onView: (tab: Tab) => void;
-}
+import { Tab, Member, TabsTableProps } from "~/constants/tabs";
 
 export function TabsTable({ tabs, onEdit, onDelete, onView }: TabsTableProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -53,7 +22,8 @@ export function TabsTable({ tabs, onEdit, onDelete, onView }: TabsTableProps) {
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return '-';
     return new Date(dateString).toLocaleString('en-GB', {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit', hour12: false

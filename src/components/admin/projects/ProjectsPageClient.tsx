@@ -13,19 +13,7 @@ import { useToastContext } from "~/components/toast-provider";
 import { useQuery } from "@tanstack/react-query";
 import AdminTableSkeleton from "~/components/admin/common/AdminTableSkeleton";
 import NotFoundInline from "~/components/ui/not-found-inline";
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  href?: string;
-  status: 'PROPOSED' | 'APPROVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  year: number;
-  quarterly: string;
-  fund?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Project } from "~/constants/projects";
 
 export default function ProjectsPageClient() {
   const [searchTerm, setSearchTerm] = useState("");

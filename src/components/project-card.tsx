@@ -4,23 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import ProjectModal from "~/components/project-modal";
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  href?: string;
-  status: 'PROPOSED' | 'APPROVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  year: number;
-  quarterly: string;
-  fund?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ProjectCardProps {
-  project: Project;
-}
+import { ProjectCardProps } from '~/constants/projects';
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   const [showModal, setShowModal] = useState(false);

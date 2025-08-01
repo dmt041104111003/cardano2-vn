@@ -1,15 +1,8 @@
 import { Edit, Trash2 } from 'lucide-react';
-import { Post } from '~/constants/posts';
+import { Post, PostTableProps } from '~/constants/posts';
 import { Tag } from '~/constants/tags';
 import { useState } from 'react';
 import Modal from '../common/Modal';
-
-interface PostTableProps {
-  posts: Post[];
-  onEdit: (post: Post) => void;
-  onDelete: (postId: string) => void;
-  onStatusChange?: (postId: string, newStatus: 'published' | 'draft' | 'archived') => void;
-}
 
 export function PostTable({
   posts = [],

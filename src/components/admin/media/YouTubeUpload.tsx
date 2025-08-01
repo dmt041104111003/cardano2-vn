@@ -2,10 +2,7 @@
 
 import { useState } from 'react';
 import { useToastContext } from '~/components/toast-provider';
-
-interface YouTubeUploadProps {
-  onUploadSuccess: () => void;
-}
+import { YouTubeUploadProps } from '~/constants/media';
 
 export function YouTubeUpload({ onUploadSuccess }: YouTubeUploadProps) {
   const [youtubeUrl, setYoutubeUrl] = useState('');
