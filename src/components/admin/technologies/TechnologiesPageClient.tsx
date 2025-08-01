@@ -5,9 +5,10 @@ import { AdminHeader } from "~/components/admin/common/AdminHeader";
 import { AdminStats } from "~/components/admin/common/AdminStats";
 import { AdminFilters } from "~/components/admin/common/AdminFilters";
 import TechnologyEditor from "~/components/admin/technologies/TechnologyEditor";
-import AboutEditor from "~/components/admin/about/AboutEditor";
+
 import { TechnologyTable } from "~/components/admin/technologies/TechnologyTable";
 import TechnologyDetailsModal from "~/components/admin/technologies/TechnologyDetailsModal";
+import ProjectsPageClient from "~/components/admin/projects/ProjectsPageClient";
 import Modal from "~/components/admin/common/Modal";
 import { Pagination } from "~/components/ui/pagination";
 import { useToastContext } from "~/components/toast-provider";
@@ -33,7 +34,7 @@ export default function TechnologiesPageClient() {
   const [editingTechnology, setEditingTechnology] = useState<Technology | null>(null);
 
   const [showTechnologyModal, setShowTechnologyModal] = useState<Technology | null>(null);
-  const [activeTab, setActiveTab] = useState<'technologies' | 'about'>('technologies');
+  const [activeTab, setActiveTab] = useState<'technologies' | 'projects'>('technologies');
   const { showSuccess, showError } = useToastContext();
 
   const {
@@ -50,6 +51,20 @@ export default function TechnologiesPageClient() {
   });
 
   const technologies: Technology[] = queryData?.technologies || [];
+
+  const {
+    data: projectsData,
+    isLoading: loadingProjects,
+  } = useQuery({
+    queryKey: ['admin-projects'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/projects');
+      if (!res.ok) throw new Error('Failed to fetch projects');
+      return res.json();
+    }
+  });
+
+  const projects = projectsData?.projects || [];
 
   const handleCreateTechnology = () => {
     setEditingTechnology(null);
@@ -91,25 +106,7 @@ export default function TechnologiesPageClient() {
     }
   };
 
-  const handleSaveAbout = async (aboutData: any) => {
-    try {
-      const response = await fetch('/api/admin/about', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(aboutData),
-      });
 
-      if (response.ok) {
-        showSuccess('About content updated', 'About content has been updated successfully.');
-      } else {
-        showError('Failed to save about content');
-      }
-    } catch (error) {
-      showError('Failed to save about content');
-    }
-  };
 
 
 
@@ -135,13 +132,6 @@ export default function TechnologiesPageClient() {
 
   return (
     <div className="space-y-6">
-      <AdminHeader 
-        title="Technologies Management" 
-        description="Manage Cardano2vn technology projects"
-        buttonText="Add Technology"
-        onAddClick={handleCreateTechnology}
-      />
-
       {/* Tabs */}
       <div className="border-b border-gray-200">
         <nav className="-mb-px flex space-x-8">
@@ -153,35 +143,42 @@ export default function TechnologiesPageClient() {
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Technologies
+            Projects ({technologies.length})
           </button>
           <button
-            onClick={() => setActiveTab('about')}
+            onClick={() => setActiveTab('projects')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'about'
+              activeTab === 'projects'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            About Content
+            Catalyst ({projects.length})
           </button>
+
         </nav>
       </div>
 
       {activeTab === 'technologies' ? (
         <>
+          <AdminHeader 
+            title="Projects Management" 
+            description="Manage Cardano2vn projects"
+            buttonText="Add Project"
+            onAddClick={handleCreateTechnology}
+          />
           <AdminStats 
             stats={[
-              { label: "Total Technologies", value: stats.total },
+              { label: "Total Projects", value: stats.total },
             ]}
           />
 
           <AdminFilters
             searchTerm={searchTerm}
             filterType="all"
-            searchPlaceholder="Search technologies by title, name or description..."
+            searchPlaceholder="Search projects by title, name or description..."
             filterOptions={[
-              { value: "all", label: "All Technologies" },
+              { value: "all", label: "All Projects" },
             ]}
             onSearchChange={setSearchTerm}
             onFilterChange={() => {}}
@@ -232,16 +229,9 @@ export default function TechnologiesPageClient() {
             </div>
           )}
         </>
-      ) : (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">About Section Content</h2>
-          <AboutEditor
-            onSave={handleSaveAbout}
-            onCancel={() => {}}
-            isLoading={false}
-          />
-        </div>
-      )}
+      ) : activeTab === 'projects' ? (
+        <ProjectsPageClient />
+      ) : null}
 
       <Modal
         isOpen={showEditor}

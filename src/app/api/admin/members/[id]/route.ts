@@ -32,7 +32,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { name, role, description, image, email, color, skills, order } = await request.json();
+    const { name, role, description, image, email, color, skills, order, tabId } = await request.json();
 
     const member = await prisma.member.update({
       where: { id: params.id },
@@ -42,9 +42,10 @@ export async function PUT(
         description,
         image,
         email,
-        color: color || "blue",
-        skills: skills || [],
-        order: order || 0
+        color,
+        skills,
+        order,
+        tabId: tabId || null
       }
     });
 
@@ -63,9 +64,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    await prisma.member.update({
-      where: { id: params.id },
-      data: { isActive: false }
+    await prisma.member.delete({
+      where: { id: params.id }
     });
 
     return NextResponse.json({ success: true });

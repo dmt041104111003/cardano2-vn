@@ -77,7 +77,7 @@ export default function ProjectPageClient() {
       
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
         <Title
-          title="Projects Cardano2vn Roadmap"
+          title="Catalyst Cardano2vn Roadmap"
           description="Our journey of building the Andamio platform and ecosystem, from founding to the present day and beyond."
         />
         <div className="relative">
@@ -111,7 +111,7 @@ export default function ProjectPageClient() {
                   onYearChange={handleYearChange}
                 />
                 <div className="mt-6 flex-1 md:-mt-12">
-                  {typeFilter === "project" ? (
+                  {typeFilter === "catalyst" ? (
                     <TechnologyPageClient isEmbedded={true} searchTerm={searchTerm} />
                   ) : (
                     <div

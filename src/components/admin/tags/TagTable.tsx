@@ -1,6 +1,6 @@
 import { Edit, Trash2 } from 'lucide-react';
 import { Tag } from '~/constants/tags';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 
 interface TagTableProps {
@@ -28,6 +28,18 @@ export function TagTable({
 }: TagTableProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedTagToDelete, setSelectedTagToDelete] = useState<Tag | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editTagName, setEditTagName] = useState('');
+
+  useEffect(() => {
+    if (editingTag) {
+      setEditTagName(editingTag.name);
+      setIsEditModalOpen(true);
+    } else {
+      setIsEditModalOpen(false);
+      setEditTagName('');
+    }
+  }, [editingTag]);
 
   const handleDeleteClick = (tag: Tag) => {
     setSelectedTagToDelete(tag);
@@ -40,6 +52,24 @@ export function TagTable({
       setIsDeleteModalOpen(false);
       setSelectedTagToDelete(null);
     }
+  };
+
+  const handleEditClick = (tag: Tag) => {
+    onEdit(tag);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingTag && editTagName.trim()) {
+      onSave(editingTag.id, editTagName.trim());
+      setIsEditModalOpen(false);
+      setEditTagName('');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditModalOpen(false);
+    setEditTagName('');
+    onCancel();
   };
 
   return (
@@ -66,18 +96,7 @@ export function TagTable({
           {tags.map((tag) => (
             <tr key={tag.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
-                {editingTag?.id === tag.id ? (
-                  <input
-                    type="text"
-                    defaultValue={tag.name}
-                    placeholder="Enter tag name"
-                    title="Edit tag name"
-                    className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    onBlur={(e) => onSave(tag.id, e.target.value)}
-                  />
-                ) : (
-                  <div className="text-sm font-medium text-gray-900">{tag.name}</div>
-                )}
+                <div className="text-sm font-medium text-gray-900">{tag.name}</div>
               </td>
 
               <td className="px-6 py-4 whitespace-nowrap">
@@ -90,23 +109,13 @@ export function TagTable({
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div className="flex items-center justify-end space-x-2">
-                  {editingTag?.id === tag.id ? (
-                    <button
-                      onClick={onCancel}
-                      className="text-gray-400 hover:text-gray-600"
-                      title="Cancel edit"
-                    >
-                      Cancel
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => onEdit(tag)}
-                      className="text-blue-600 hover:text-blue-900"
-                      title="Edit tag"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => handleEditClick(tag)}
+                    className="text-blue-600 hover:text-blue-900"
+                    title="Edit tag"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
                   <button
                     onClick={() => handleDeleteClick(tag)}
                     className="text-red-600 hover:text-red-900"
@@ -121,6 +130,52 @@ export function TagTable({
         </tbody>
       </table>
       
+      {/* Edit Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={handleCancelEdit}
+        title="Edit Tag"
+        maxWidth="max-w-md"
+      >
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="editTagName" className="block text-sm font-medium text-gray-700 mb-1">
+              Tag Name
+            </label>
+            <input
+              id="editTagName"
+              type="text"
+              value={editTagName}
+              onChange={(e) => setEditTagName(e.target.value)}
+              placeholder="Enter tag name"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSaveEdit();
+                }
+              }}
+            />
+          </div>
+          
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <button
+              onClick={handleCancelEdit}
+              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveEdit}
+              disabled={!editTagName.trim()}
+              className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete Modal */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

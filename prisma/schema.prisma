@@ -203,8 +203,25 @@ model Member {
   skills      String[] @default([])
   isActive    Boolean  @default(true)
   order       Int      @default(0)
+  tabId       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  tab         Tab?     @relation(fields: [tabId], references: [id], onDelete: SetNull)
+
+  @@index([isActive])
+  @@index([order])
+  @@index([createdAt])
+  @@index([tabId])
+}
+
+model Tab {
+  id          String   @id @default(uuid())
+  name        String
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  members     Member[]
 
   @@index([isActive])
   @@index([order])

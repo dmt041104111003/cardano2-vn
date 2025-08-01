@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 
 interface Member {
   id?: string;
@@ -11,6 +13,15 @@ interface Member {
   email?: string;
   color?: string;
   skills?: string[];
+  order: number;
+  tabId?: string;
+}
+
+interface Tab {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
   order: number;
 }
 
@@ -102,50 +113,50 @@ function MediaInput({ value, onChange, placeholder, accept }: MediaInputProps) {
           }`}
           onClick={() => setActiveTab('url')}
         >
-          Paste URL
+          URL
         </button>
       </div>
-      
-      {activeTab === 'upload' && (
-        <div className="flex flex-col items-center gap-2">
-          <button
-            type="button"
-            className="inline-flex items-center px-3 py-2 text-sm font-medium bg-blue-100 text-blue-800 rounded hover:bg-blue-200 border border-blue-200"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            Upload image
-          </button>
+
+      {activeTab === 'upload' ? (
+        <div className="space-y-2">
           <input
+            ref={fileInputRef}
             type="file"
             accept={accept || "image/*"}
             onChange={handleFileChange}
-            ref={fileInputRef}
-            style={{ display: 'none' }}
-            title="Upload image file"
-            aria-label="Upload image file"
+            className="hidden"
+            aria-label="Upload file"
           />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          >
+            Choose File
+          </button>
         </div>
-      )}
-      
-      {activeTab === 'url' && (
-        <div className="flex flex-col items-center gap-2 w-full">
+      ) : (
+        <div className="space-y-2">
           <input
             type="url"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder={placeholder || "Paste image URL here..."}
             value={imageUrl}
-            onChange={e => handleImageUrl(e.target.value)}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="Enter image URL"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
+          <button
+            type="button"
+            onClick={() => handleImageUrl(imageUrl)}
+            className="w-full px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Add URL
+          </button>
         </div>
       )}
-      
+
       {value && (
-        <div className="flex justify-center">
-          <img
-            src={value}
-            alt="Preview"
-            className="max-w-full max-h-48 rounded-lg shadow-md"
-          />
+        <div className="mt-4">
+          <img src={value} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
         </div>
       )}
     </div>
@@ -161,10 +172,23 @@ export default function MemberEditor({ member, onSave, onCancel, isLoading }: Me
     email: member?.email || "",
     color: member?.color || "blue",
     skills: member?.skills || [],
-    order: member?.order || 0
+    order: member?.order || 0,
+    tabId: member?.tabId || ""
   });
 
   const [skillInput, setSkillInput] = useState("");
+
+  // Fetch tabs for dropdown
+  const { data: tabsData } = useQuery({
+    queryKey: ['admin-tabs'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/tabs');
+      if (!res.ok) throw new Error('Failed to fetch tabs');
+      return res.json();
+    }
+  });
+
+  const tabs: Tab[] = tabsData?.tabs || [];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,13 +274,13 @@ export default function MemberEditor({ member, onSave, onCancel, isLoading }: Me
           <MediaInput
             value={formData.image}
             onChange={handleImageUpload}
-            placeholder="Upload or paste image URL"
+            placeholder="Upload or enter image URL"
             accept="image/*"
           />
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email (Optional)</label>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
           <input
             id="email"
             type="email"
@@ -268,90 +292,117 @@ export default function MemberEditor({ member, onSave, onCancel, isLoading }: Me
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div className="space-y-2">
-          <label htmlFor="color" className="block text-sm font-medium text-gray-700">Color Theme</label>
+          <label htmlFor="color" className="block text-sm font-medium text-gray-700">Color</label>
           <select
             id="color"
             value={formData.color}
             onChange={(e) => setFormData({ ...formData, color: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           >
-            {colorOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+            {colorOptions.map((color) => (
+              <option key={color.value} value={color.value}>
+                {color.label}
               </option>
             ))}
           </select>
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="order" className="block text-sm font-medium text-gray-700">Display Order</label>
+          <label htmlFor="order" className="block text-sm font-medium text-gray-700">Order</label>
           <input
             id="order"
             type="number"
             value={formData.order}
             onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
             placeholder="0"
+            min="0"
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="tab" className="block text-sm font-medium text-gray-700">Tab</label>
+          <Select
+            value={formData.tabId || "no-tab"}
+            onValueChange={(value) => setFormData({ ...formData, tabId: value === "no-tab" ? undefined : value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a tab (optional)" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="no-tab">No Tab</SelectItem>
+              {tabs.map((tab) => (
+                <SelectItem key={tab.id} value={tab.id}>
+                  {tab.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Skills</label>
-        <div className="space-y-3">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={skillInput}
-              onChange={(e) => setSkillInput(e.target.value)}
-              placeholder="Add a skill"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
-            />
-            <button
-              type="button"
-              onClick={addSkill}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Add
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {formData.skills?.map((skill, index) => (
+        <label htmlFor="skills" className="block text-sm font-medium text-gray-700">Skills</label>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={skillInput}
+            onChange={(e) => setSkillInput(e.target.value)}
+            placeholder="Add a skill"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addSkill();
+              }
+            }}
+          />
+          <button
+            type="button"
+            onClick={addSkill}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Add
+          </button>
+        </div>
+        {formData.skills && formData.skills.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {formData.skills.map((skill, index) => (
               <span
                 key={index}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
               >
                 {skill}
                 <button
                   type="button"
                   onClick={() => removeSkill(skill)}
-                  className="ml-2 text-blue-600 hover:text-blue-800"
+                  className="ml-1 text-blue-600 hover:text-blue-800"
                 >
                   ×
                 </button>
               </span>
             ))}
           </div>
-        </div>
+        )}
       </div>
 
-      <div className="flex justify-end space-x-4">
+      <div className="flex justify-end space-x-3 pt-4">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          disabled={isLoading}
+          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
-          {isLoading ? "Saving..." : "Save Changes"}
+          {isLoading ? 'Saving...' : (member ? 'Update Member' : 'Create Member')}
         </button>
       </div>
     </form>
