@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, Users, Tags, Menu, X, Home, LogOut, Image, FolderOpen, Cpu, Info, UserPlus } from "lucide-react";
+import { FileText, Users, Menu, X, Home, LogOut, Cpu, Info, UserPlus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "~/hooks/useUser";
 import { useEffect } from "react";
@@ -45,40 +45,28 @@ const adminNavItems = [
     icon: FileText,
   },
   {
-    title: "Projects",
-    href: "/admin/projects",
-    icon: FolderOpen,
-  },
-  {
-    title: "Technologies",
+    title: "Catalyst & Project",
     href: "/admin/technologies",
     icon: Cpu,
   },
   {
-    title: "Members",
+    title: "About & Member",
     href: "/admin/members",
     icon: UserPlus,
   },
+
   {
     title: "Users",
     href: "/admin/users",
     icon: Users,
   },
-  {
-    title: "Tags",
-    href: "/admin/tags",
-    icon: Tags,
-  },
+
   {
     title: "Video Section",
     href: "/admin/video-section",
     icon: Info,
   },
-  {
-    title: "Media",
-    href: "/admin/media",
-    icon: Image,
-  },
+
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

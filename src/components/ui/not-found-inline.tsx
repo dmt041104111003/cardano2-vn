@@ -1,5 +1,3 @@
-import { images } from "~/public/images";
-
 interface NotFoundInlineProps {
   onClearFilters?: () => void;
 }
@@ -18,7 +16,7 @@ export default function NotFoundInline({ onClearFilters }: NotFoundInlineProps) 
         />
       </div>
       <div>
-        <img className="animate-pulse" width={260} src={images.logo} alt="not-found" />
+        <img className="animate-pulse" width={260} src="/images/common/logo.png" alt="not-found" />
       </div>
       <div className="text-2xl font-bold text-gray-900 dark:text-white">404 - Page not found</div>
       <div className="text-base text-gray-600 dark:text-gray-400">The page you are looking for does not exist</div>

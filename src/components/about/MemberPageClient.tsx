@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useSession } from 'next-auth/react';
 import { useToastContext } from '~/components/toast-provider';
 import { ContactFormData, FormErrors } from '~/types/contact';
+import { Pagination } from "~/components/ui/pagination";
 
 interface MemberType {
   id: string;
@@ -21,6 +22,15 @@ interface MemberType {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  tab?: TabType;
+}
+
+interface TabType {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
+  order: number;
 }
 
 function AboutContactForm({ formData, errors, isSubmitting, onInputChange, onSubmit }: {
@@ -172,6 +182,9 @@ function AboutContactForm({ formData, errors, isSubmitting, onInputChange, onSub
 export default function MemberPageClient() {
   const [selectedMember, setSelectedMember] = useState<MemberType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 6;
   const { data: session } = useSession();
   const { showSuccess, showError } = useToastContext();
   
@@ -180,6 +193,7 @@ export default function MemberPageClient() {
     "your-number": "",
     "your-email": "",
     "address-wallet": "",
+    "email-intro": "",
     "event-location": "",
     message: ""
   });
@@ -198,7 +212,50 @@ export default function MemberPageClient() {
     }
   });
 
+  const { data: tabsData } = useQuery({
+    queryKey: ['tabs'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/tabs');
+      if (!response.ok) {
+        throw new Error('Failed to fetch tabs');
+      }
+      return response.json();
+    }
+  });
+
   const members: MemberType[] = queryData?.members || [];
+  const tabs: TabType[] = tabsData?.tabs || [];
+
+  // const membersByTab = members.reduce((acc, member) => {
+  //   const tabId = member.tab?.id || 'no-tab';
+  //   if (!acc[tabId]) {
+  //     acc[tabId] = {
+  //       tab: member.tab,
+  //       members: []
+  //     };
+  //   }
+  //   acc[tabId].members.push(member);
+  //   return acc;
+  // }, {} as Record<string, { tab?: TabType; members: MemberType[] }>);
+
+  const sortedTabs = tabs.sort((a, b) => a.order - b.order);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
+
+  const filteredMembers = members.filter(member => {
+    if (activeTab === null) return true;
+    if (activeTab === 'no-tab') return !member.tab;
+    return member.tab?.id === activeTab;
+  });
+
+  const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedMembers = filteredMembers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleMemberClick = (member: MemberType) => {
     setSelectedMember(member);
@@ -315,6 +372,7 @@ export default function MemberPageClient() {
           "your-number": "",
           "your-email": "",
           "address-wallet": "",
+          "email-intro": "",
           "event-location": "",
           message: ""
         });
@@ -425,9 +483,51 @@ export default function MemberPageClient() {
           </div>
         </div>
         
+        {/* Tab Navigation */}
+        {sortedTabs.length > 0 && (
+          <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
+            <nav className="-mb-px flex space-x-8">
+              <button
+                onClick={() => setActiveTab(null)}
+                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === null
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+              >
+                <div className="flex items-center">
+                  <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  All Members
+                </div>
+              </button>
+              {sortedTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    {tab.name}
+                  </div>
+                </button>
+              ))}
+            </nav>
+          </div>
+        )}
+        
+        {/* Members Grid */}
         <div className="mx-auto pb-20">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {members.map(function (member, index) {
+            {paginatedMembers.map(function (member, index) {
               return (
                 <Member
                   name={member.name}
@@ -441,6 +541,19 @@ export default function MemberPageClient() {
             })}
           </div>
         </div>
+        
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="bg-white rounded-lg shadow">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredMembers.length}
+              itemsPerPage={ITEMS_PER_PAGE}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
       </section>
 
       <section className="py-12 lg:py-16 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-950">

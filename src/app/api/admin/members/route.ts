@@ -5,7 +5,10 @@ export async function GET() {
   try {
     const members = await prisma.member.findMany({
       where: { isActive: true },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'asc' },
+      include: {
+        tab: true
+      }
     });
 
     return NextResponse.json({ members });
@@ -20,7 +23,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, role, description, image, email, color, skills, order } = await request.json();
+    const { name, role, description, image, email, color, skills, order, tabId } = await request.json();
 
     const member = await prisma.member.create({
       data: {
@@ -32,6 +35,7 @@ export async function POST(request: NextRequest) {
         color: color || "blue",
         skills: skills || [],
         order: order || 0,
+        tabId: tabId || null,
         isActive: true
       }
     });
