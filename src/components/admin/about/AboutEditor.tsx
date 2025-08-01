@@ -4,14 +4,18 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AboutContent, AboutEditorProps } from "~/constants/about";
 
-export default function AboutEditor({ initialData, onSave, onCancel, isLoading }: AboutEditorProps) {
+export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditorProps) {
   const [formData, setFormData] = useState<AboutContent>({
+    id: "",
     title: "",
     subtitle: "",
     description: "",
     youtubeUrl: "",
     buttonText: "",
-    buttonUrl: ""
+    buttonUrl: "",
+    isActive: true,
+    createdAt: "",
+    updatedAt: ""
   });
 
   const convertToEmbedUrl = (url: string): string => {

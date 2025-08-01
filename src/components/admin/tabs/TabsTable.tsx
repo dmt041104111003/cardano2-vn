@@ -3,7 +3,8 @@
 import { Edit, Trash2, Eye } from "lucide-react";
 import { useState } from 'react';
 import Modal from '../common/Modal';
-import { Tab, Member, TabsTableProps } from "~/constants/tabs";
+import { Tab, Member } from "~/constants/members";
+import { TabsTableProps } from "~/constants/tabs";
 
 export function TabsTable({ tabs, onEdit, onDelete, onView }: TabsTableProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -15,7 +16,7 @@ export function TabsTable({ tabs, onEdit, onDelete, onView }: TabsTableProps) {
   };
 
   const handleConfirmDelete = () => {
-    if (selectedTabToDelete) {
+    if (selectedTabToDelete && selectedTabToDelete.id) {
       onDelete(selectedTabToDelete.id);
       setIsDeleteModalOpen(false);
       setSelectedTabToDelete(null);

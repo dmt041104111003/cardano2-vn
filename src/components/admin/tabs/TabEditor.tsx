@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Tab, TabEditorProps } from "~/constants/tabs";
+import { TabEditorProps } from "~/constants/tabs";
 
 export default function TabEditor({ tab, existingTabs = [], onSave, onCancel, isLoading }: TabEditorProps) {
   const [formData, setFormData] = useState({
@@ -21,7 +21,7 @@ export default function TabEditor({ tab, existingTabs = [], onSave, onCancel, is
     } else {
       const trimmedName = formData.name.trim().toLowerCase();
       const isDuplicate = existingTabs.some(existingTab => 
-        existingTab.id !== tab?.id && 
+        existingTab.id !== (tab?.id || '') && 
         existingTab.name.toLowerCase() === trimmedName
       );
       
@@ -46,6 +46,7 @@ export default function TabEditor({ tab, existingTabs = [], onSave, onCancel, is
     }
 
     onSave({
+      id: tab?.id || '',
       name: formData.name.trim(),
       order: formData.order
     });

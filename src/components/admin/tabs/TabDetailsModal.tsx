@@ -1,7 +1,8 @@
 "use client";
 
 import Modal from "~/components/admin/common/Modal";
-import { Tab, Member, TabDetailsModalProps } from "~/constants/tabs";
+import { Tab, Member } from "~/constants/members";
+import { TabDetailsModalProps } from "~/constants/tabs";
 
 export function TabDetailsModal({ tab, isOpen, onClose }: TabDetailsModalProps) {
   if (!tab) return null;
