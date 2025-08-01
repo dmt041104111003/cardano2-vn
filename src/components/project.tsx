@@ -1,6 +1,5 @@
-import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
-import { Result } from "~/types";
+import { Result } from "~/constants/home";
 
 export default function Project({
   title,

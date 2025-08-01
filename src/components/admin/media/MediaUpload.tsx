@@ -5,12 +5,7 @@ import Modal from '~/components/admin/common/Modal';
 import { UploadTabs } from './UploadTabs';
 import { ImageUpload } from './ImageUpload';
 import { YouTubeUpload } from './YouTubeUpload';
-
-interface MediaUploadProps {
-  isOpen: boolean;
-  onUploadSuccess: () => void;
-  onClose: () => void;
-}
+import { MediaUploadProps } from '~/constants/media';
 
 export function MediaUpload({ isOpen, onUploadSuccess, onClose }: MediaUploadProps) {
   const [uploadType, setUploadType] = useState<'image' | 'youtube'>('image');

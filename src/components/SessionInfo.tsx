@@ -2,12 +2,7 @@
 
 import { useUser } from "~/hooks/useUser";
 import { useEffect, useState, useCallback } from "react";
-
-interface SessionData {
-  id: string;
-  accessTime: string;
-  lastAccess: string;
-}
+import { SessionData } from '~/constants/users';
 
 export default function SessionInfo() {
   const { user, isAuthenticated } = useUser();

@@ -2,22 +2,7 @@
 
 import * as React from "react";
 import { AdminStats } from "../common/AdminStats";
-
-interface VideoItem {
-  id: string;
-  videoId: string;
-  channelName: string;
-  videoUrl: string;
-  title: string;
-  thumbnailUrl: string;
-  isFeatured: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface VideoSectionStatsProps {
-  videos: VideoItem[];
-}
+import { VideoItem, VideoSectionStatsProps } from "~/constants/video-section";
 
 export function VideoSectionStats({ videos }: VideoSectionStatsProps) {
   const stats = [

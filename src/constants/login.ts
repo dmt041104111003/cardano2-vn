@@ -1,3 +1,17 @@
+// Login Components Interfaces
+export interface Network {
+  id: string;
+  name: string;
+  icon: string;
+  isActive: boolean;
+}
+
+export interface NetworkSelectorProps {
+  networks: Network[];
+  selectedNetwork: string;
+  onNetworkSelect: (networkId: string) => void;
+}
+
 export interface Wallet {
   id: string;
   name: string;
@@ -5,11 +19,8 @@ export interface Wallet {
   color: string;
 }
 
-export interface Network {
-  id: string;
-  name: string;
-  icon: string;
-  isActive: boolean;
+export interface WalletListProps {
+  wallets: Wallet[];
 }
 
 export const NETWORKS: Network[] = [

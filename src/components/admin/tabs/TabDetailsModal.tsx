@@ -1,37 +1,7 @@
 "use client";
 
 import Modal from "~/components/admin/common/Modal";
-
-interface Tab {
-  id: string;
-  name: string;
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  members?: Member[];
-}
-
-interface Member {
-  id: string;
-  name: string;
-  role: string;
-  description: string;
-  image: string;
-  email?: string;
-  color?: string;
-  skills?: string[];
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface TabDetailsModalProps {
-  tab: Tab | null;
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { Tab, Member, TabDetailsModalProps } from "~/constants/tabs";
 
 export function TabDetailsModal({ tab, isOpen, onClose }: TabDetailsModalProps) {
   if (!tab) return null;

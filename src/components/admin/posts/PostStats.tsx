@@ -2,14 +2,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useState } from 'react';
 
 import { Pagination } from '~/components/ui/pagination';
-import { Post } from '~/constants/posts';
-
-interface PostStatsProps {
-  posts: Post[];
-  year?: number;
-}
-
-const REACTION_TYPES = ['LIKE', 'HEART', 'HAHA', 'SAD', 'ANGRY', 'WOW'] as const;
+import { Post, PostStatsProps, REACTION_TYPES } from '~/constants/posts';
 
 export function PostStats({ posts, year: yearProp }: PostStatsProps) {
   const [filteredMonth, setFilteredMonth] = useState<number | null>(null);

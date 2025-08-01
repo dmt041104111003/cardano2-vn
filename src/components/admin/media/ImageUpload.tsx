@@ -2,10 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useToastContext } from '~/components/toast-provider';
-
-interface ImageUploadProps {
-  onUploadSuccess: () => void;
-}
+import { ImageUploadProps } from '~/constants/media';
 
 export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);

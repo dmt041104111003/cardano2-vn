@@ -2,19 +2,7 @@
 
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-
-interface AboutContent {
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  youtubeUrl: string;
-  buttonText: string;
-  buttonUrl: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { AboutContent } from '~/constants/about';
 
 export default function AboutSection() {
   const { data: queryData, isLoading } = useQuery({

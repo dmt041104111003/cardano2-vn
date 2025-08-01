@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Link from "next/link";
-
-interface NavDocsProps {
-  previous?: { title: string; href: string };
-  current: { title: string; href: string };
-  next?: { title: string; href: string };
-}
+import { NavDocsProps } from '~/constants/docs';
 
 export default function NavDocs({ previous, current, next }: NavDocsProps) {
   return (

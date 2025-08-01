@@ -1,11 +1,7 @@
 'use client';
 
 import { Image as ImageIcon, Youtube } from 'lucide-react';
-
-interface UploadTabsProps {
-  uploadType: 'image' | 'youtube';
-  onTypeChange: (type: 'image' | 'youtube') => void;
-}
+import { UploadTabsProps } from '~/constants/media';
 
 export function UploadTabs({ uploadType, onTypeChange }: UploadTabsProps) {
   return (

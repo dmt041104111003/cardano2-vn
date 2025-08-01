@@ -12,48 +12,8 @@ import { useSession } from "next-auth/react";
 import { useToastContext } from '~/components/toast-provider';
 import { TipTapPreview } from '~/components/ui/tiptap-preview';
 import { useQuery } from '@tanstack/react-query';
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  author: string;
-  authorId?: string;
-  authorWallet?: string;
-  tags: { id: string; name: string }[];
-  media: { type: string; url: string; id?: string }[];
-  comments: { id: string; text: string; author: string; createdAt: string }[];
-  comments_rel?: unknown[];
-  shares: number;
-  reactions: { type: string }[];
-  githubRepo?: string;
-  updatedAt?: string;
-}
-
-interface Tag {
-  id: string;
-  name: string;
-}
-
-interface Comment {
-  id: string;
-  content: string;
-  createdAt: string;
-  userId: string;
-  user?: {
-    wallet?: string;
-    image?: string;
-  } | null;
-  parentCommentId?: string | null;
-  replies?: Comment[];
-  parentUserId?: string;
-  parentAuthor?: string;
-  author?: string;
-  time?: string;
-  avatar?: string;
-  isPostAuthor?: boolean;
-}
+import { BlogPostDetail, BlogTag } from '~/constants/posts';
+import { Comment } from '~/constants/comment';
 
 export default function BlogDetailClient({ slug }: { slug: string }) {
   const { data: session } = useSession();
@@ -78,7 +38,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
     },
     enabled: !!slug
   });
-  const post: Post | null = postData?.post || null;
+  const post: BlogPostDetail | null = postData?.post || null;
 
   const {
     data: reactionsData,
@@ -325,7 +285,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
             </h1>
             {Array.isArray(post.tags) && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-4">
-                {post.tags.map((tag: Tag | string) => (
+                {post.tags.map((tag: BlogTag | string) => (
                   <span key={typeof tag === 'string' ? tag : tag.id} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
                     {typeof tag === 'string' ? tag : tag.name}
                   </span>

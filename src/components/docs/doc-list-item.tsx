@@ -2,12 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, Clock, Eye, Heart, User } from 'lucide-react';
-import { DocDocument } from '~/constants/docs';
-
-interface DocListItemProps {
-  document: DocDocument;
-  onNavigate: (id: string) => void;
-}
+import { DocDocument, DocListItemProps } from '~/constants/docs';
 
 export default function DocListItem({ document, onNavigate }: DocListItemProps) {
 

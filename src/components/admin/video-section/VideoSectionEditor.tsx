@@ -3,20 +3,7 @@
 import * as React from "react";
 import Modal from "../common/Modal";
 import { Play } from "lucide-react";
-
-interface VideoSectionEditorProps {
-  isOpen: boolean;
-  onClose: () => void;
-  videoUrl: string;
-  videoTitle: string;
-  channelName: string;
-  isValidUrl: boolean | null;
-  isAdding: boolean;
-  onVideoUrlChange: (url: string) => void;
-  onVideoTitleChange: (title: string) => void;
-  onChannelNameChange: (channel: string) => void;
-  onAddVideo: () => void;
-}
+import { VideoSectionEditorProps } from "~/constants/video-section";
 
 export function VideoSectionEditor({
   isOpen,

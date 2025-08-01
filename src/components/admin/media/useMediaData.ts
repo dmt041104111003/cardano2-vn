@@ -1,26 +1,7 @@
 import { useState } from 'react';
 import { useToastContext } from '~/components/toast-provider';
 import { useQuery } from '@tanstack/react-query';
-
-interface Media {
-  id: string;
-  filename: string;
-  originalName: string;
-  mimeType: string;
-  size: number;
-  path: string;
-  createdAt: string;
-  updatedAt: string;
-  usedInPosts?: string[];
-}
-
-// interface MediaStats {
-//   total: number;
-//   images: number;
-//   documents: number;
-//   videos: number;
-//   unused: number;
-// }
+import { Media } from '~/constants/media';
 
 export function useMediaData() {
   const [filteredMedia, setFilteredMedia] = useState<Media[]>([]);

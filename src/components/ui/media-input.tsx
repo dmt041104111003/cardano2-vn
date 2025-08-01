@@ -1,21 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-
-
-interface Media {
-  type: 'youtube' | 'image';
-  url: string;
-  id: string;
-}
-
-interface MediaInputProps {
-  onMediaAdd?: (media: Media) => void;
-  mediaType?: 'image' | 'youtube';
-}
+import { MediaInputMedia, MediaInputProps } from '~/constants/media';
 
 export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInputProps) {
-  const [currentMedia, setCurrentMedia] = useState<Media | null>(null);
+  const [currentMedia, setCurrentMedia] = useState<MediaInputMedia | null>(null);
   const [activeImageTab, setActiveImageTab] = useState<'upload' | 'url'>('upload');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [imageUrl, setImageUrl] = useState('');
@@ -32,7 +21,7 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
       });
       const result = await response.json();
       if (response.ok && result.media?.url) {
-        const media = { type: 'image' as const, url: result.media.url, id: result.media.url };
+        const media: MediaInputMedia = { type: 'image', url: result.media.url, id: result.media.url };
         setCurrentMedia(media);
         if (onMediaAdd) {
           onMediaAdd(media);
@@ -56,7 +45,7 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
       });
       const result = await response.json();
       if (response.ok && result.media?.url) {
-        const media = { type: 'image' as const, url: result.media.url, id: result.media.url };
+        const media: MediaInputMedia = { type: 'image', url: result.media.url, id: result.media.url };
         setCurrentMedia(media);
         if (onMediaAdd) onMediaAdd(media);
       } else {
@@ -144,7 +133,7 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
             type="text"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Paste YouTube video link here..."
-            onChange={e => onMediaAdd && onMediaAdd({ type: 'youtube', url: e.target.value, id: e.target.value })}
+            onChange={e => onMediaAdd && onMediaAdd({ type: 'youtube', url: e.target.value, id: e.target.value } as MediaInputMedia)}
           />
           {currentMedia?.type === 'youtube' && (
             <div className="youtube-video">

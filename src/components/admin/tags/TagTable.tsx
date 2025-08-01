@@ -1,22 +1,7 @@
 import { Edit, Trash2 } from 'lucide-react';
-import { Tag } from '~/constants/tags';
+import { Tag, TagTableProps, formatDateTime } from '~/constants/tags';
 import { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
-
-interface TagTableProps {
-  tags: Tag[];
-  editingTag: Tag | null;
-  onEdit: (tag: Tag) => void;
-  onSave: (tagId: string, newName: string) => void;
-  onDelete: (tagId: string) => void;
-  onCancel: () => void;
-}
-
-function formatDateTime(dateString: string) {
-  const date = new Date(dateString);
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-}
 
 export function TagTable({
   tags,

@@ -1,23 +1,5 @@
 import Modal from "~/components/admin/common/Modal";
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  href?: string;
-  status: 'PROPOSED' | 'APPROVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  year: number;
-  quarterly: string;
-  fund?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ProjectDetailsModalProps {
-  project: Project | null;
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { Project, ProjectDetailsModalProps } from "~/constants/projects";
 
 export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetailsModalProps) {
   if (!project) return null;
@@ -59,25 +41,25 @@ export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetails
           <div>
             <span className="font-medium text-gray-900">Created:</span>
             <span className="ml-2 text-gray-600">
-              {new Date(project.createdAt).toLocaleString('en-GB', {
+              {project.createdAt ? new Date(project.createdAt).toLocaleString('en-GB', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
-              })}
+              }) : '-'}
             </span>
           </div>
           <div>
             <span className="font-medium text-gray-900">Updated:</span>
             <span className="ml-2 text-gray-600">
-              {new Date(project.updatedAt).toLocaleString('en-GB', {
+              {project.updatedAt ? new Date(project.updatedAt).toLocaleString('en-GB', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
-              })}
+              }) : '-'}
             </span>
           </div>
         </div>

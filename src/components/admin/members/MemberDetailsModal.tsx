@@ -1,25 +1,5 @@
 import Modal from "~/components/admin/common/Modal";
-
-interface Member {
-  id: string;
-  name: string;
-  role: string;
-  description: string;
-  image: string;
-  email?: string;
-  color?: string;
-  skills?: string[];
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface MemberDetailsModalProps {
-  member: Member | null;
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { Member, MemberDetailsModalProps } from "~/constants/members";
 
 export function MemberDetailsModal({ member, isOpen, onClose }: MemberDetailsModalProps) {
   if (!member) return null;

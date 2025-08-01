@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-interface ShareModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  blogTitle: string;
-  blogUrl: string;
-}
+import { ShareModalProps } from '~/constants/share';
 
 export default function ShareModal({ isOpen, onClose, blogTitle, blogUrl }: ShareModalProps) {
   const [copied, setCopied] = useState(false);

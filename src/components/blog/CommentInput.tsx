@@ -3,11 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 
 import { EMOJIS } from "../../constants/emoji";
-
-interface CommentInputProps {
-  onSubmit: (comment: string, user?: { id: string; address: string; image: string | null } | null) => void;
-  user?: { id: string; address: string; image: string | null } | null;
-}
+import { CommentInputProps } from '~/constants/comment';
 
 export default function CommentInput({ onSubmit, user }: CommentInputProps) {
   const [commentText, setCommentText] = useState("");

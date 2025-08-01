@@ -3,12 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight, ExternalLink, X } from "lucide-react";
-import { docCategories, DocCategory } from "~/constants/docs";
+import { docCategories, DocCategory, DocSidebarProps } from "~/constants/docs";
 import { useState } from "react";
-
-interface DocSidebarProps {
-  onClose?: () => void;
-}
 
 export default function DocSidebar({ onClose }: DocSidebarProps) {
   const pathname = usePathname();

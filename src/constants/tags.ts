@@ -7,6 +7,21 @@ export interface Tag {
   _count?: { posts?: number };
 }
 
+export interface TagTableProps {
+  tags: Tag[];
+  editingTag: Tag | null;
+  onEdit: (tag: Tag) => void;
+  onSave: (tagId: string, newName: string) => void;
+  onDelete: (tagId: string) => void;
+  onCancel: () => void;
+}
+
+export function formatDateTime(dateString: string) {
+  const date = new Date(dateString);
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
 export const ITEMS_PER_PAGE = 6;
 
 export function isWithin24Hours(dateString: string): boolean {

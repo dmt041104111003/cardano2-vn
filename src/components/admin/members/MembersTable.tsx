@@ -3,28 +3,7 @@
 import { Edit, Trash2, Eye } from "lucide-react";
 import { useState } from 'react';
 import Modal from '../common/Modal';
-
-interface Member {
-  id: string;
-  name: string;
-  role: string;
-  description: string;
-  image: string;
-  email?: string;
-  color?: string;
-  skills?: string[];
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface MembersTableProps {
-  members: Member[];
-  onView: (member: Member) => void;
-  onEdit: (member: Member) => void;
-  onDelete: (memberId: string) => void;
-}
+import { Member, MembersTableProps } from "~/constants/members";
 
 export function MembersTable({ members, onView, onEdit, onDelete }: MembersTableProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

@@ -1,35 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToastContext } from "~/components/toast-provider";
-
-interface Tab {
-  id: string;
-  name: string;
-  description?: string;
-  color?: string;
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  members?: Member[];
-}
-
-interface Member {
-  id: string;
-  name: string;
-  role: string;
-  description: string;
-  image: string;
-  email?: string;
-  color?: string;
-  skills?: string[];
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  tabId?: string;
-  tab?: Tab;
-}
+import { Tab, Member } from "~/constants/members";
 
 export function useMembersWithTabs() {
   const [searchTerm, setSearchTerm] = useState("");

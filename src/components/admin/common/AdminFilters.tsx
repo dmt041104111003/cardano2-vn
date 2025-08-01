@@ -1,15 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
-
-interface AdminFiltersProps {
-  searchTerm: string;
-  filterType: string;
-  searchPlaceholder: string;
-  filterOptions: { value: string; label: string }[];
-  onSearchChange: (value: string) => void;
-  onFilterChange: (value: string) => void;
-}
+import { AdminFiltersProps } from '~/constants/admin';
 
 export function AdminFilters({
   searchTerm,

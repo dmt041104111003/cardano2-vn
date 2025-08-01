@@ -6,34 +6,7 @@ import CommentItem from "./CommentItem";
 import { CommentSkeletonList } from "./CommentSkeleton";
 import { useUser } from '~/hooks/useUser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-
-interface Comment {
-  id: string;
-  content: string;
-  createdAt: string;
-  userId: string;
-  user?: {
-    wallet?: string;
-    image?: string;
-  } | null;
-  parentCommentId?: string | null;
-  replies?: Comment[];
-  parentUserId?: string;
-  parentAuthor?: string;
-  author?: string;
-  time?: string;
-  avatar?: string;
-  isPostAuthor?: boolean;
-  postId?: string;
-}
-
-interface CommentSectionProps {
-  comments: Comment[];
-  onSubmitComment: (comment: string) => void;
-  showAllComments?: boolean;
-  postId?: string; 
-}
+import { Comment, CommentSectionProps } from '~/constants/comment';
 
 export default function CommentSection({ comments: initialComments, onSubmitComment, showAllComments = true, postId }: CommentSectionProps) {
   const { isAuthenticated, user } = useUser();

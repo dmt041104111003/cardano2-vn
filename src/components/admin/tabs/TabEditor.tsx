@@ -3,20 +3,7 @@
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-
-interface Tab {
-  id?: string;
-  name: string;
-  order: number;
-}
-
-interface TabEditorProps {
-  tab?: Tab;
-  existingTabs?: Tab[];
-  onSave: (data: Tab) => void;
-  onCancel: () => void;
-  isLoading?: boolean;
-}
+import { Tab, TabEditorProps } from "~/constants/tabs";
 
 export default function TabEditor({ tab, existingTabs = [], onSave, onCancel, isLoading }: TabEditorProps) {
   const [formData, setFormData] = useState({

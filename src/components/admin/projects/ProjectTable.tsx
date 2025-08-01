@@ -3,26 +3,7 @@
 import { Edit, Trash2 } from "lucide-react";
 import { useState } from 'react';
 import Modal from '../common/Modal';
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  href?: string;
-  status: 'PROPOSED' | 'APPROVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  year: number;
-  quarterly: string;
-  fund?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ProjectTableProps {
-  projects: Project[];
-  onEdit: (project: Project) => void;
-  onDelete: (project: Project) => void;
-  onViewDetails: (project: Project) => void;
-}
+import { Project, ProjectTableProps } from "~/constants/projects";
 
 export function ProjectTable({ projects, onEdit, onDelete, onViewDetails }: ProjectTableProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -106,22 +87,22 @@ export function ProjectTable({ projects, onEdit, onDelete, onViewDetails }: Proj
                 {project.fund || '-'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {new Date(project.createdAt).toLocaleString('en-GB', {
+                {project.createdAt ? new Date(project.createdAt).toLocaleString('en-GB', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
                   hour: '2-digit',
                   minute: '2-digit'
-                })}
+                }) : '-'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {new Date(project.updatedAt).toLocaleString('en-GB', {
+                {project.updatedAt ? new Date(project.updatedAt).toLocaleString('en-GB', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
                   hour: '2-digit',
                   minute: '2-digit'
-                })}
+                }) : '-'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div className="flex items-center justify-end space-x-2">

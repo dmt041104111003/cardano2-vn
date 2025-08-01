@@ -1,10 +1,7 @@
 "use client";
 
 import { Menu } from "lucide-react";
-
-interface DocHeaderProps {
-  onMenuClick?: () => void;
-}
+import { DocHeaderProps } from '~/constants/docs';
 
 export default function DocHeader({ onMenuClick }: DocHeaderProps) {
   return (

@@ -2,23 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Save, Loader2 } from "lucide-react";
-
-interface Project {
-  id?: string;
-  title: string;
-  description: string;
-  href?: string;
-  status: 'PROPOSED' | 'APPROVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  year: number;
-  quarterly: string;
-  fund?: string;
-}
-
-interface ProjectEditorProps {
-  project?: Project | null;
-  onSave: (project: Partial<Project>) => void;
-  onCancel: () => void;
-}
+import { Project, ProjectEditorProps } from "~/constants/projects";
 
 export default function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps) {
   const [formData, setFormData] = useState<Partial<Project>>({

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useToastContext } from '~/components/toast-provider';
 import { ContactForm } from './ContactForm';
-import { ContactFormData, FormErrors } from '~/types/contact';
+import { ContactFormData, FormErrors } from '~/constants/contact';
 
 export default function ContactFormSection() {
   const { data: session } = useSession();

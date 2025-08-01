@@ -1,21 +1,7 @@
 import { Search, Filter, Tag, FolderOpen } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-
-interface NavigationProps {
-  searchTerm: string;
-  statusFilter: string;
-  fundFilter: string;
-  typeFilter: string;
-  projects: any[];
-  years: number[];
-  selectedYear: number;
-  onSearchChange: (value: string) => void;
-  onStatusChange: (value: string) => void;
-  onFundChange: (value: string) => void;
-  onTypeChange: (value: string) => void;
-  onYearChange: (year: number) => void;
-}
+import { NavigationProps } from '~/constants/navigation';
 
 export default function Navigation({
   searchTerm,

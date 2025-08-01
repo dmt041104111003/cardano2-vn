@@ -3,15 +3,7 @@
 import * as React from "react";
 import { Button } from "~/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-interface VideoSectionPaginationProps {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  itemsPerPage: number;
-  startIndex: number;
-  onPageChange: (page: number) => void;
-}
+import { VideoSectionPaginationProps } from "~/constants/video-section";
 
 export function VideoSectionPagination({
   currentPage,

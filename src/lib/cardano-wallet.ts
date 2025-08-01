@@ -1,15 +1,5 @@
 import { BrowserWallet } from '@meshsdk/core';
-
-export interface CardanoWalletUser {
-  address: string;
-  name?: string;
-  image?: string;
-  balance?: string;
-}
-
-export interface CardanoWalletConfig {
-  network: 'mainnet';
-}
+import { CardanoWalletUser, CardanoWalletConfig } from '~/constants/wallet';
 
 export class CardanoWalletProvider {
   private config: CardanoWalletConfig;

@@ -3,41 +3,7 @@
 import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-
-interface Member {
-  id?: string;
-  name: string;
-  role: string;
-  description: string;
-  image: string;
-  email?: string;
-  color?: string;
-  skills?: string[];
-  order: number;
-  tabId?: string;
-}
-
-interface Tab {
-  id: string;
-  name: string;
-  description?: string;
-  color?: string;
-  order: number;
-}
-
-interface MemberEditorProps {
-  member?: Member;
-  onSave: (data: Member) => void;
-  onCancel: () => void;
-  isLoading?: boolean;
-}
-
-interface MediaInputProps {
-  value: string;
-  onChange: (url: string) => void;
-  placeholder?: string;
-  accept?: string;
-}
+import { Member, Tab, MemberEditorProps, MediaInputProps } from "~/constants/members";
 
 function MediaInput({ value, onChange, placeholder, accept }: MediaInputProps) {
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('upload');

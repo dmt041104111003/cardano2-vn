@@ -1,19 +1,23 @@
 import { Learn, Check, Verify } from "~/components/icons";
+import { FeatureCard } from '~/constants/about';
 
-const featureCards = [
+const featureCards: FeatureCard[] = [
   {
+    id: "1",
     Icon: () => <Learn color="blue" />,
     title: "Asset Minting",
     description: "Create and manage dynamic assets on Cardano.",
     color: "blue"
   },
   {
+    id: "2",
     Icon: () => <Check color="green" />,
     title: "Asset Updating", 
     description: "Create and manage dynamic assets on Cardano.",
     color: "green"
   },
   {
+    id: "3",
     Icon: () => <Verify color="purple" />,
     title: "Asset Burning",
     description: "Create and manage dynamic assets on Cardano.",

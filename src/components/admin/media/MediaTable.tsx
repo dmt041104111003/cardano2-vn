@@ -5,25 +5,7 @@ import { Image as ImageIcon, Trash2, Download, Eye } from 'lucide-react';
 import { useToastContext } from '~/components/toast-provider';
 import Modal from '~/components/admin/common/Modal';
 import { useRouter } from 'next/navigation';
-
-interface Media {
-  id: string;
-  filename: string;
-  originalName: string;
-  mimeType: string;
-  size: number;
-  path: string;
-  createdAt: string;
-  updatedAt: string;
-  usageCount?: number;
-  usageTitles?: string[];
-  // usedInPosts?: string[]; 
-}
-
-interface MediaTableProps {
-  media: Media[];
-  onDelete: (id: string) => void;
-}
+import { Media, MediaTableProps } from '~/constants/media';
 
 export function MediaTable({ media, onDelete }: MediaTableProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

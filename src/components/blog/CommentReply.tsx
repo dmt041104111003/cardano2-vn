@@ -3,37 +3,7 @@
 import { useState, useRef } from "react";
 
 import { EMOJIS } from "../../constants/emoji";
-
-interface Comment {
-  id: string;
-  content: string;
-  createdAt: string;
-  userId?: string;
-  user?: {
-    wallet?: string;
-    image?: string;
-  } | null;
-  parentCommentId?: string | null;
-  replies?: Comment[];
-  parentUserId?: string;
-  parentAuthor?: string;
-  author?: string;
-  time?: string;
-  avatar?: string;
-  isPostAuthor?: boolean;
-}
-
-const MAX_COMMENT_LENGTH = 200;
-
-interface CommentReplyProps {
-  reply: Comment;
-  onReply: (commentId: string) => void;
-  replyingTo: string | null;
-  onSubmitReply: (e: React.FormEvent, commentId: string, user: { id?: string; address?: string; image?: string }) => void;
-  replyText: string;
-  setReplyText: (text: string) => void;
-  user: { id?: string; address?: string; image?: string } | null;
-}
+import { Comment, CommentReplyProps, MAX_COMMENT_LENGTH } from '~/constants/comment';
 
 export default function CommentReply({ 
   reply, 
@@ -134,7 +104,7 @@ export default function CommentReply({
             <div className="flex items-start gap-3">
               <div className="relative">
                 {user?.image && (user.image.startsWith('http') || user.image.startsWith('data:image')) ? (
-                  <Image src={user.image} alt="avatar" width={32} height={32} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                  <img src={user.image} alt="avatar" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex-shrink-0"></div>
                 )}

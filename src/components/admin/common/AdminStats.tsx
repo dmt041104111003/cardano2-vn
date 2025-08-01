@@ -1,12 +1,4 @@
-interface StatItem {
-  label: string;
-  value: number;
-  color?: 'default' | 'green' | 'blue' | 'red';
-}
-
-interface AdminStatsProps {
-  stats: StatItem[];
-}
+import { StatItem, AdminStatsProps } from '~/constants/admin';
 
 export function AdminStats({ stats }: AdminStatsProps) {
   const getColorClass = (color?: string) => {

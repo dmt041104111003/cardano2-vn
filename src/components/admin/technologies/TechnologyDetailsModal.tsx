@@ -1,21 +1,5 @@
 import Modal from "~/components/admin/common/Modal";
-
-interface Technology {
-  id: string;
-  title: string;
-  name: string;
-  description: string;
-  href: string;
-  image: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface TechnologyDetailsModalProps {
-  technology: Technology | null;
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { Technology, TechnologyDetailsModalProps } from "~/constants/technologies";
 
 export default function TechnologyDetailsModal({ technology, isOpen, onClose }: TechnologyDetailsModalProps) {
   if (!technology) return null;
@@ -73,28 +57,28 @@ export default function TechnologyDetailsModal({ technology, isOpen, onClose }: 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Created At</label>
             <p className="text-sm text-gray-900">
-              {new Date(technology.createdAt).toLocaleString('en-GB', {
+              {technology.createdAt ? new Date(technology.createdAt).toLocaleString('en-GB', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: false
-              })}
+              }) : '-'}
             </p>
           </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Updated At</label>
             <p className="text-sm text-gray-900">
-              {new Date(technology.updatedAt).toLocaleString('en-GB', {
+              {technology.updatedAt ? new Date(technology.updatedAt).toLocaleString('en-GB', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: false
-              })}
+              }) : '-'}
             </p>
           </div>
         </div>

@@ -6,26 +6,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { Copy, Trash2, Eye } from "lucide-react";
 import { useToastContext } from "~/components/toast-provider";
 import Modal from "../common/Modal";
-
-interface VideoItem {
-  id: string;
-  videoId: string;
-  channelName: string;
-  videoUrl: string;
-  title: string;
-  thumbnailUrl: string;
-  isFeatured: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface VideoSectionTableProps {
-  videos: VideoItem[];
-  modifiedVideos: { [id: string]: Partial<VideoItem> };
-  onCheckboxChange: (videoId: string, field: "isFeatured", value: boolean) => void;
-  onDeleteVideo: (videoId: string) => void;
-  onViewDetails?: (video: VideoItem) => void;
-}
+import { VideoItem, VideoSectionTableProps } from "~/constants/video-section";
 
 export function VideoSectionTable({ 
   videos, 
