@@ -9,14 +9,14 @@ import { YouTubeUpload } from './YouTubeUpload';
 interface MediaUploadProps {
   isOpen: boolean;
   onUploadSuccess: () => void;
-  onCancel: () => void;
+  onClose: () => void;
 }
 
-export function MediaUpload({ isOpen, onUploadSuccess, onCancel }: MediaUploadProps) {
+export function MediaUpload({ isOpen, onUploadSuccess, onClose }: MediaUploadProps) {
   const [uploadType, setUploadType] = useState<'image' | 'youtube'>('image');
 
   return (
-    <Modal isOpen={isOpen} onClose={onCancel} title="Upload Media" maxWidth="max-w-md">
+    <Modal isOpen={isOpen} onClose={onClose} title="Upload Media" maxWidth="max-w-md">
       <div>
         <UploadTabs 
           uploadType={uploadType} 
