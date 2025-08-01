@@ -118,10 +118,10 @@ export default function MediaPageClient() {
 
       <MediaUpload
         isOpen={showUploadModal}
-          onClose={() => setShowUploadModal(false)}
-          onUploadSuccess={() => {
+        onClose={() => setShowUploadModal(false)}
+        onUploadSuccess={() => {
           setShowUploadModal(false);
-            fetchMedia();
+          fetchMedia();
         }}
       />
       </div>

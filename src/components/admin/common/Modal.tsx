@@ -12,7 +12,23 @@ interface ModalProps {
 
 export default function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-md' }: ModalProps) {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  
+  useEffect(() => { 
+    setMounted(true); 
+  }, []);
+  
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+  
   if (!mounted) return null;
   return createPortal(
     <AnimatePresence>
@@ -23,6 +39,14 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4"
           onClick={onClose}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              onClose();
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
         >
           <motion.div
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -33,11 +57,13 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 pt-6 pb-2 border-b">
-              <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+              <h2 id="modal-title" className="text-lg font-semibold text-gray-900">{title}</h2>
               <button
                 onClick={onClose}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition"
                 title="Close"
+                tabIndex={0}
+                aria-label="Close modal"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

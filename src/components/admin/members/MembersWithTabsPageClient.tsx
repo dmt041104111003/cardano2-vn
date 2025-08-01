@@ -267,6 +267,7 @@ export default function MembersWithTabsPageClient() {
       >
         <TabEditor
           tab={editingTab || undefined}
+          existingTabs={tabs}
           onSave={handleSaveTab}
           onCancel={() => setShowTabEditor(false)}
         />

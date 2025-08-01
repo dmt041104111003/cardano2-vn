@@ -12,12 +12,13 @@ interface Tab {
 
 interface TabEditorProps {
   tab?: Tab;
+  existingTabs?: Tab[];
   onSave: (data: Tab) => void;
   onCancel: () => void;
   isLoading?: boolean;
 }
 
-export default function TabEditor({ tab, onSave, onCancel, isLoading }: TabEditorProps) {
+export default function TabEditor({ tab, existingTabs = [], onSave, onCancel, isLoading }: TabEditorProps) {
   const [formData, setFormData] = useState({
     name: tab?.name || '',
     order: tab?.order || 0
@@ -30,6 +31,16 @@ export default function TabEditor({ tab, onSave, onCancel, isLoading }: TabEdito
 
     if (!formData.name.trim()) {
       newErrors.name = 'Tab name is required';
+    } else {
+      const trimmedName = formData.name.trim().toLowerCase();
+      const isDuplicate = existingTabs.some(existingTab => 
+        existingTab.id !== tab?.id && 
+        existingTab.name.toLowerCase() === trimmedName
+      );
+      
+      if (isDuplicate) {
+        newErrors.name = 'Tab name already exists';
+      }
     }
 
     if (formData.order < 0) {
