@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ProjectCard from "~/components/project-card";
 import ProjectSkeleton from "~/components/project/ProjectSkeleton";
@@ -10,7 +10,7 @@ import TechnologyPageClient from "~/components/technology/TechnologyPageClient";
 import NotFoundInline from "~/components/ui/not-found-inline";
 
 export default function ProjectPageClient() {
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [year, setYear] = useState<number | null>(null); 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -32,8 +32,14 @@ export default function ProjectPageClient() {
   const projects = data?.projects || [];
   const years = Array.from(new Set(projects.map((p: any) => p.year))).sort((a: unknown, b: unknown) => (a as number) - (b as number)) as number[];
   
+  useEffect(() => {
+    if (years.length > 0 && year === null) {
+      setYear(years[0]);
+    }
+  }, [years, year]);
+  
   const filteredProjects = projects.filter((proposal: any) => {
-    const matchesYear = proposal.year === year;
+    const matchesYear = year === null || proposal.year === year;
     const matchesSearch = proposal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          proposal.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatusFilter = statusFilter === 'all' || proposal.status === statusFilter;
@@ -112,8 +118,6 @@ export default function ProjectPageClient() {
                 />
                 <div className="mt-6 flex-1 md:-mt-12">
                   {typeFilter === "catalyst" ? (
-                    <TechnologyPageClient isEmbedded={true} searchTerm={searchTerm} />
-                  ) : (
                     <div
                       data-state="active"
                       data-orientation="vertical"
@@ -165,6 +169,8 @@ export default function ProjectPageClient() {
                         )}
                       </div>
                     </div>
+                  ) : (
+                    <TechnologyPageClient isEmbedded={true} searchTerm={searchTerm} />
                   )}
                 </div>
               </div>
