@@ -42,11 +42,6 @@ export async function GET(request: NextRequest) {
       user.image = uploadRes.url;
     }
 
-    await prisma.session.updateMany({
-      where: { userId: user.id },
-      data: { lastAccess: new Date() }
-    });
-
     const isAdmin = user.role.name === "ADMIN";
 
     return NextResponse.json({

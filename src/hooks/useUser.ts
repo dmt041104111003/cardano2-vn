@@ -1,13 +1,15 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { UserHook } from "~/constants/users";
 
 export function useUser() {
   const { data: session, status } = useSession();
   const [user, setUser] = useState<UserHook | null>(null);
   const [loading, setLoading] = useState(true);
+  const lastUpdateRef = useRef<number>(0);
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -35,15 +37,26 @@ export function useUser() {
           const data = await response.json();
           setUser(data.user);
           
-          try {
-            await fetch("/api/auth/session/update", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
-          } catch (sessionError) {
-            console.error("Error updating session:", sessionError);
+          const now = Date.now();
+          if (now - lastUpdateRef.current > 30000) { 
+            lastUpdateRef.current = now;
+            
+            if (updateTimeoutRef.current) {
+              clearTimeout(updateTimeoutRef.current);
+            }
+            
+            updateTimeoutRef.current = setTimeout(async () => {
+              try {
+                await fetch("/api/auth/session/update", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                });
+              } catch (sessionError) {
+                console.error("Error updating session:", sessionError);
+              }
+            }, 1000); 
           }
         } else {
           setUser(null);
@@ -57,6 +70,12 @@ export function useUser() {
     };
 
     fetchUser();
+    
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
   }, [session, status]);
 
   return {

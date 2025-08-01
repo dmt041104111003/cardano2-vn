@@ -29,20 +29,27 @@ export async function POST() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const updatedSession = await prisma.session.upsert({
-      where: {
-        userId: user.id,
-        id: user.id,
-      },
-      update: {
-        lastAccess: new Date(),
-      },
-      create: {
-        userId: user.id,
-        accessTime: new Date(),
-        lastAccess: new Date(),
-      },
+    const existingSession = await prisma.session.findFirst({
+      where: { userId: user.id }
     });
+
+    let updatedSession;
+    if (existingSession) {
+      updatedSession = await prisma.session.update({
+        where: { id: existingSession.id },
+        data: {
+          lastAccess: new Date(),
+        },
+      });
+    } else {
+      updatedSession = await prisma.session.create({
+        data: {
+          userId: user.id,
+          accessTime: new Date(),
+          lastAccess: new Date(),
+        },
+      });
+    }
 
     return NextResponse.json({
       success: true,
