@@ -1,29 +1,8 @@
-// Tab interfaces
-export interface Tab {
-  id?: string;
-  name: string;
-  order: number;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  members?: Member[];
-}
+// Import interfaces from members.ts to maintain consistency
+import { Tab, Member } from '~/constants/members';
 
-// Member interfaces (for tabs context)
-export interface Member {
-  id: string;
-  name: string;
-  role: string;
-  description: string;
-  image: string;
-  email?: string;
-  color?: string;
-  skills?: string[];
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+// Re-export for backward compatibility
+export type { Tab, Member };
 
 // TabDetailsModal interfaces
 export interface TabDetailsModalProps {

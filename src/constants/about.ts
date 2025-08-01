@@ -14,8 +14,9 @@ export interface AboutContent {
 }
 
 export interface AboutEditorProps {
-  aboutContent: AboutContent | null;
   onSave: (content: AboutContent) => void;
+  onCancel?: () => void;
+  isLoading?: boolean;
 }
 
 // Technology Components Interfaces
