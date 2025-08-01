@@ -45,6 +45,7 @@ CREATE TABLE "Post" (
     "content" TEXT NOT NULL,
     "status" "PostStatus" NOT NULL DEFAULT 'DRAFT',
     "authorId" TEXT NOT NULL,
+    "githubRepo" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "comments" INTEGER NOT NULL DEFAULT 0,
@@ -159,6 +160,7 @@ CREATE TABLE "Technology" (
     "description" TEXT NOT NULL,
     "href" TEXT NOT NULL,
     "image" TEXT NOT NULL,
+    "githubRepo" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -182,6 +184,18 @@ CREATE TABLE "AboutContent" (
 );
 
 -- CreateTable
+CREATE TABLE "Tab" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "order" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Tab_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Member" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -193,6 +207,7 @@ CREATE TABLE "Member" (
     "skills" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "order" INTEGER NOT NULL DEFAULT 0,
+    "tabId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -272,6 +287,15 @@ CREATE INDEX "AboutContent_isActive_idx" ON "AboutContent"("isActive");
 CREATE INDEX "AboutContent_createdAt_idx" ON "AboutContent"("createdAt");
 
 -- CreateIndex
+CREATE INDEX "Tab_isActive_idx" ON "Tab"("isActive");
+
+-- CreateIndex
+CREATE INDEX "Tab_order_idx" ON "Tab"("order");
+
+-- CreateIndex
+CREATE INDEX "Tab_createdAt_idx" ON "Tab"("createdAt");
+
+-- CreateIndex
 CREATE INDEX "Member_isActive_idx" ON "Member"("isActive");
 
 -- CreateIndex
@@ -279,6 +303,9 @@ CREATE INDEX "Member_order_idx" ON "Member"("order");
 
 -- CreateIndex
 CREATE INDEX "Member_createdAt_idx" ON "Member"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "Member_tabId_idx" ON "Member"("tabId");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -315,3 +342,6 @@ ALTER TABLE "PostTag" ADD CONSTRAINT "PostTag_tagId_fkey" FOREIGN KEY ("tagId") 
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Member" ADD CONSTRAINT "Member_tabId_fkey" FOREIGN KEY ("tabId") REFERENCES "Tab"("id") ON DELETE SET NULL ON UPDATE CASCADE;
