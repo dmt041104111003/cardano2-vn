@@ -97,7 +97,7 @@ export default function ProjectPageClient() {
                   typeFilter={typeFilter}
                   projects={projects}
                   years={years}
-                  selectedYear={year}
+                  selectedYear={year || 0}
                   onSearchChange={(value) => {
                     setSearchTerm(value);
                     handleFilterChange();
