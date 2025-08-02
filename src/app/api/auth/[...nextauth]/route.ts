@@ -6,6 +6,8 @@ import { CardanoWalletProvider } from "~/lib/cardano-auth-provider"
 import { generateWalletAvatar } from '~/lib/wallet-avatar';
 import cloudinary from '~/lib/cloudinary';
 
+const roleCache = new Map<string, any>();
+
 interface TokenWithAddress extends Record<string, unknown> {
   address?: string;
 }
@@ -133,13 +135,20 @@ export const authOptions = {
           
           let dbUser = await prisma.user.findUnique({
             where: { email: user.email },
-            include: { role: true }
+            select: { id: true, name: true, image: true, roleId: true, email: true }
           });
 
           if (!dbUser) {
-            const userRole = await prisma.role.findFirst({
-              where: { name: "ADMIN" }
-            });
+            let userRole = roleCache.get("ADMIN");
+            if (!userRole) {
+              userRole = await prisma.role.findFirst({
+                where: { name: "ADMIN" },
+                select: { id: true }
+              });
+              if (userRole) {
+                roleCache.set("ADMIN", userRole);
+              }
+            }
             
             if (!userRole) {
               throw new Error("Role ADMIN not exist");
@@ -168,7 +177,7 @@ export const authOptions = {
                 provider: "google",
                 roleId: userRole.id,
               },
-              include: { role: true }
+              select: { id: true, name: true, image: true, roleId: true, email: true }
             });
             
             console.log("[NextAuth] New Google user created:", dbUser.email);
@@ -210,7 +219,6 @@ export const authOptions = {
               where: { id: existingSession.id },
               data: { lastAccess: new Date() }
             });
-            console.log("[NextAuth] Session lastAccess updated for user:", dbUser.email);
           } else {
             await prisma.session.create({
               data: {
@@ -219,7 +227,6 @@ export const authOptions = {
                 lastAccess: new Date(),
               }
             });
-            console.log("[NextAuth] New session created for user:", dbUser.email);
           }
           
           return true;
@@ -255,13 +262,20 @@ export const authOptions = {
           
           let dbUser = await prisma.user.findUnique({
             where: { email: user.email },
-            include: { role: true }
+            select: { id: true, name: true, image: true, roleId: true, email: true }
           });
 
           if (!dbUser) {
-            const userRole = await prisma.role.findFirst({
-              where: { name: "ADMIN" }
-            });
+            let userRole = roleCache.get("ADMIN");
+            if (!userRole) {
+              userRole = await prisma.role.findFirst({
+                where: { name: "ADMIN" },
+                select: { id: true }
+              });
+              if (userRole) {
+                roleCache.set("ADMIN", userRole);
+              }
+            }
             
             if (!userRole) {
               throw new Error("Role ADMIN not exist");
@@ -290,7 +304,7 @@ export const authOptions = {
                 provider: "github",
                 roleId: userRole.id,
               },
-              include: { role: true }
+              select: { id: true, name: true, image: true, roleId: true, email: true }
             });
             console.log("[NextAuth] New GitHub user created:", dbUser.email);
           } else {
@@ -330,7 +344,6 @@ export const authOptions = {
               where: { id: existingSession.id },
               data: { lastAccess: new Date() }
             });
-            console.log("[NextAuth] Session lastAccess updated for user:", dbUser.email);
           } else {
             await prisma.session.create({
               data: {
@@ -339,7 +352,6 @@ export const authOptions = {
                 lastAccess: new Date(),
               }
             });
-            console.log("[NextAuth] New session created for user:", dbUser.email);
           }
           
           return true;
@@ -375,13 +387,20 @@ export const authOptions = {
           
           let dbUser = await prisma.user.findUnique({
             where: { wallet: user.address },
-            include: { role: true }
+            select: { id: true, name: true, image: true, roleId: true, wallet: true }
           });
 
           if (!dbUser) {
-                        const userRole = await prisma.role.findFirst({
-              where: { name: "ADMIN" } 
-            });
+            let userRole = roleCache.get("ADMIN");
+            if (!userRole) {
+              userRole = await prisma.role.findFirst({
+                where: { name: "ADMIN" },
+                select: { id: true }
+              });
+              if (userRole) {
+                roleCache.set("ADMIN", userRole);
+              }
+            }
             
             if (!userRole) {
               throw new Error("Role ADMIN not exist");
@@ -404,7 +423,7 @@ export const authOptions = {
                 image: avatar,
                 roleId: userRole.id,
               },
-              include: { role: true }
+              select: { id: true, name: true, image: true, roleId: true, wallet: true }
             });
             
             console.log("[NextAuth] New Cardano Wallet user created:", dbUser.wallet);
@@ -435,7 +454,6 @@ export const authOptions = {
               where: { id: existingSession.id },
               data: { lastAccess: new Date() }
             });
-            console.log("[NextAuth] Session lastAccess updated for user:", dbUser.wallet);
           } else {
             await prisma.session.create({
               data: {
@@ -444,7 +462,6 @@ export const authOptions = {
                 lastAccess: new Date(),
               }
             });
-            console.log("[NextAuth] New session created for user:", dbUser.wallet);
           }
           
           return true;

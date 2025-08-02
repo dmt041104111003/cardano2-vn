@@ -3,6 +3,9 @@ import { getServerSession } from "next-auth/next";
 import { prisma } from "~/lib/prisma";
 import { authOptions } from "../../[...nextauth]/route";
 
+const sessionUpdateCache = new Map<string, number>();
+const CACHE_DURATION = 5 * 60 * 1000;
+
 export async function POST() {
   try {
     const session = await getServerSession(authOptions);
@@ -14,14 +17,30 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userIdentifier = address || email;
+    const now = Date.now();
+    
+    if (userIdentifier) {
+      const lastUpdate = sessionUpdateCache.get(userIdentifier);
+      if (lastUpdate && (now - lastUpdate) < CACHE_DURATION) {
+        return NextResponse.json({
+          success: true,
+          cached: true,
+          message: "Session recently updated"
+        });
+      }
+    }
+
     let user = null;
     if (address) {
       user = await prisma.user.findUnique({
         where: { wallet: address },
+        select: { id: true }
       });
     } else if (email) {
       user = await prisma.user.findUnique({
         where: { email: email },
+        select: { id: true } // Chỉ select id để tối ưu
       });
     }
 
@@ -49,6 +68,10 @@ export async function POST() {
           lastAccess: new Date(),
         },
       });
+    }
+
+    if (userIdentifier) {
+      sessionUpdateCache.set(userIdentifier, now);
     }
 
     return NextResponse.json({
