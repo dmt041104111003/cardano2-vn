@@ -176,6 +176,14 @@
   z-index: auto !important;
 }
 
+/* Ensure mobile menu and navigation have high z-index */
+.docs-isolated-container [data-fumadocs-mobile-menu],
+.docs-isolated-container [data-fumadocs-mobile-toc],
+.docs-isolated-container [data-fumadocs-mobile-sidebar] {
+  z-index: 99999 !important;
+  position: fixed !important;
+}
+
 /* Ensure dropdown portal renders at highest level */
 [data-radix-popper-content-wrapper] {
   z-index: 99999 !important;
@@ -185,6 +193,63 @@
 body > [data-radix-popper-content-wrapper] {
   z-index: 99999 !important;
   position: fixed !important;
+}
+
+/* Ensure docs navigation menu appears above content */
+.docs-isolated-container [data-fumadocs-sidebar] {
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+/* Ensure mobile menu appears above all content */
+.docs-isolated-container [data-fumadocs-mobile-menu],
+.docs-isolated-container [data-fumadocs-mobile-toc] {
+  z-index: 99999 !important;
+  position: fixed !important;
+}
+
+/* Ensure code blocks don't overlap with navigation */
+.docs-isolated-container pre,
+.docs-isolated-container code {
+  z-index: 1 !important;
+  position: relative !important;
+}
+
+/* Additional mobile menu fixes */
+.docs-isolated-container [data-fumadocs-mobile-menu] *,
+.docs-isolated-container [data-fumadocs-mobile-toc] * {
+  z-index: inherit !important;
+}
+
+/* Ensure mobile menu backdrop covers everything */
+.docs-isolated-container [data-fumadocs-mobile-menu]::before,
+.docs-isolated-container [data-fumadocs-mobile-toc]::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 768px) {
+  .docs-isolated-container [data-fumadocs-mobile-menu],
+  .docs-isolated-container [data-fumadocs-mobile-toc] {
+    z-index: 99999 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+  
+  /* Ensure content doesn't overlap with mobile menu */
+  .docs-isolated-container [data-fumadocs-content] {
+    z-index: 1 !important;
+  }
 }
 
 @layer base {
