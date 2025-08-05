@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { TruncatedText } from './truncated-text';
 import { TooltipData } from '~/constants/tooltip';
+import Modal from '~/components/admin/common/Modal';
 
 export function TooltipHandler() {
   const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);
@@ -68,48 +68,19 @@ export function TooltipHandler() {
 
   if (!tooltipData) return null;
 
-  const tooltipContent = (
-    <>
-      <div 
-        className="tooltip-overlay fixed inset-0 bg-black/20 backdrop-blur-sm z-[9998]"
-        onClick={handleClose}
-      />
-      <div 
-        className="tooltip-popup fixed z-[9999] bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-purple-200/50 dark:border-purple-700/50 rounded-lg shadow-lg p-4 max-w-sm"
-        style={{
-          left: '50%',
-          top: '50%',
-          transform: 'translate(-50%, -50%)'
-        }}
-      >
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="mb-2">
-              <TruncatedText 
-                text={tooltipData.clickedText}
-                maxLength={50}
-                className="font-semibold text-purple-900 dark:text-purple-100 text-base"
-              />
-            </div>
-            <TruncatedText 
-              text={tooltipData.text}
-              maxLength={150}
-              className="text-sm font-medium text-gray-900 dark:text-gray-100 leading-relaxed"
-            />
-          </div>
-          <button 
-            className="tooltip-close ml-2 text-purple-500 hover:text-purple-700 dark:text-purple-300 dark:hover:text-purple-100 transition-colors"
-            onClick={handleClose}
-            aria-label="Close tooltip"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
+  return (
+    <Modal
+      isOpen={!!tooltipData}
+      onClose={handleClose}
+      title={tooltipData.clickedText}
+    >
+      <div className="p-4">
+        <TruncatedText 
+          text={tooltipData.text}
+          maxLength={200}
+          className="text-base font-medium text-gray-800 dark:text-gray-200 leading-relaxed"
+        />
       </div>
-    </>
+    </Modal>
   );
-
-  return createPortal(tooltipContent, document.body);
 } 
