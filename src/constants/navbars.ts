@@ -1,25 +1,25 @@
 export const navbars = [
   {
     id: 1,
-    target: "_blank",
+    target: "",
     title: "Docs",
     href: "/docs",
   },
   {
     id: 2,
-    target: "_blank",
+    target: "",
     title: "Blogs",
     href: "/blog",
   },
   {
     id: 3,
-    target: "_blank",
+    target: "",
     title: "Projects",
     href: "/project",
   },
   {
     id: 4,
-    target: "_blank",
+    target: "",
     title: "Abouts",
     href: "/about",
   },
