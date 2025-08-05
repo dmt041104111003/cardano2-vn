@@ -41,4 +41,4 @@ export const adminRouters = [
   },
 ];
 
-export type NavbarType = { id: number; title: string; href: string };
+export type NavbarType = { id: number; title: string; href: string; target?: string };
