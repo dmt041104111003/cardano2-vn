@@ -105,14 +105,14 @@ export default function WalletList({ wallets }: WalletListProps) {
                     <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : (
-                  <Image
-                    src={`/images/wallets/${wallet.id}.png`}
-                    alt={`${wallet.name}`}
-                    width={32}
-                    height={32}
-                    className="w-8 h-8"
-                    loading="lazy"
-                  />
+                                     <Image
+                     src={`/images/wallets/${wallet.id === "gero" ? "Gero" : wallet.id}.png`}
+                     alt={`${wallet.name}`}
+                     width={32}
+                     height={32}
+                     className="w-8 h-8"
+                     loading="lazy"
+                   />
                 )
               ) : wallet.id === "google" ? (
                 <Image
