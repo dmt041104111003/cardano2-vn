@@ -157,6 +157,36 @@
   display: none !important;
 }
 
+/* Ensure dropdown menus appear above all content */
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-sub-content"] {
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+/* Reduce z-index of fumadocs-ui elements to prevent overlap */
+.docs-isolated-container [data-fumadocs-sidebar],
+.docs-isolated-container [data-fumadocs-toc],
+.docs-isolated-container [data-fumadocs-header] {
+  z-index: 10 !important;
+}
+
+/* Force all fumadocs content to have lower z-index */
+.docs-isolated-container * {
+  z-index: auto !important;
+}
+
+/* Ensure dropdown portal renders at highest level */
+[data-radix-popper-content-wrapper] {
+  z-index: 99999 !important;
+}
+
+/* Force portal to render outside docs container */
+body > [data-radix-popper-content-wrapper] {
+  z-index: 99999 !important;
+  position: fixed !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
