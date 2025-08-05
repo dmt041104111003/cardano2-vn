@@ -112,7 +112,7 @@ export default function Blog({
           </span>
         </div> */}
         <div className="p-6">
-          <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white transition-colors duration-200 group-hover:text-blue-600 dark:group-hover:text-blue-300 lg:text-2xl">{title}</h2>
+          <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white transition-colors duration-200 group-hover:text-blue-600 dark:group-hover:text-blue-300 lg:text-2xl line-clamp-2">{title}</h2>
           <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-4">
               <span className="font-mono">{datetime}</span>

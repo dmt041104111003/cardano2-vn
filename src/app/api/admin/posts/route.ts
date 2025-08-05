@@ -68,6 +68,7 @@ export async function GET(request: NextRequest) {
         reactions: { select: { type: true, userId: true } }, // thêm userId
         author: { select: { name: true } },
         tags: { select: { tag: { select: { id: true, name: true } } } },
+        media: { select: { url: true, type: true, id: true } },
       },
     });
     const mapped = posts.map(post => {
@@ -85,7 +86,14 @@ export async function GET(request: NextRequest) {
         updatedAt: post.updatedAt,
         comments: post.comments_rel.length,
         comments_rel: post.comments_rel, 
-        reactions: post.reactions,      
+        reactions: post.reactions,
+        media: Array.isArray(post.media)
+          ? post.media.map((m: { url: string; type: string; id: string }) =>
+              m.type === 'YOUTUBE'
+                ? { ...m, id: m.id && m.id.length === 11 ? m.id : getYoutubeIdFromUrl(m.url) }
+                : m
+            )
+          : [],
         author: post.author?.name || 'Admin',
         tags: post.tags?.map(t => t.tag) || [],
         ...reactionCount,
