@@ -16,7 +16,6 @@ import { Subscript } from '@tiptap/extension-subscript';
 import { Superscript } from '@tiptap/extension-superscript';
 import { Highlight } from '@tiptap/extension-highlight';
 import { Tooltip } from './tiptap/extensions/tooltip-extension';
-import { TooltipHandler } from './tiptap/tooltip-handler';
 import { createLowlight, common } from 'lowlight';
 import { useEffect, useState, useRef } from 'react';
 import { tiptapPreviewStyles } from './tiptap/styles';
@@ -155,7 +154,6 @@ export function TipTapPreview({ content, className = "" }: TipTapPreviewProps) {
       ref={proseRef}
       className={`prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto max-w-none ${className}`}
     >
-      <TooltipHandler />
       <EditorContent 
         editor={editor} 
         className="focus:outline-none"
