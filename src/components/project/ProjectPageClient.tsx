@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ProjectCard from "~/components/project-card";
 import ProjectSkeleton from "~/components/project/ProjectSkeleton";
-import { Pagination } from "~/components/ui/pagination";
+import Pagination from "~/components/pagination";
 import Navigation from "~/components/navigation";
 import Title from "~/components/title";
 import TechnologyPageClient from "~/components/technology/TechnologyPageClient";
@@ -51,9 +51,7 @@ export default function ProjectPageClient() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedProjects = filteredProjects.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+
   
   const handleFilterChange = () => {
     setCurrentPage(1);
@@ -159,9 +157,7 @@ export default function ProjectPageClient() {
                                 <Pagination
                                   currentPage={currentPage}
                                   totalPages={totalPages}
-                                  totalItems={filteredProjects.length}
-                                  itemsPerPage={ITEMS_PER_PAGE}
-                                  onPageChange={handlePageChange}
+                                  setCurrentPage={setCurrentPage}
                                 />
                               </div>
                             )}

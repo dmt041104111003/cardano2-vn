@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
   currentPage: number;
@@ -8,7 +8,13 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, onPageChange }: PaginationProps) {
+export function Pagination({
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+}: PaginationProps) {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
@@ -24,7 +30,7 @@ export function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, 
     }
 
     if (currentPage - delta > 2) {
-      rangeWithDots.push(1, "...");
+      rangeWithDots.push(1, '...');
     } else {
       rangeWithDots.push(1);
     }
@@ -32,7 +38,7 @@ export function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, 
     rangeWithDots.push(...range);
 
     if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push("...", totalPages);
+      rangeWithDots.push('...', totalPages);
     } else {
       rangeWithDots.push(totalPages);
     }
@@ -64,7 +70,8 @@ export function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, 
       <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-700 dark:text-gray-300">
-            Showing <span className="font-medium">{startIndex + 1}</span> to <span className="font-medium">{endIndex}</span> of{" "}
+            Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
+            <span className="font-medium">{endIndex}</span> of{' '}
             <span className="font-medium">{totalItems}</span> results
           </p>
         </div>
@@ -81,14 +88,14 @@ export function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, 
             {getPageNumbers().map((page, index) => (
               <button
                 key={index}
-                onClick={() => (typeof page === "number" ? onPageChange(page) : undefined)}
-                disabled={typeof page !== "number"}
+                onClick={() => typeof page === 'number' ? onPageChange(page) : undefined}
+                disabled={typeof page !== 'number'}
                 className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                  typeof page === "number" && page === currentPage
-                    ? "z-10 bg-blue-50 dark:bg-blue-900/30 border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400"
-                    : typeof page === "number"
-                      ? "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600"
-                      : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 cursor-default"
+                  typeof page === 'number' && page === currentPage
+                    ? 'z-10 bg-blue-50 dark:bg-blue-900/30 border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400'
+                    : typeof page === 'number'
+                    ? 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600'
+                    : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 cursor-default'
                 }`}
               >
                 {page}
@@ -107,4 +114,4 @@ export function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, 
       </div>
     </div>
   );
-}
+} 

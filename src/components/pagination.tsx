@@ -27,41 +27,51 @@ const Pagination = ({ currentPage, totalPages, setCurrentPage }: Props) => {
     return null;
   }
   return (
-    <div className={`flex justify-center items-center mt-6 text-white `}>
+    <div className="flex justify-center items-center mt-6 space-x-2">
       <Button
-        className="bg-[#030711] border-0 rounded-[8px] text-white cursor-pointer flex items-center justify-center text-[16px] h-8 font-normal px-3 py-[1px] mx-2"
+        variant="transparent"
+        size="sm"
         disabled={currentPage === 1}
         onClick={() => setCurrentPage(1)}
       >
-        <ArrowLeft className="w-2 h-2 object-contain" />
-        <span className="mx-1">First</span>
+        <ArrowLeft className="w-4 h-4 mr-1" />
+        <span>First</span>
       </Button>
+      
       <Button
-        className="bg-[#030711] border-0 rounded-[8px] text-white cursor-pointer flex items-center justify-center text-[16px] h-8 font-normal px-3 py-[1px] mx-2"
+        variant="transparent"
+        size="sm"
         disabled={currentPage === 1}
         onClick={handlePreviousPage}
       >
-        <ArrowLeft className="w-2 h-2 object-contain" />
-        <span className="mx-1">Previous</span>
+        <ArrowLeft className="w-4 h-4 mr-1" />
+        <span>Previous</span>
       </Button>
-      <span className="text-[16px] font-light leading-8 min-w-[110px] text-center">
+      
+      <span className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
         {currentPage} of {totalPages}
       </span>
+      
       <Button
-        className="bg-[#030711] border-0 rounded-[8px] text-white cursor-pointer flex items-center justify-center text-[16px] h-8 font-normal px-3 py-[1px] mx-2"
+        variant="outline"
+        size="sm"
+        className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:text-blue-800 dark:hover:text-blue-200"
         disabled={currentPage === totalPages}
         onClick={handleNextPage}
       >
-        <span className="mx-1">Next</span>
-        <ArrowRight className="w-2 h-2 object-contain" />
+        <span>Next</span>
+        <ArrowRight className="w-4 h-4 ml-1" />
       </Button>
+      
       <Button
-        className="bg-[#030711] border-0 rounded-[8px] text-white cursor-pointer flex items-center justify-center text-[16px] h-8 font-normal px-3 py-[1px] mx-2"
+        variant="outline"
+        size="sm"
+        className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:text-blue-800 dark:hover:text-blue-200"
         disabled={currentPage === totalPages}
         onClick={() => setCurrentPage(totalPages)}
       >
-        <span className="mx-1">Last</span>
-        <ArrowRight className="w-2 h-2 object-contain" />
+        <span>Last</span>
+        <ArrowRight className="w-4 h-4 ml-1" />
       </Button>
     </div>
   );

@@ -563,9 +563,7 @@ export default function MemberPageClient() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="bg-white rounded-lg shadow">
-            <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
-          </div>
+          <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
         )}
       </section>
 
