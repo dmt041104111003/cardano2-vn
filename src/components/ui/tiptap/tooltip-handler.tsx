@@ -84,8 +84,7 @@ export function TooltipHandler() {
       >
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+            <div className="mb-2">
               <TruncatedText 
                 text={tooltipData.clickedText}
                 maxLength={50}
