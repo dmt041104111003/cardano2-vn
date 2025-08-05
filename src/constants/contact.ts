@@ -17,10 +17,13 @@ export interface ContactFormData {
   "event-location": string;
   "address-wallet": string;
   "email-intro": string;
+  "your-course": string;
   message: string;
 }
 
 export interface FormErrors {
   "your-name"?: string;
+  "your-email"?: string;
+  "your-course"?: string;
   contact?: string;
 } 

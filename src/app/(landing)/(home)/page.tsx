@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import LandingSection from "~/components/home/LandingSection";
 import TrustSection from "~/components/home/TrustSection";
 import ProtocolSection from "~/components/home/ProtocolSection";
-import CardanoSection from "~/components/home/CardanoSection";
+// import CardanoSection from "~/components/home/CardanoSection";
 import CTASection from "~/components/home/CTASection";
 import VideoSection from "~/components/home/VideoSection";
 // import PartnerLogosCarousel from "~/components/home/PartnerLogosCarousel";
@@ -38,7 +38,7 @@ export default function HomePage() {
       {/* <PartnerLogosCarousel /> */}
       <TrustSection />
    
-      <CardanoSection />
+      {/* <CardanoSection /> */}
       <CTASection />
    
       <ContactFormSection />

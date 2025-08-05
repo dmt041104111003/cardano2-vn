@@ -16,6 +16,7 @@ export default function ContactFormSection() {
     "address-wallet": "",
     "email-intro": "",
     "event-location": "",
+    "your-course": "",
     message: ""
   });
   
@@ -86,13 +87,24 @@ export default function ContactFormSection() {
       newErrors["your-name"] = "Name is required";
     }
 
+    const email = formData["your-email"].trim();
+    if (!email) {
+      newErrors["your-email"] = "Email is required";
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        newErrors["your-email"] = "Please enter a valid email address";
+      }
+    }
+
+    if (!formData["your-course"].trim()) {
+      newErrors["your-course"] = "Course selection is required";
+    }
+
     const hasPhone = formData["your-number"].trim() !== "";
-    const hasEmail = formData["your-email"].trim() !== "";
     const hasWallet = formData["address-wallet"].trim() !== "";
 
-    if (!hasPhone && !hasEmail && !hasWallet) {
-      newErrors.contact = "Please provide at least one contact method (phone, email, or wallet address)";
-    }
+   
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -150,6 +162,7 @@ export default function ContactFormSection() {
           "address-wallet": "",
           "email-intro": "",
           "event-location": "",
+          "your-course": "",
           message: ""
         });
         setErrors({});
@@ -168,19 +181,19 @@ export default function ContactFormSection() {
   return (
     <section
       id="contact"
-      className="relative flex min-h-screen items-center overflow-hidden border-t border-gray-200 dark:border-white/10 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-950"
+      className="relative flex min-h-[90vh] items-center overflow-hidden border-t border-gray-200 dark:border-white/10 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-950"
     >
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/50 dark:via-white/5 to-transparent"></div>
-      <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <div className="grid items-center gap-16 lg:grid-cols-2">
+      <div className="relative mx-auto max-w-7xl px-6 py-12 lg:px-8">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <div className="mb-8 flex items-center gap-4">
+            <div className="mb-6 flex items-center gap-4">
               <div className="h-1 w-12 bg-gradient-to-r from-blue-600 dark:from-white to-transparent"></div>
-              <h2 className="text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">Register for an C2VN course</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white lg:text-4xl">Register for a C2VN Course</h2>
             </div>
-            <p className="mb-10 text-xl leading-relaxed text-gray-600 dark:text-blue-100">
-              Have questions about Cardano or want to collaborate? We'd love to hear from you. 
-              Reach out to our team and let's build the future of blockchain together.
+            <p className="mb-8 text-lg leading-relaxed text-gray-600 dark:text-blue-100">
+              Join our comprehensive Cardano courses and learn from industry experts. 
+              Choose your path and start your blockchain journey today.
             </p>
        
           </div>
