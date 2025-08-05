@@ -33,10 +33,11 @@ export default function HomePage() {
       </div>
 
       <LandingSection />
+      <ProtocolSection />
       <VideoSection />
       {/* <PartnerLogosCarousel /> */}
       <TrustSection />
-      <ProtocolSection />
+   
       <CardanoSection />
       <CTASection />
    
