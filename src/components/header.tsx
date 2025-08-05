@@ -11,11 +11,11 @@ import { images } from "~/public/images";
 import { routers, NavbarType } from "~/constants/routers";
 import { useUser } from "~/hooks/useUser";
 import { WalletAvatar } from "~/components/WalletAvatar";
-import { ThemeToggle } from "~/components/ui/theme-toggle";
+
 
 function UserAvatar({ session }: { session: any }) {
   const [imageError, setImageError] = useState(false);
-  
+
   if ((session.user as { image?: string })?.image && !imageError) {
     return (
       <img
@@ -26,14 +26,10 @@ function UserAvatar({ session }: { session: any }) {
       />
     );
   }
-  
+
   // Fallback to wallet avatar
   return (
-    <WalletAvatar 
-      address={(session.user as { address?: string })?.address || null} 
-      size={32} 
-      className="border border-gray-300 dark:border-white" 
-    />
+    <WalletAvatar address={(session.user as { address?: string })?.address || null} size={32} className="border border-gray-300 dark:border-white" />
   );
 }
 
@@ -42,7 +38,7 @@ export default function Header() {
   const { isAdmin } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  
+
   if (pathname.startsWith("/docs")) return null;
 
   const toggleMenu = () => {
@@ -60,7 +56,7 @@ export default function Header() {
 
   const formatEmail = (email: string) => {
     if (!email) return "";
-    const [username, domain] = email.split('@');
+    const [username, domain] = email.split("@");
     if (!domain) return email;
     return `${username.slice(0, 3)}...@${domain}`;
   };
@@ -99,14 +95,13 @@ export default function Header() {
           <section className="hidden md:flex items-center space-x-8">
             {navbars.map((navbar: NavbarType) => {
               const isActive = isActiveNav(navbar.href);
-              return (navbar.title === "Login" && session) ? null : (
-                <Link 
-                  href={navbar.href} 
-                  key={navbar.id} 
+              return navbar.title === "Login" && session ? null : (
+                <Link
+                  target={navbar.target}
+                  href={navbar.href}
+                  key={navbar.id}
                   className={`font-medium transition-colors duration-200 relative ${
-                    isActive 
-                      ? "text-blue-600 dark:text-blue-400" 
-                      : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                    isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
                   {navbar.title}
@@ -122,9 +117,7 @@ export default function Header() {
                 </Link>
               );
             })}
-            
-            <ThemeToggle />
-            
+
             {session && isAdmin && (
               <Link
                 href="/admin/posts"
@@ -133,26 +126,48 @@ export default function Header() {
                 <span>Admin Panel</span>
               </Link>
             )}
-            
+
             {session && (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <UserAvatar session={session} />
-                              <span className="text-sm text-gray-700 dark:text-white font-mono">
-              {(session.user as { address?: string })?.address ?
-                formatWalletAddress((session.user as { address?: string }).address || "") :
-                (session.user as { email?: string })?.email ?
-                  formatEmail((session.user as { email?: string }).email || "") :
-                  (session.user as { name?: string })?.name || "User"
-              }
-            </span>
+                  <span className="text-sm text-gray-700 dark:text-white font-mono">
+                    {(session.user as { address?: string })?.address
+                      ? formatWalletAddress((session.user as { address?: string }).address || "")
+                      : (session.user as { email?: string })?.email
+                        ? formatEmail((session.user as { email?: string }).email || "")
+                        : (session.user as { name?: string })?.name || "User"}
+                  </span>
                 </div>
-                <button onClick={() => signOut()} className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white">
+                <button
+                  onClick={() => signOut()}
+                  className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white"
+                >
                   Sign out
                 </button>
               </div>
             )}
           </section>
+
+          {!session && (
+            <section>
+              <Link
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-sm border border-white/30 bg-gray-800/50 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-200 hover:border-white/50 hover:bg-gray-700/50"
+                href={routers.login}
+              >
+                <span>Connect Wallet</span>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  ></path>
+                </svg>
+              </Link>
+            </section>
+          )}
 
           <section className="md:hidden">
             <button
@@ -176,15 +191,13 @@ export default function Header() {
               <div className="space-y-3">
                 {navbars.map((navbar: NavbarType) => {
                   const isActive = isActiveNav(navbar.href);
-                  return (navbar.title === "Login" && session) ? null : (
+                  return navbar.title === "Login" && session ? null : (
                     <Link
                       href={navbar.href}
                       key={navbar.id}
                       onClick={closeMenu}
                       className={`block font-medium transition-colors duration-200 py-2 ${
-                        isActive 
-                          ? "text-blue-600 dark:text-blue-400" 
-                          : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                        isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                       }`}
                     >
                       {navbar.title}
@@ -192,7 +205,16 @@ export default function Header() {
                   );
                 })}
                 <div className="py-2">
-                  <ThemeToggle />
+                  {/* <Link
+                    href={navbar.href}
+                    key={navbar.id}
+                    onClick={closeMenu}
+                    className={`block font-medium transition-colors duration-200 py-2 ${
+                      isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                  >
+                    {navbar.title}
+                  </Link> */}
                 </div>
               </div>
 
@@ -204,22 +226,21 @@ export default function Header() {
                       onClick={closeMenu}
                       className="inline-flex items-center gap-2 rounded-sm border border-gray-300 dark:border-white/30 bg-gray-100 dark:bg-gray-800/50 px-4 py-2 text-sm font-medium text-gray-700 dark:text-white shadow-lg transition-all duration-200 hover:border-gray-400 dark:hover:border-white/50 hover:bg-gray-200 dark:hover:bg-gray-700/50"
                     >
-                     <span>Admin Panel</span>
+                      <span>Admin Panel</span>
                     </Link>
                   </div>
                 )}
-                
+
                 {session && (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <UserAvatar session={session} />
                       <span className="text-sm text-gray-700 dark:text-white font-mono">
-                        {(session.user as { address?: string })?.address ? 
-                          formatWalletAddress((session.user as { address?: string }).address || "") :
-                          (session.user as { email?: string })?.email ?
-                            formatEmail((session.user as { email?: string }).email || "") :
-                            (session.user as { name?: string })?.name || "User"
-                        }
+                        {(session.user as { address?: string })?.address
+                          ? formatWalletAddress((session.user as { address?: string }).address || "")
+                          : (session.user as { email?: string })?.email
+                            ? formatEmail((session.user as { email?: string }).email || "")
+                            : (session.user as { name?: string })?.name || "User"}
                       </span>
                     </div>
                     <button

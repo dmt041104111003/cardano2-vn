@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import Link from "next/link";
 import TechnologyItem from "./TechnologyItem";
-import { Pagination } from "~/components/ui/pagination";
+import Pagination from "~/components/pagination";
 import NotFoundInline from "~/components/ui/not-found-inline";
 import { TechnologyPageClientProps, Technology } from '~/constants/technologies';
 
@@ -15,7 +15,6 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
   const {
     data: queryData,
     isLoading,
-    error,
   } = useQuery({
     queryKey: ['technologies'],
     queryFn: async () => {
@@ -42,9 +41,7 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedTechnologies = filteredTechnologies.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+
 
   // Reset to first page when search changes
   if (searchTerm && currentPage > 1) {
@@ -73,8 +70,7 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
         ) : filteredTechnologies.length === 0 ? (
           <NotFoundInline 
             onClearFilters={() => {
-              // For embedded mode, we can't clear filters directly
-              // The parent component should handle this
+
             }}
           />
         ) : (
@@ -89,9 +85,7 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
-                  totalItems={filteredTechnologies.length}
-                  itemsPerPage={ITEMS_PER_PAGE}
-                  onPageChange={handlePageChange}
+                  setCurrentPage={setCurrentPage}
                 />
               </div>
             )}
@@ -112,8 +106,7 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
           {filteredTechnologies.length === 0 ? (
             <NotFoundInline 
               onClearFilters={() => {
-                // For full page mode, we can't clear filters directly
-                // This would need to be handled by the parent component
+
               }}
             />
           ) : (
@@ -128,9 +121,7 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    totalItems={filteredTechnologies.length}
-                    itemsPerPage={ITEMS_PER_PAGE}
-                    onPageChange={handlePageChange}
+                    setCurrentPage={setCurrentPage}
                   />
                 </div>
               )}
@@ -139,7 +130,7 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
           
           <section className="mt-16 rounded-sm border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 p-8 text-center backdrop-blur-sm">
             <h2 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">Start Your Cardano2vn Journey Today</h2>
-            <Link href="https://lms.andamio.io">
+            <Link href="https://cardano2vn.io">
               <button className="inline-flex items-center justify-center whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:text-success p-1 text-md rounded-sm bg-blue-600 px-8 py-3 font-semibold text-white shadow-lg shadow-blue-500/25 hover:bg-blue-700">
                 Open Cardano2vn App
               </button>

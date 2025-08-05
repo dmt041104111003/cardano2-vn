@@ -5,7 +5,7 @@ import Title from "~/components/title";
 import { useEffect, useState } from "react";
 import BlogFilters from "~/components/blog/BlogFilters";
 import BlogCardSkeleton from "~/components/blog/BlogCardSkeleton";
-import { Pagination } from "~/components/ui/pagination";
+import Pagination from "~/components/pagination";
 import { useQuery } from '@tanstack/react-query';
 import NotFoundInline from "~/components/ui/not-found-inline";
 import { BlogPost, BlogMedia, BlogTag } from '~/constants/posts';
@@ -23,8 +23,6 @@ export default function BlogPageClient() {
 
   const {
     data: postsData,
-    isLoading: loadingPosts,
-    refetch: refetchPosts,
   } = useQuery({
     queryKey: ['public-posts'],
     queryFn: async () => {
@@ -37,8 +35,6 @@ export default function BlogPageClient() {
 
   const {
     data: tagsData,
-    isLoading: loadingTags,
-    refetch: refetchTags,
   } = useQuery({
     queryKey: ['public-tags'],
     queryFn: async () => {
@@ -138,9 +134,7 @@ export default function BlogPageClient() {
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          totalItems={publishedPosts.length}
-          itemsPerPage={pageSize}
-          onPageChange={setCurrentPage}
+          setCurrentPage={setCurrentPage}
         />
       </div>
     </main>
