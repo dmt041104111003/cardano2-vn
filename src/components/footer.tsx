@@ -84,28 +84,7 @@ export default function Footer() {
                 </li>
               </ul>
             </div>
-            <div className="relative">
-              <div className="absolute -top-2 left-0 h-1 w-8 bg-gradient-to-r from-blue-500 to-transparent opacity-60"></div>
-              <h3 className="mb-6 text-lg font-bold uppercase tracking-wider text-gray-900 dark:text-white">Legal</h3>
-              <ul className="space-y-4">
-                <li>
-                  <Link
-                    className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-white"
-                    href="/privacy-policy"
-                  >
-                    <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-white"
-                    href="/terms"
-                  >
-                    <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>Terms of Use
-                  </Link>
-                </li>
-              </ul>
-            </div>
+
           </div>
           <div className="mt-16 border-t border-white/10 pt-8">
             <div className="flex flex-col items-center justify-between md:flex-row">
