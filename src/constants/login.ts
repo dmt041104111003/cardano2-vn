@@ -33,6 +33,11 @@ export const NETWORKS: Network[] = [
 export const C2VN_WALLETS: Wallet[] = [
   { id: "sol", name: "Solana Wallet", logo: "S", color: "bg-purple-500" },
   { id: "eternal", name: "Eternal Wallet", logo: "E", color: "bg-green-500" },
+  { id: "nami", name: "Nami Wallet", logo: "N", color: "bg-blue-500" },
+  { id: "typhon", name: "Typhon Wallet", logo: "T", color: "bg-orange-500" },
+  { id: "lace", name: "Lace Wallet", logo: "L", color: "bg-purple-600" },
+  { id: "gero", name: "Gero Wallet", logo: "G", color: "bg-blue-600" },
+  { id: "nufi", name: "NuFi Wallet", logo: "N", color: "bg-indigo-600" },
 ];
 
 export const SOCIAL_WALLETS: Wallet[] = [

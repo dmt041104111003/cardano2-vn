@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useCardanoWallet } from "~/hooks/useCardanoWallet";
@@ -10,16 +10,28 @@ export default function WalletList({ wallets }: WalletListProps) {
   const { showError, showSuccess, showInfo } = useToastContext();
   const lastErrorRef = useRef<string>("");
   const lastSuccessRef = useRef<string>("");
+  const [connectingWalletId, setConnectingWalletId] = useState<string | null>(null);
 
   const handleWalletClick = async (walletId: string) => {
-    if (walletId === "eternal") {
+    if (walletId === "eternal" || walletId === "lace") {
       if (isAuthenticated) {
         await disconnect();
         showSuccess("Logout Successful", "Your Cardano wallet has been disconnected successfully.");
       } else {
+        setConnectingWalletId(walletId);
         showInfo("Connecting...", "Please wait while we connect to your Cardano wallet.");
-        await connect();
+        try {
+          await connect(walletId);
+        } finally {
+          setConnectingWalletId(null);
+        }
       }
+    } else if (walletId === "nami") {
+      showInfo("Nami Wallet Upgraded", "Nami has been upgraded to Lace! Please use Lace wallet with Nami mode enabled.");
+    } else if (walletId === "gero") {
+      showInfo("Gero Wallet", "Gero Wallet is currently not supported. Please use Eternl or Lace wallet instead.");
+    } else if (walletId === "nufi") {
+      showInfo("NuFi Wallet", "NuFi Wallet is currently not supported. Please use Eternl or Lace wallet instead.");
     } else if (walletId === "google") {
       showInfo("Connecting...", "Please wait while we connect to your Google account.");
       await signIn("google", { callbackUrl: "/" });
@@ -53,7 +65,7 @@ export default function WalletList({ wallets }: WalletListProps) {
   }, [hasLoggedIn, walletUser, showSuccess]);
 
   const isActiveWallet = (walletId: string) => {
-    return ["eternal", "google", "github"].includes(walletId);
+    return ["eternal", "lace", "nami", "google", "github"].includes(walletId);
   };
 
   return (
@@ -66,14 +78,14 @@ export default function WalletList({ wallets }: WalletListProps) {
             <button
               key={wallet.id}
               onClick={() => handleWalletClick(wallet.id)}
-              disabled={wallet.id === "eternal" && isConnecting || !isActive}
+                             disabled={(wallet.id === "eternal" || wallet.id === "lace") && connectingWalletId === wallet.id || !isActive}
               className={`w-full p-3 rounded-lg border transition-all duration-200 flex items-center gap-3 ${
                 isActive 
                   ? "border-gray-200 hover:bg-gray-100 hover:border-gray-300 hover:shadow-sm bg-white" 
                   : "border-gray-100 bg-gray-50 cursor-not-allowed opacity-60"
-              } ${
-                wallet.id === "eternal" && isConnecting ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+                             } ${
+                 (wallet.id === "eternal" || wallet.id === "lace") && connectingWalletId === wallet.id ? "opacity-50 cursor-not-allowed" : ""
+               }`}
             >
               <span className={`text-sm font-medium flex-1 ${
                 isActive ? "text-gray-700" : "text-gray-500"
@@ -87,15 +99,15 @@ export default function WalletList({ wallets }: WalletListProps) {
                 </span>
               )}
               
-              {wallet.id === "eternal" ? (
-                isConnecting ? (
+                             {wallet.id === "eternal" || wallet.id === "nami" || wallet.id === "typhon" || wallet.id === "lace" || wallet.id === "gero" || wallet.id === "nufi" ? (
+                connectingWalletId === wallet.id ? (
                   <div className="w-8 h-8 flex items-center justify-center">
                     <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : (
                   <Image
-                    src="/images/wallets/eternal.png"
-                    alt="Eternal Wallet"
+                    src={`/images/wallets/${wallet.id}.png`}
+                    alt={`${wallet.name}`}
                     width={32}
                     height={32}
                     className="w-8 h-8"
