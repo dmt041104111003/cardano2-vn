@@ -63,7 +63,7 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, onIn
           
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Email Address
+              Email Address *
             </label>
             <input
               type="email"
@@ -71,8 +71,20 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, onIn
               placeholder="your.email@example.com"
               value={typedFormData["your-email"]}
               onChange={onInputChange}
-              className="w-full px-3 py-2 sm:py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm sm:text-base"
+              className={`w-full px-3 py-2 sm:py-2.5 border-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm sm:text-base ${
+                typedErrors["your-email"] 
+                  ? "border-red-500 focus:ring-red-500/20 focus:border-red-500" 
+                  : "border-gray-300 dark:border-gray-600"
+              }`}
             />
+            {typedErrors["your-email"] && (
+              <p className="text-red-500 text-xs mt-1 flex items-start sm:items-center">
+                <svg className="w-3 h-3 mr-1 flex-shrink-0 mt-0.5 sm:mt-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <span className="break-words leading-relaxed">{typedErrors["your-email"]}</span>
+              </p>
+            )}
           </div>
           
           <div>

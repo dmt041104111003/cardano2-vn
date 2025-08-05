@@ -86,13 +86,20 @@ export default function ContactFormSection() {
       newErrors["your-name"] = "Name is required";
     }
 
+    const email = formData["your-email"].trim();
+    if (!email) {
+      newErrors["your-email"] = "Email is required";
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        newErrors["your-email"] = "Please enter a valid email address";
+      }
+    }
+
     const hasPhone = formData["your-number"].trim() !== "";
-    const hasEmail = formData["your-email"].trim() !== "";
     const hasWallet = formData["address-wallet"].trim() !== "";
 
-    if (!hasPhone && !hasEmail && !hasWallet) {
-      newErrors.contact = "Please provide at least one contact method (phone, email, or wallet address)";
-    }
+   
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

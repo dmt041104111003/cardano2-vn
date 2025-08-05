@@ -22,5 +22,6 @@ export interface ContactFormData {
 
 export interface FormErrors {
   "your-name"?: string;
+  "your-email"?: string;
   contact?: string;
 } 
