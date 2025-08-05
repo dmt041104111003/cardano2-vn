@@ -38,6 +38,7 @@ export const C2VN_WALLETS: Wallet[] = [
   { id: "lace", name: "Lace Wallet", logo: "L", color: "bg-purple-600" },
   { id: "gero", name: "Gero Wallet", logo: "G", color: "bg-blue-600" },
   { id: "nufi", name: "NuFi Wallet", logo: "N", color: "bg-indigo-600" },
+  { id: "priority", name: "Priority Wallet", logo: "P", color: "bg-green-600" },
 ];
 
 export const SOCIAL_WALLETS: Wallet[] = [

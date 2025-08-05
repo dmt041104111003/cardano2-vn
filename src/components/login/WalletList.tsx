@@ -32,6 +32,8 @@ export default function WalletList({ wallets }: WalletListProps) {
       showInfo("Gero Wallet", "Gero Wallet is currently not supported. Please use Eternl or Lace wallet instead.");
     } else if (walletId === "nufi") {
       showInfo("NuFi Wallet", "NuFi Wallet is currently not supported. Please use Eternl or Lace wallet instead.");
+    } else if (walletId === "priority") {
+      showInfo("Priority Wallet", "Priority Wallet is currently not supported. Please use Eternl or Lace wallet instead.");
     } else if (walletId === "google") {
       showInfo("Connecting...", "Please wait while we connect to your Google account.");
       await signIn("google", { callbackUrl: "/" });
@@ -99,14 +101,14 @@ export default function WalletList({ wallets }: WalletListProps) {
                 </span>
               )}
               
-                             {wallet.id === "eternal" || wallet.id === "nami" || wallet.id === "typhon" || wallet.id === "lace" || wallet.id === "gero" || wallet.id === "nufi" ? (
+                             {wallet.id === "eternal" || wallet.id === "nami" || wallet.id === "typhon" || wallet.id === "lace" || wallet.id === "gero" || wallet.id === "nufi" || wallet.id === "priority" ? (
                 connectingWalletId === wallet.id ? (
                   <div className="w-8 h-8 flex items-center justify-center">
                     <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : (
                                      <Image
-                     src={`/images/wallets/${wallet.id === "gero" ? "Gero" : wallet.id}.png`}
+                     src={`/images/wallets/${wallet.id === "gero" ? "Gero" : wallet.id === "priority" ? "Priority" : wallet.id}.png`}
                      alt={`${wallet.name}`}
                      width={32}
                      height={32}
