@@ -145,19 +145,19 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, onIn
              )}
            </div>
            
-           <div>
-             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-               Email Introduction
-             </label>
-             <input
-               type="text"
-               name="email-intro"
-               placeholder="How did you hear about us?"
-               value={typedFormData["email-intro"]}
-               onChange={onInputChange}
-               className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm"
-             />
-           </div>
+                       <div className="md:col-span-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Email Introduction
+              </label>
+              <input
+                type="text"
+                name="email-intro"
+                placeholder="How did you hear about us?"
+                value={typedFormData["email-intro"]}
+                onChange={onInputChange}
+                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm"
+              />
+            </div>
           
           {typedErrors.contact && (
             <div className="md:col-span-2">

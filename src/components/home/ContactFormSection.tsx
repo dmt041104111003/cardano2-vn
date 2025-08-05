@@ -189,11 +189,11 @@ export default function ContactFormSection() {
           <div>
             <div className="mb-6 flex items-center gap-4">
               <div className="h-1 w-12 bg-gradient-to-r from-blue-600 dark:from-white to-transparent"></div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white lg:text-4xl">Register for a C2VN Course</h2>
+              <h2 className="text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">Register for an C2VN course</h2>
             </div>
-            <p className="mb-8 text-lg leading-relaxed text-gray-600 dark:text-blue-100">
-              Join our comprehensive Cardano courses and learn from industry experts. 
-              Choose your path and start your blockchain journey today.
+            <p className="mb-10 text-xl leading-relaxed text-gray-600 dark:text-blue-100">
+              Have questions about Cardano or want to collaborate? We'd love to hear from you. 
+              Reach out to our team and let's build the future of blockchain together.
             </p>
        
           </div>
