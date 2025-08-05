@@ -123,28 +123,78 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
                 </div>
               </div>
             </div>
-            <motion.button
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.3 }}
-              onClick={onClose}
-              className="absolute -top-3 -right-3 w-10 h-10 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center text-gray-700 dark:text-gray-200 transition-all duration-200 hover:scale-110 shadow-lg"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </motion.button>
           </motion.div>
+          
+          <motion.button
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+            onClick={onClose}
+            className="absolute button"
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              width: '4em',
+              height: '4em',
+              border: 'none',
+              background: 'rgba(180, 83, 107, 0.11)',
+              borderRadius: '5px',
+              transition: 'background 0.5s',
+              zIndex: 50
+            }}
+          >
+            <span 
+              className="X"
+              style={{
+                content: "",
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: '2em',
+                height: '1.5px',
+                backgroundColor: 'rgb(255, 255, 255)',
+                transform: 'translateX(-50%) rotate(45deg)'
+              }}
+            ></span>
+            <span 
+              className="Y"
+              style={{
+                content: "",
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: '2em',
+                height: '1.5px',
+                backgroundColor: '#fff',
+                transform: 'translateX(-50%) rotate(-45deg)'
+              }}
+            ></span>
+            <div 
+              className="close"
+              style={{
+                position: 'absolute',
+                display: 'flex',
+                padding: '0.8rem 1.5rem',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transform: 'translateX(-50%)',
+                top: '-70%',
+                left: '50%',
+                width: '3em',
+                height: '1.7em',
+                fontSize: '12px',
+                backgroundColor: 'rgb(19, 22, 24)',
+                color: 'rgb(187, 229, 236)',
+                border: 'none',
+                borderRadius: '3px',
+                pointerEvents: 'none',
+                opacity: '0'
+              }}
+            >
+              Close
+            </div>
+          </motion.button>
         </motion.div>
       )}
     </AnimatePresence>

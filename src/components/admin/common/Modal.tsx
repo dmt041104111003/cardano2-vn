@@ -46,24 +46,83 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className={`relative w-full ${maxWidth} max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-auto`}
+            className={`relative w-full ${maxWidth} max-h-[90vh] overflow-hidden`}
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 pt-6 pb-2 border-b">
-              <h2 id="modal-title" className="text-lg font-semibold text-gray-900">{title}</h2>
-              <button
-                onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition"
-                title="Close"
-                tabIndex={0}
-                aria-label="Close modal"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-6 pt-6 pb-2 border-b">
+                <h2 id="modal-title" className="text-lg font-semibold text-gray-900">{title}</h2>
+                <button
+                  onClick={onClose}
+                  className="button"
+                  title="Close"
+                  tabIndex={0}
+                  aria-label="Close modal"
+                  style={{
+                    position: 'relative',
+                    width: '2.5em',
+                    height: '2.5em',
+                    border: '2px solid #dc2626',
+                    background: 'rgba(220,38,38,0.08)',
+                    borderRadius: '5px',
+                    transition: 'all 0.3s ease',
+                    zIndex: 10
+                  }}
+                >
+                  <span 
+                    className="X"
+                    style={{
+                      content: "",
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      width: '1.5em',
+                      height: '2px',
+                      backgroundColor: '#dc2626',
+                      transform: 'translateX(-50%) rotate(45deg)'
+                    }}
+                  ></span>
+                  <span 
+                    className="Y"
+                    style={{
+                      content: "",
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      width: '1.5em',
+                      height: '2px',
+                      backgroundColor: '#dc2626',
+                      transform: 'translateX(-50%) rotate(-45deg)'
+                    }}
+                  ></span>
+                  <div 
+                    className="close"
+                    style={{
+                      position: 'absolute',
+                      display: 'flex',
+                      padding: '0.6rem 1.2rem',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transform: 'translateX(-50%)',
+                      top: '-60%',
+                      left: '50%',
+                      width: '2.5em',
+                      height: '1.5em',
+                      fontSize: '10px',
+                      backgroundColor: 'rgb(19, 22, 24)',
+                      color: 'rgb(187, 229, 236)',
+                      border: 'none',
+                      borderRadius: '3px',
+                      pointerEvents: 'none',
+                      opacity: '0'
+                    }}
+                  >
+                    Close
+                  </div>
+                </button>
+              </div>
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">{children}</div>
             </div>
-            <div className="p-6">{children}</div>
           </motion.div>
         </motion.div>
       )}

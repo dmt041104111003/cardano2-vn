@@ -318,3 +318,24 @@ body > [data-radix-popper-content-wrapper] {
 .transparent-scrollbar.scrolling {
   scrollbar-color: #888 transparent;
 }
+
+/* Custom Close Button Styles */
+.button:hover {
+  background-color: rgba(220, 38, 38, 0.1);
+  border-color: #b91c1c;
+}
+
+.button:active {
+  background-color: rgba(185, 28, 28, 0.2);
+  border-color: #991b1b;
+}
+
+.button:hover > .close {
+  animation: close 0.2s forwards 0.25s;
+}
+
+@keyframes close {
+  100% {
+    opacity: 1;
+  }
+}
