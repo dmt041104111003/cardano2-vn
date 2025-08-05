@@ -14,75 +14,91 @@ export default function Footer() {
               <div className="absolute -top-2 left-0 h-1 w-8 bg-gradient-to-r from-blue-500 to-transparent opacity-60"></div>
               <h3 className="mb-6 text-lg font-bold uppercase tracking-wider text-gray-900 dark:text-white">Stay Connected with Cardano2VN</h3>
               <ul className="space-y-4">
-                <li>
-                  <Link
-                    className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-white"
-                    href="mailto:cardano2vn@gmail.com"
-                  >
-                    <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>Support
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-white"
-                    href="mailto:hello@cardano2vn.com"
-                  >
-                    <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>Contact Us
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-white"
-                    href="https://docs.cardano2vn.com"
-                  >
-                    <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>Docs
-                  </Link>
-                </li>
+                                 <li>
+                                      <Link
+                      className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400"
+                      href="/about#contact"
+                    >
+                      <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>Support
+                    </Link>
+                 </li>
+                 <li>
+                                      <Link
+                      className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400"
+                      href="/about#contact"
+                    >
+                      <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>Contact Us
+                    </Link>
+                 </li>
+                                 <li>
+                                      <Link
+                      className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400"
+                      href="/docs"
+                    >
+                      <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>Docs
+                    </Link>
+                 </li>
               </ul>
             </div>
             <div className="relative">
               <div className="absolute -top-2 left-0 h-1 w-8 bg-gradient-to-r from-blue-500 to-transparent opacity-60"></div>
               <h3 className="mb-6 text-lg font-bold uppercase tracking-wider text-gray-900 dark:text-white">Follow Us</h3>
-              <ul className="space-y-4">
-                <li>
-                  <Link
-                    className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-white"
-                    href="https://www.linkedin.com/company/cardano2vn"
-                  >
-                    <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>LinkedIn
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-white"
-                    href="https://twitter.com/cardano2vn"
-                  >
-                    <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>Twitter
-                  </Link>
-                </li>
-              </ul>
+                             <ul className="space-y-4">
+                 <li>
+                                      <Link
+                      className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400"
+                      href="https://www.youtube.com/channel/UCJTdAQPGJntJet5v-nk9ebA"
+                    >
+                      <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>YouTube
+                    </Link>
+                 </li>
+                 <li>
+                                      <Link
+                      className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400"
+                      href="https://t.me/cardano2vn"
+                    >
+                      <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>Telegram
+                    </Link>
+                 </li>
+                 <li>
+                                      <Link
+                      className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400"
+                      href="https://github.com/cardano2vn"
+                    >
+                      <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>GitHub
+                    </Link>
+                 </li>
+               </ul>
             </div>
             <div className="relative">
               <div className="absolute -top-2 left-0 h-1 w-8 bg-gradient-to-r from-blue-500 to-transparent opacity-60"></div>
               <h3 className="mb-6 text-lg font-bold uppercase tracking-wider text-gray-900 dark:text-white">Company</h3>
-              <ul className="space-y-4">
-                <li>
-                  <Link
-                    className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-white"
-                    href="/about"
-                  >
-                    <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>About
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-white"
-                    href="/roadmap"
-                  >
-                    <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-white"></span>Roadmap
-                  </Link>
-                </li>
-              </ul>
+                             <ul className="space-y-4">
+                 <li>
+                                      <Link
+                      className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400"
+                      href="/about"
+                    >
+                      <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>About
+                    </Link>
+                 </li>
+                                  <li>
+                                       <Link
+                       className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400"
+                       href="/project?typeFilter=project"
+                     >
+                       <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>Project
+                     </Link>
+                   </li>
+                   <li>
+                                       <Link
+                       className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400"
+                       href="/project?typeFilter=catalyst"
+                     >
+                       <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>Catalyst
+                     </Link>
+                   </li>
+               </ul>
             </div>
 
           </div>
