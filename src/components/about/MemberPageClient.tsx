@@ -567,7 +567,7 @@ export default function MemberPageClient() {
         )}
       </section>
 
-      <section className="py-12 lg:py-16 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-950">
+      <section id="contact" className="pt-32 pb-12 lg:pt-40 lg:pb-16 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <div className="mb-4 flex items-center justify-center gap-4">

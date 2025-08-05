@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import ProjectCard from "~/components/project-card";
 import ProjectSkeleton from "~/components/project/ProjectSkeleton";
 import Pagination from "~/components/pagination";
@@ -8,8 +9,10 @@ import Navigation from "~/components/navigation";
 import Title from "~/components/title";
 import TechnologyPageClient from "~/components/technology/TechnologyPageClient";
 import NotFoundInline from "~/components/ui/not-found-inline";
+import Loading from "~/components/ui/Loading";
 
-export default function ProjectPageClient() {
+function ProjectPageContent() {
+  const searchParams = useSearchParams();
   const [year, setYear] = useState<number | null>(null); 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,6 +40,14 @@ export default function ProjectPageClient() {
       setYear(years[0]);
     }
   }, [years, year]);
+
+  // Read typeFilter from URL query parameter
+  useEffect(() => {
+    const urlTypeFilter = searchParams.get('typeFilter');
+    if (urlTypeFilter && (urlTypeFilter === 'catalyst' || urlTypeFilter === 'project')) {
+      setTypeFilter(urlTypeFilter);
+    }
+  }, [searchParams]);
   
   const filteredProjects = projects.filter((proposal: any) => {
     const matchesYear = year === null || proposal.year === year;
@@ -175,5 +186,13 @@ export default function ProjectPageClient() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function ProjectPageClient() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ProjectPageContent />
+    </Suspense>
   );
 } 
