@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { cardanoWallet, CardanoWalletUser } from "~/lib/cardano-wallet";
+import { cardanoWallet, WALLET_NAMES } from "~/lib/cardano-wallet";
+import { CardanoWalletUser } from "~/constants/wallet";
 
 export function useCardanoWallet() {
   const { data: session, status, update } = useSession();
@@ -15,19 +16,19 @@ export function useCardanoWallet() {
 
   const isAuthenticated = !!(session?.user && (session.user as { address?: string }).address);
 
-  const connect = useCallback(async () => {
+  const connect = useCallback(async (walletName: string = 'eternal') => {
     setIsConnecting(true);
     setError(null);
     setHasLoggedIn(false);
     try {
-      if (!cardanoWallet.isWalletInstalled()) {
-        throw new Error("Cardano Wallet is not installed. Please install it first.");
-      }
-      const user = await cardanoWallet.connect();
-      const networkId = await cardanoWallet.getWallet()?.getNetworkId();
-      if (networkId !== 1) {
-        throw new Error("Vui lòng chuyển ví sang mạng Mainnet để đăng nhập.");
-      }
+      const actualWalletName = WALLET_NAMES[walletName as keyof typeof WALLET_NAMES] || walletName;
+      
+             if (!(await cardanoWallet.isWalletInstalled(walletName))) {
+         throw new Error(`${walletName.charAt(0).toUpperCase() + walletName.slice(1)} Wallet is not installed. Please install it first.`);
+       }
+      
+      const user = await cardanoWallet.connect(actualWalletName);
+      
       setWalletUser(user);
       const message = `Sign this message to authenticate with Cardano2VN\n\nTimestamp: ${Date.now()}`;
       const signature = await cardanoWallet.signMessage(message);
@@ -45,37 +46,25 @@ export function useCardanoWallet() {
         await update();
       }
       window.location.href = "/";
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to connect to Cardano Wallet";
-      setError(errorMessage);
-      setHasLoggedIn(false);
-      console.error("Error connecting to Cardano Wallet:", err);
-    } finally {
+         } catch (err) {
+       const errorMessage = err instanceof Error ? err.message : "Failed to connect to Cardano Wallet";
+       setError(errorMessage);
+       setHasLoggedIn(false);
+     } finally {
       setIsConnecting(false);
     }
   }, [router, update]);
 
-  const disconnect = useCallback(async () => {
-    try {
-      await cardanoWallet.disconnect();
-      setWalletUser(null);
-      await signOut({ redirect: false });
-    } catch (err) {
-      console.error("Error disconnecting from Cardano Wallet:", err);
-    }
-  }, []);
+     const disconnect = useCallback(async () => {
+     try {
+       await cardanoWallet.disconnect();
+       setWalletUser(null);
+       await signOut({ redirect: false });
+     } catch (err) {
+     }
+   }, []);
 
-  const getBalance = useCallback(async () => {
-    if (!cardanoWallet.getConnectionStatus()) {
-      throw new Error("Wallet not connected");
-    }
-    try {
-      return await cardanoWallet.getBalance();
-    } catch (err) {
-      console.error("Error getting balance:", err);
-      throw err;
-    }
-  }, []);
+     
 
   useEffect(() => {
     if (cardanoWallet.getConnectionStatus()) {
@@ -86,7 +75,6 @@ export function useCardanoWallet() {
   return {
     connect,
     disconnect,
-    getBalance,
     isConnecting,
     error,
     walletUser,

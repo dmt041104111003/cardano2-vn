@@ -5,6 +5,7 @@ export class CardanoWalletProvider {
   private config: CardanoWalletConfig;
   private wallet: BrowserWallet | null = null;
   private user: CardanoWalletUser | null = null;
+  private currentWalletName: string = '';
 
   constructor(config: CardanoWalletConfig) {
     this.config = config;
@@ -13,6 +14,7 @@ export class CardanoWalletProvider {
   async connect(walletName: string = 'eternl'): Promise<CardanoWalletUser> {
     try {
       const availableWallets = await BrowserWallet.getAvailableWallets();
+      
       const walletInfo = availableWallets.find(w => w.name === walletName);
       
       if (!walletInfo) {
@@ -20,22 +22,19 @@ export class CardanoWalletProvider {
       }
 
       this.wallet = await BrowserWallet.enable(walletName);
+      this.currentWalletName = walletName;
       
       const addresses = await this.wallet.getUnusedAddresses();
       const address = addresses[0];
       
-      const balance = await this.wallet.getLovelace();
-      
       this.user = {
         address,
         name: walletInfo.name,
-        image: walletInfo.icon,
-        balance: balance.toString()
+        image: walletInfo.icon
       };
 
       return this.user;
     } catch (error) {
-      console.error('Error connecting to Cardano wallet:', error);
       throw error;
     }
   }
@@ -43,6 +42,7 @@ export class CardanoWalletProvider {
   async disconnect(): Promise<void> {
     this.wallet = null;
     this.user = null;
+    this.currentWalletName = '';
   }
 
   async signMessage(message: string): Promise<string> {
@@ -54,36 +54,46 @@ export class CardanoWalletProvider {
       const signature = await this.wallet.signData(message);
       return signature.signature;
     } catch (error) {
-      console.error('Error signing message:', error);
       throw error;
     }
   }
 
-  async getBalance(): Promise<string> {
-    if (!this.wallet) {
-      throw new Error('Wallet not connected');
-    }
 
-    try {
-      const balance = await this.wallet.getLovelace();
-      return balance.toString();
-    } catch (error) {
-      console.error('Error getting balance:', error);
-      throw error;
-    }
-  }
 
   async getAvailableWallets(): Promise<Array<{ name: string; icon: string; version: string }>> {
     try {
       return await BrowserWallet.getAvailableWallets();
     } catch (error) {
-      console.error('Error getting available wallets:', error);
       return [];
     }
   }
 
-  isWalletInstalled(): boolean {
-    return typeof window !== 'undefined';
+  async isWalletInstalled(walletName?: string): Promise<boolean> {
+    if (typeof window === 'undefined') return false;
+    
+    if (walletName) {
+      return this.checkWalletAvailability(walletName);
+    }
+    
+    return true;
+  }
+
+  private async checkWalletAvailability(walletName: string): Promise<boolean> {
+    const walletMap: { [key: string]: string } = {
+      'eternal': 'eternl',
+      'lace': 'lace'
+    };
+
+    const actualWalletName = walletMap[walletName] || walletName;
+    
+    try {
+      const availableWallets = await BrowserWallet.getAvailableWallets();
+      
+      const isAvailable = availableWallets.some(wallet => wallet.name === actualWalletName);
+      return isAvailable;
+    } catch (error) {
+      return false;
+    }
   }
 
   getCurrentUser(): CardanoWalletUser | null {
@@ -97,7 +107,20 @@ export class CardanoWalletProvider {
   getWallet(): BrowserWallet | null {
     return this.wallet;
   }
+
+  getCurrentWalletName(): string {
+    return this.currentWalletName;
+  }
+
+  getConfig(): CardanoWalletConfig {
+    return this.config;
+  }
 }
+
+export const WALLET_NAMES = {
+  eternal: 'eternl',
+  lace: 'lace'
+};
 
 export const cardanoWallet = new CardanoWalletProvider({
   network: 'mainnet'
