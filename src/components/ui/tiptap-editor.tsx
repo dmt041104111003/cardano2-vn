@@ -16,6 +16,10 @@ import { Subscript } from '@tiptap/extension-subscript';
 import { Superscript } from '@tiptap/extension-superscript';
 import { Highlight } from '@tiptap/extension-highlight';
 import { Placeholder } from '@tiptap/extension-placeholder';
+import { Tooltip } from './tiptap/extensions/tooltip-extension';
+import { LockMark } from './tiptap/extensions/lock-extension';
+import { TooltipButton } from './tiptap/tooltip-button';
+import { TooltipHandler } from './tiptap/tooltip-handler';
 import { createLowlight, common } from 'lowlight';
 import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import {
@@ -421,6 +425,12 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           <Redo className="h-4 w-4" />
         </button>
       </div>
+
+      <div className="w-px h-6 bg-gray-300"></div>
+
+      <div className="flex items-center gap-1">
+        <TooltipButton editor={editor} />
+      </div>
     </div>
   );
 };
@@ -503,6 +513,8 @@ export function TipTapEditor({ content, onChange, placeholder }: TipTapEditorPro
       Placeholder.configure({
         placeholder: placeholder || 'Start writing...',
       }),
+      LockMark,
+      Tooltip,
     ],
     content,
     immediatelyRender: false,
@@ -549,6 +561,7 @@ export function TipTapEditor({ content, onChange, placeholder }: TipTapEditorPro
 
   return (
     <div className="border border-gray-300 rounded-md overflow-hidden bg-white" suppressHydrationWarning>
+      <TooltipHandler />
       <MenuBar editor={editor} />
       <FloatingTableToolbar editor={editor} isClient={isClient} />
       <EditorContent 
