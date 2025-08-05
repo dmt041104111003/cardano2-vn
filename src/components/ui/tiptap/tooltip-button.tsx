@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Modal from '~/components/admin/common/Modal';
 import { TooltipPopup } from './tooltip-popup';
 import { TooltipBadges } from './tooltip-badges';
 import { useTooltipSelection, useTooltipEvents, useTooltipActions, useLockedTexts } from './tooltip-hooks';
@@ -10,8 +9,6 @@ import { TooltipButtonProps } from '~/constants/tooltip';
 export function TooltipButton({ editor }: TooltipButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [tooltipText, setTooltipText] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
   const [tooltipCount, setTooltipCount] = useState(0);
 
   const selectedText = useTooltipSelection(editor);
@@ -25,8 +22,6 @@ export function TooltipButton({ editor }: TooltipButtonProps) {
     const { from, to } = editor.state.selection;
     
     if (from === to) {
-      setModalMessage('Please select text to add tooltip');
-      setShowModal(true);
       return;
     }
 
@@ -58,8 +53,6 @@ export function TooltipButton({ editor }: TooltipButtonProps) {
     const { from, to } = editor.state.selection;
     
     if (from === to) {
-      setModalMessage('Please select text first, then click the tooltip button');
-      setShowModal(true);
       return;
     }
     
@@ -150,28 +143,18 @@ export function TooltipButton({ editor }: TooltipButtonProps) {
            selectedText={selectedText}
          />
 
-         <TooltipPopup
-           isOpen={isOpen}
-           selectedText={selectedText}
-           tooltipText={tooltipText}
-           onTooltipTextChange={setTooltipText}
-           onAddTooltip={handleAddTooltip}
-           onRemoveTooltip={handleRemoveTooltip}
-           onClose={() => {
-             setIsOpen(false);
-             setTooltipText('');
-           }}
-         />
-
-             <Modal
-         isOpen={showModal}
-         onClose={() => setShowModal(false)}
-         title="Tooltip Information"
-       >
-         <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-           {modalMessage}
-         </p>
-       </Modal>
+                   <TooltipPopup
+            isOpen={isOpen}
+            selectedText={selectedText}
+            tooltipText={tooltipText}
+            onTooltipTextChange={setTooltipText}
+            onAddTooltip={handleAddTooltip}
+            onRemoveTooltip={handleRemoveTooltip}
+            onClose={() => {
+              setIsOpen(false);
+              setTooltipText('');
+            }}
+          />
     </div>
   );
 } 
