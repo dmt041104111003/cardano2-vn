@@ -27,41 +27,57 @@ export function CourseTable({
   return (
     <div className="overflow-x-auto">
       <table className="min-w-[1200px] md:min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                 <thead className="bg-gray-50 dark:bg-gray-800">
-           <tr>
-                                           <th className="px-16 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                 Name
-               </th>
-               <th className="px-16 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                 Actions
-               </th>
-           </tr>
-         </thead>
+                         <thead className="bg-gray-50 dark:bg-gray-800">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Image
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Name
+            </th>
+            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
         <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-          {Array.isArray(courses) && courses.map((course) => (
-                         <tr key={course.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                               <td className="px-16 py-4">
-                   <div className="text-sm font-medium text-gray-900 dark:text-white">{course.name}</div>
-                 </td>
-                 <td className="px-16 py-4 whitespace-nowrap text-right text-sm font-medium">
-                 <div className="flex items-center justify-end space-x-2">
-                   <button
-                     onClick={() => onEdit(course)}
-                     className="text-blue-600 hover:text-blue-900"
-                     title={`Edit ${course.name}`}
-                   >
-                     <Edit className="h-4 w-4" />
-                   </button>
-                   <button
-                     onClick={() => handleDeleteClick(course)}
-                     className="text-red-600 hover:text-red-900"
-                     title={`Delete ${course.name}`}
-                   >
-                     <Trash2 className="h-4 w-4" />
-                   </button>
-                 </div>
-               </td>
-             </tr>
+                    {Array.isArray(courses) && courses.map((course) => (
+            <tr key={course.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+              <td className="px-6 py-4">
+                {course.image ? (
+                  <img
+                    src={course.image}
+                    alt={course.name}
+                    className="w-12 h-12 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">No image</span>
+                  </div>
+                )}
+              </td>
+              <td className="px-6 py-4">
+                <div className="text-sm font-medium text-gray-900 dark:text-white">{course.name}</div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div className="flex items-center justify-end space-x-2">
+                  <button
+                    onClick={() => onEdit(course)}
+                    className="text-blue-600 hover:text-blue-900"
+                    title={`Edit ${course.name}`}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(course)}
+                    className="text-red-600 hover:text-red-900"
+                    title={`Delete ${course.name}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>

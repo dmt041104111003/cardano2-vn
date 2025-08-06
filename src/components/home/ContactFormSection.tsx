@@ -6,6 +6,8 @@ import { useToastContext } from '~/components/toast-provider';
 import { ContactForm } from './ContactForm';
 import ContactFormManager from './ContactFormManager';
 import { ContactFormData, FormErrors } from '~/constants/contact';
+import ContactFormQuoteBlock from './ContactFormQuoteBlock';
+import ContactFormImage from './ContactFormImage';
 
 type TabType = "form" | "manage";
 
@@ -15,6 +17,7 @@ export default function ContactFormSection() {
   
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("form");
+  const [selectedCourseImage, setSelectedCourseImage] = useState<string>('');
   
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -135,9 +138,6 @@ export default function ContactFormSection() {
       newErrors["your-course"] = "Course selection is required";
     }
 
-    const hasPhone = formData["your-number"].trim() !== "";
-    const hasWallet = formData["address-wallet"].trim() !== "";
-
    
 
     setErrors(newErrors);
@@ -164,6 +164,23 @@ export default function ContactFormSection() {
         contact: undefined
       }));
     }
+  };
+
+  const handleCourseChange = (courseName: string) => {
+    console.log('handleCourseChange called with:', courseName);
+    fetch('/api/admin/courses')
+      .then(response => response.json())
+      .then(courses => {
+        console.log('Fetched courses:', courses);
+        const selectedCourse = courses.find((course: any) => course.name === courseName);
+        console.log('Selected course:', selectedCourse);
+        const imageUrl = selectedCourse?.image || '';
+        console.log('Setting image URL:', imageUrl);
+        setSelectedCourseImage(imageUrl);
+      })
+      .catch(error => {
+        console.error('Error fetching courses:', error);
+      });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -216,24 +233,31 @@ export default function ContactFormSection() {
     setActiveTab(tab);
   };
 
+  console.log('selectedCourseImage:', selectedCourseImage);
+  const backgroundStyle = {
+    backgroundImage: selectedCourseImage ? `url(${selectedCourseImage})` : 'linear-gradient(to bottom right, rgb(239 246 255), rgb(224 231 255))',
+    backgroundSize: selectedCourseImage ? 'contain' : 'auto',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat'
+  };
+  console.log('backgroundStyle:', backgroundStyle);
+
   return (
     <section
       id="contact"
-      className="relative flex min-h-[90vh] items-center overflow-hidden border-t border-gray-200 dark:border-white/10 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-950"
+      className="relative flex min-h-[90vh] items-center overflow-hidden border-t border-gray-200 dark:border-white/10"
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/50 dark:via-white/5 to-transparent"></div>
       <div className="relative mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <div className={`grid items-center gap-12 ${activeTab === "manage" ? "lg:grid-cols-1" : "lg:grid-cols-2"}`}>
           {activeTab !== "manage" && (
-            <div>
-              <div className="mb-6 flex items-center gap-4">
-                <div className="h-1 w-12 bg-gradient-to-r from-blue-600 dark:from-white to-transparent"></div>
-                <h2 className="text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">Register for an C2VN course</h2>
+            <div className="relative flex flex-col h-full justify-center">
+              <div className="relative w-full h-[600px] lg:h-[600px]">
+                <ContactFormImage imageUrl={selectedCourseImage} />
+                {/* Overlay text */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
+                  <ContactFormQuoteBlock />
+                </div>
               </div>
-              <p className="mb-10 text-xl leading-relaxed text-gray-600 dark:text-blue-100">
-                Have questions about Cardano or want to collaborate? We'd love to hear from you. 
-                Reach out to our team and let's build the future of blockchain together.
-              </p>
             </div>
           )}
           <div className={`relative ${activeTab === "manage" ? "lg:col-span-1" : "lg:col-span-1"}`}>
@@ -285,7 +309,6 @@ export default function ContactFormSection() {
                 </nav>
               </div>
             )}
-            
             {activeTab === "form" ? (
               <ContactForm
                 formData={formData}
@@ -295,6 +318,7 @@ export default function ContactFormSection() {
                 onInputChange={handleInputChange}
                 onSubmit={handleSubmit}
                 onCaptchaChange={setCaptchaValid}
+                onCourseChange={handleCourseChange}
               />
             ) : (
               <ContactFormManager />

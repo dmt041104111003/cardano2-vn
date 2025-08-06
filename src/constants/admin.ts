@@ -70,6 +70,7 @@ export interface EventLocationEditModalProps {
 export interface Course {
   id: string;
   name: string;
+  image?: string;
   isActive: boolean;
   order: number;
   createdAt: string;
@@ -86,7 +87,7 @@ export interface CourseEditModalProps {
   course: Course | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (id: string, name: string) => void;
+  onSave: (id: string, name: string, image?: string) => void;
   isSaving: boolean;
 }
 
