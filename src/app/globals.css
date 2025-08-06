@@ -171,10 +171,10 @@
   z-index: 10 !important;
 }
 
-/* Force all fumadocs content to have lower z-index */
+ /* Force all fumadocs content to have lower z-index 
 .docs-isolated-container * {
   z-index: auto !important;
-}
+} */
 
 /* Ensure mobile menu and navigation have high z-index */
 .docs-isolated-container [data-fumadocs-mobile-menu],
