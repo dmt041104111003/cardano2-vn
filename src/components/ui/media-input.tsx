@@ -26,6 +26,11 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
         if (onMediaAdd) {
           onMediaAdd(media);
         }
+        setCurrentMedia(null);
+        setImageUrl('');
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
       } else {
         alert(result.error || 'Upload failed');
       }
@@ -48,6 +53,8 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
         const media: MediaInputMedia = { type: 'image', url: result.media.url, id: result.media.url };
         setCurrentMedia(media);
         if (onMediaAdd) onMediaAdd(media);
+        setCurrentMedia(null);
+        setImageUrl('');
       } else {
         alert(result.error || 'Failed to add image URL');
       }

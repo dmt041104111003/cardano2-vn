@@ -281,6 +281,29 @@ model Course {
   @@index([createdAt])
 }
 
+model LandingContent {
+  id          String   @id @default(uuid())
+  section     String   @unique // "hero"
+  title       String?
+  subtitle    String?
+  description String?
+  mainText    String?
+  subText     String?
+  media1Url   String?
+  media2Url   String?
+  media3Url   String?
+  media4Url   String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
+  @@index([createdAt])
+  @@index([section])
+}
+
 enum ProjectStatus {
   PROPOSED
   APPROVED
