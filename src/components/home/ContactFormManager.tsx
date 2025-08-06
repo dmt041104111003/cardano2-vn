@@ -1,43 +1,10 @@
 "use client";
 
-import React, { Suspense } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import EventLocationManager from '~/components/admin/event-locations/EventLocationManager';
 import CourseManager from '~/components/admin/courses/CourseManager';
-
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean; error?: Error }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error in ContactFormManager:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <h3 className="text-red-800 dark:text-red-200 font-medium">Something went wrong</h3>
-          <p className="text-red-600 dark:text-red-300 text-sm mt-1">
-            Please refresh the page or try again later.
-          </p>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
 
 function LoadingSpinner() {
   return (
@@ -51,7 +18,7 @@ function ContactFormManager() {
   const { data: session } = useSession();
 
   const { data: userData, isLoading: isLoadingUser } = useQuery({
-    queryKey: ['user-role'],
+    queryKey: ['user-role', session?.user?.email, (session?.user as any)?.address],
     queryFn: async () => {
       if (!session?.user) return null;
       
@@ -67,50 +34,39 @@ function ContactFormManager() {
       }
       return null;
     },
-    enabled: !!session?.user
+    enabled: !!session?.user,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const isAdmin = userData?.role === 'ADMIN';
 
-
-
   if (isLoadingUser) {
-    console.log('ContactFormManager: Loading user data...');
     return <LoadingSpinner />;
   }
 
   if (!isAdmin) {
-    console.log('ContactFormManager: User is not admin');
     return null; 
   }
 
-  console.log('ContactFormManager: Rendering admin interface');
-
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<LoadingSpinner />}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-32">
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-              Event Locations
-            </h3>
-            <ErrorBoundary>
-              <EventLocationManager />
-            </ErrorBoundary>
-          </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-32">
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+          Event Locations
+        </h3>
+        <EventLocationManager />
+      </div>
 
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-              Courses
-            </h3>
-            <ErrorBoundary>
-              <CourseManager />
-            </ErrorBoundary>
-          </div>
-        </div>
-      </Suspense>
-    </ErrorBoundary>
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+          Courses
+        </h3>
+        <CourseManager />
+      </div>
+    </div>
   );
 }
 
-export default React.memo(ContactFormManager); 
+export default ContactFormManager; 

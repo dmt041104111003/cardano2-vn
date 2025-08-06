@@ -30,7 +30,10 @@ export default function CourseManager() {
         throw new Error('Failed to fetch courses');
       }
       return response.json();
-    }
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
 
@@ -50,9 +53,12 @@ export default function CourseManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-courses'] });
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-courses'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-form-courses'] });
       setNewName('');
       setNewImage('');
+      setNewTitle('');
+      setNewDescription('');
       showSuccess('Course created successfully');
     },
     onError: (error: Error) => {
@@ -75,7 +81,8 @@ export default function CourseManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-courses'] });
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-courses'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-form-courses'] });
       setEditingCourse(null);
       showSuccess('Course updated successfully');
     },
@@ -97,7 +104,8 @@ export default function CourseManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-courses'] });
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-courses'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-form-courses'] });
       showSuccess('Course deleted successfully');
     },
     onError: (error: Error) => {
