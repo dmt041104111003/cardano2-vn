@@ -10,14 +10,12 @@ import AdminTabs from "./AdminTabs";
 import LandingContentSection from "./LandingContentSection";
 import LandingMediaSection from "./LandingMediaSection";
 import LandingManageSection from "./LandingManageSection";
-import WelcomeModal from "./WelcomeModal";
 import FloatingNotification from "~/components/ui/FloatingNotification";
 
 export default function LandingSection() {
   const { data: session } = useSession();
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState<"content" | "manage">("content");
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   const { data: userData } = useQuery({
     queryKey: ['user-role'],
@@ -54,25 +52,8 @@ export default function LandingSection() {
     setIsAdmin(userData?.user?.role === 'ADMIN');
   }, [userData]);
 
-  // Show welcome modal when component mounts (when back to home)
-  useEffect(() => {
-    // Temporarily show modal for testing
-    setShowWelcomeModal(true);
-    
-    // Original code (commented for testing)
-    // const hasVisited = sessionStorage.getItem('hasVisitedHome');
-    // if (!hasVisited) {
-    //   setShowWelcomeModal(true);
-    //   sessionStorage.setItem('hasVisitedHome', 'true');
-    // }
-  }, []);
-
   const handleTabChange = (tab: "content" | "manage") => {
     setActiveTab(tab);
-  };
-
-  const handleCloseWelcomeModal = () => {
-    setShowWelcomeModal(false);
   };
 
   const getMediaItems = () => {
@@ -187,7 +168,6 @@ export default function LandingSection() {
         <Action title="Next" href="#trust" />
       </section>
       
-      <WelcomeModal isOpen={showWelcomeModal} onClose={handleCloseWelcomeModal} />
       <FloatingNotification />
     </>
   );

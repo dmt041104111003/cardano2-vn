@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import WelcomeModal from "~/components/home/WelcomeModal";
+import { images } from "~/public/images";
 
 interface FloatingNotificationProps {
   children?: React.ReactNode;
@@ -10,6 +11,14 @@ interface FloatingNotificationProps {
 
 export default function FloatingNotification({ children }: FloatingNotificationProps) {
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    const hasVisited = sessionStorage.getItem('hasVisitedHome');
+    if (!hasVisited) {
+      setShowModal(true);
+      sessionStorage.setItem('hasVisitedHome', 'true');
+    }
+  }, []);
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -33,14 +42,18 @@ export default function FloatingNotification({ children }: FloatingNotificationP
           <span className="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 animate-ping"></span>
 
           {/* Main button */}
-          <div className="absolute inset-0 w-14 h-14 bg-blue-600 dark:bg-blue-500 rounded-full shadow-lg cursor-pointer hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center">
-            <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
-              <span className="text-xs font-bold text-white">C2VN</span>
-            </div>
+          <div className="absolute inset-0 w-14 h-14 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform duration-200 flex items-center justify-center">
+            <img src={images.loading.src} alt="Loading" className="w-full h-full object-contain rounded-full" />
           </div>
         </div>
       </motion.div>
-      <WelcomeModal isOpen={showModal} onClose={handleCloseModal} />
+      {/* <WelcomeModal isOpen={showModal} onClose={handleCloseModal} /> */}
+      <WelcomeModal
+        isOpen={showModal}
+        onClose={handleCloseModal}
+        origin={{ x: '100%', y: '100%' }} 
+        />
+
     </>
   );
 }
