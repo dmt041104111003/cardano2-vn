@@ -3,7 +3,7 @@ import { prisma } from "~/lib/prisma";
 
 export async function GET() {
   try {
-    const welcomeModal = await prisma.welcomeModal.findFirst({
+    const welcomeModal = await prisma.WelcomeModal.findFirst({
       where: { isActive: true },
       orderBy: { createdAt: 'desc' }
     });
@@ -23,28 +23,46 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { title, description, imageUrl, buttonLink, startDate, endDate } = body;
 
-    await prisma.welcomeModal.updateMany({
-      where: { isActive: true },
-      data: { isActive: false }
+    const finalStartDate = startDate && startDate.trim() !== '' ? new Date(startDate) : new Date();
+
+    const existingModal = await prisma.WelcomeModal.findFirst({
+      where: { isActive: true }
     });
 
-    const welcomeModal = await prisma.welcomeModal.create({
-      data: {
-        title,
-        description,
-        imageUrl,
-        buttonLink,
-        startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null,
-        isActive: true
-      }
-    });
+    if (existingModal) {
+      const welcomeModal = await prisma.WelcomeModal.update({
+        where: { id: existingModal.id },
+        data: {
+          title,
+          description,
+          imageUrl,
+          buttonLink,
+          startDate: finalStartDate,
+          endDate: endDate ? new Date(endDate) : null,
+          updatedAt: new Date()
+        }
+      });
 
-    return NextResponse.json(welcomeModal);
+      return NextResponse.json(welcomeModal);
+    } else {
+      const welcomeModal = await prisma.WelcomeModal.create({
+        data: {
+          title,
+          description,
+          imageUrl,
+          buttonLink,
+          startDate: finalStartDate,
+          endDate: endDate ? new Date(endDate) : null,
+          isActive: true
+        }
+      });
+
+      return NextResponse.json(welcomeModal);
+    }
   } catch (error) {
-    console.error('Error creating welcome modal:', error);
+    console.error('Error updating welcome modal:', error);
     return NextResponse.json(
-      { error: 'Failed to create welcome modal' },
+      { error: 'Failed to update welcome modal' },
       { status: 500 }
     );
   }

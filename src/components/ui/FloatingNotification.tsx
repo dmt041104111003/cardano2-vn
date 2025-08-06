@@ -2,8 +2,11 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import WelcomeModal from "~/components/home/WelcomeModal";
 import { images } from "~/public/images";
+import { useToastContext } from "~/components/toast-provider";
 
 interface FloatingNotificationProps {
   children?: React.ReactNode;
@@ -11,6 +14,19 @@ interface FloatingNotificationProps {
 
 export default function FloatingNotification({ children }: FloatingNotificationProps) {
   const [showModal, setShowModal] = useState(false);
+  const { data: session } = useSession();
+  const { showError } = useToastContext();
+
+  const { data: welcomeData } = useQuery({
+    queryKey: ['welcome-modal'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/welcome-modal');
+      if (!response.ok) {
+        return null;
+      }
+      return response.json();
+    }
+  });
 
   useEffect(() => {
     const hasVisited = sessionStorage.getItem('hasVisitedHome');
@@ -21,6 +37,13 @@ export default function FloatingNotification({ children }: FloatingNotificationP
   }, []);
 
   const handleOpenModal = () => {
+    const isAdmin = !!session?.user;
+    
+    if (!isAdmin && !welcomeData) {
+      showError('No event content available at the moment');
+      return;
+    }
+    
     setShowModal(true);
   };
 
@@ -47,13 +70,11 @@ export default function FloatingNotification({ children }: FloatingNotificationP
           </div>
         </div>
       </motion.div>
-      {/* <WelcomeModal isOpen={showModal} onClose={handleCloseModal} /> */}
       <WelcomeModal
         isOpen={showModal}
         onClose={handleCloseModal}
         origin={{ x: '100%', y: '100%' }} 
         />
-
     </>
   );
 }
