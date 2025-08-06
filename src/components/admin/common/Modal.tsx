@@ -49,9 +49,9 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
             className={`relative w-full ${maxWidth} max-h-[90vh] overflow-hidden`}
             onClick={e => e.stopPropagation()}
           >
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-              <div className="flex items-center justify-between px-6 pt-6 pb-2 border-b">
-                <h2 id="modal-title" className="text-lg font-semibold text-gray-900">{title}</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-6 pt-6 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <h2 id="modal-title" className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
                 <button
                   onClick={onClose}
                   className="button"
@@ -121,7 +121,7 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
                   </div>
                 </button>
               </div>
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">{children}</div>
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)] transparent-scrollbar">{children}</div>
             </div>
           </motion.div>
         </motion.div>

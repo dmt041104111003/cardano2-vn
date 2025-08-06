@@ -288,6 +288,7 @@ export default function ContactFormSection() {
                   <ContactFormQuoteBlock
                     title={selectedCourse?.title}
                     description={selectedCourse?.description}
+                    hasSelectedCourse={!!selectedCourse}
                   />
                 </div>
               </div>
