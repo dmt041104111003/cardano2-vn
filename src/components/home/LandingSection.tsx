@@ -10,11 +10,14 @@ import AdminTabs from "./AdminTabs";
 import LandingContentSection from "./LandingContentSection";
 import LandingMediaSection from "./LandingMediaSection";
 import LandingManageSection from "./LandingManageSection";
+import WelcomeModal from "./WelcomeModal";
+import FloatingNotification from "~/components/ui/FloatingNotification";
 
 export default function LandingSection() {
   const { data: session } = useSession();
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState<"content" | "manage">("content");
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   const { data: userData } = useQuery({
     queryKey: ['user-role'],
@@ -51,8 +54,25 @@ export default function LandingSection() {
     setIsAdmin(userData?.user?.role === 'ADMIN');
   }, [userData]);
 
+  // Show welcome modal when component mounts (when back to home)
+  useEffect(() => {
+    // Temporarily show modal for testing
+    setShowWelcomeModal(true);
+    
+    // Original code (commented for testing)
+    // const hasVisited = sessionStorage.getItem('hasVisitedHome');
+    // if (!hasVisited) {
+    //   setShowWelcomeModal(true);
+    //   sessionStorage.setItem('hasVisitedHome', 'true');
+    // }
+  }, []);
+
   const handleTabChange = (tab: "content" | "manage") => {
     setActiveTab(tab);
+  };
+
+  const handleCloseWelcomeModal = () => {
+    setShowWelcomeModal(false);
   };
 
   const getMediaItems = () => {
@@ -131,39 +151,44 @@ export default function LandingSection() {
   const content = getContent();
 
   return (
-    <section id="Landing" className="relative flex min-h-screen items-center overflow-hidden">
-      
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <motion.div
-          className="relative"
-          variants={{
-            hidden: {},
-            show: {
-              transition: {
-                staggerChildren: 0.15,
+    <>
+      <section id="Landing" className="relative flex min-h-screen items-center overflow-hidden">
+        
+        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <motion.div
+            className="relative"
+            variants={{
+              hidden: {},
+              show: {
+                transition: {
+                  staggerChildren: 0.15,
+                },
               },
-            },
-          }}
-          initial="hidden"
-          animate="show"
-        >
-          {isAdmin && (
-            <AdminTabs activeTab={activeTab} handleTabChange={handleTabChange} />
-          )}
+            }}
+            initial="hidden"
+            animate="show"
+          >
+            {isAdmin && (
+              <AdminTabs activeTab={activeTab} handleTabChange={handleTabChange} />
+            )}
 
-          {activeTab === "content" && (
-            <div className="grid items-center gap-8 lg:grid-cols-2">
-              <LandingContentSection content={content} />
-              <LandingMediaSection mediaItems={mediaItems} />
-            </div>
-          )}
+            {activeTab === "content" && (
+              <div className="grid items-center gap-8 lg:grid-cols-2">
+                <LandingContentSection content={content} />
+                <LandingMediaSection mediaItems={mediaItems} />
+              </div>
+            )}
 
-          {activeTab === "manage" && (
-            <LandingManageSection landingContents={landingContents} />
-          )}
-        </motion.div>
-      </div>
-      <Action title="Next" href="#trust" />
-    </section>
+            {activeTab === "manage" && (
+              <LandingManageSection landingContents={landingContents} />
+            )}
+          </motion.div>
+        </div>
+        <Action title="Next" href="#trust" />
+      </section>
+      
+      <WelcomeModal isOpen={showWelcomeModal} onClose={handleCloseWelcomeModal} />
+      <FloatingNotification />
+    </>
   );
 } 
