@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { images } from "~/public/images";
+import WelcomeModalText from "./WelcomeModalText";
 
 interface WelcomeModalContentProps {
   welcomeData: any;
@@ -69,14 +70,10 @@ export default function WelcomeModalContent({ welcomeData, onButtonClick }: Welc
         )}
       </motion.div>
       
-      <motion.p
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.4 }}
-        className="text-gray-600 dark:text-gray-300 leading-relaxed text-base text-justify"
-      >
-        {welcomeData?.description || ""}
-      </motion.p>
+      <WelcomeModalText
+        text={welcomeData?.description || ""}
+        maxLength={200}
+      />
       
       <motion.div
         initial={{ opacity: 0, y: 10 }}

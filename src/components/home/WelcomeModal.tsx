@@ -117,9 +117,9 @@ export default function WelcomeModal({ isOpen, onClose, origin }: WelcomeModalPr
   };
 
   const shouldDisplayModal = () => {
-    if (!welcomeData) return false;
-    
     if (isAdmin) return true;
+
+    if (!welcomeData) return false;
     
     const now = new Date();
     const startDate = welcomeData.startDate ? new Date(welcomeData.startDate) : null;
