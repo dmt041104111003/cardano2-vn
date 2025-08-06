@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ContactFormData, FormErrors, ContactFormProps } from '~/constants/contact';
 import { Captcha } from '~/components/ui/captcha';
 
-export function ContactForm({ formData, errors, isSubmitting, captchaValid, onInputChange, onSubmit, onCaptchaChange }: ContactFormProps) {
+export function ContactForm({ formData, errors, isSubmitting, captchaValid, onInputChange, onSubmit, onCaptchaChange, onCourseChange }: ContactFormProps) {
   const typedFormData: ContactFormData = formData;
   const typedErrors: FormErrors = errors;
+  const [selectedCourseImage, setSelectedCourseImage] = useState<string>('');
 
   const { data: eventLocations } = useQuery({
     queryKey: ['eventLocations'],
@@ -144,33 +145,45 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, onIn
             />
           </div>
           
-                     <div>
-             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-               Course *
-             </label>
-                           <select
-                name="your-course"
-                value={typedFormData["your-course"]}
-                onChange={onInputChange}
-                aria-label="Course"
-                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm"
-              >
-                <option value="">Select Course</option>
-                {courses?.map((course: any) => (
-                  <option key={course.id} value={course.name}>
-                    {course.name}
-                  </option>
-                ))}
-              </select>
-             {typedErrors["your-course"] && (
-               <p className="text-red-500 text-xs mt-1 flex items-start sm:items-center">
-                 <svg className="w-3 h-3 mr-1 flex-shrink-0 mt-0.5 sm:mt-0" fill="currentColor" viewBox="0 0 20 20">
-                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                 </svg>
-                 <span className="break-words leading-relaxed">{typedErrors["your-course"]}</span>
-               </p>
-             )}
-           </div>
+                               <div>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Course *
+            </label>
+            <select
+              name="your-course"
+              value={typedFormData["your-course"]}
+              onChange={e => {
+                onInputChange(e);
+                if (onCourseChange) onCourseChange(e.target.value);
+              }}
+              aria-label="Course"
+              className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm"
+            >
+              <option value="">Select Course</option>
+              {courses?.map((course: any) => (
+                <option key={course.id} value={course.name}>
+                  {course.name}
+                </option>
+              ))}
+            </select>
+            {selectedCourseImage && (
+              <div className="mt-2">
+                <img
+                  src={selectedCourseImage}
+                  alt="Selected course"
+                  className="w-16 h-16 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                />
+              </div>
+            )}
+            {typedErrors["your-course"] && (
+              <p className="text-red-500 text-xs mt-1 flex items-start sm:items-center">
+                <svg className="w-3 h-3 mr-1 flex-shrink-0 mt-0.5 sm:mt-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <span className="break-words leading-relaxed">{typedErrors["your-course"]}</span>
+              </p>
+            )}
+          </div>
            
                        <div className="md:col-span-2">
               <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

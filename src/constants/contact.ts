@@ -7,6 +7,7 @@ export interface ContactFormProps {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
   onCaptchaChange: (isValid: boolean) => void;
+  onCourseChange?: (courseName: string) => void;
 }
 
 // Contact Form Data Types

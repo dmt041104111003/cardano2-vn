@@ -5,7 +5,7 @@ import { prisma } from '~/lib/prisma';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -16,8 +16,9 @@ export async function PUT(
       );
     }
 
+    const { id } = await params;
     const body = await request.json();
-    const { name, isActive, order } = body;
+    const { name, image, isActive, order } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -29,7 +30,7 @@ export async function PUT(
     const existingCourse = await prisma.course.findFirst({
       where: {
         name,
-        id: { not: params.id }
+        id: { not: id }
       }
     });
 
@@ -41,9 +42,10 @@ export async function PUT(
     }
 
     const updatedCourse = await prisma.course.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
+        image,
         isActive: isActive !== undefined ? isActive : true,
         order: order !== undefined ? order : 0
       }
@@ -61,7 +63,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -72,8 +74,9 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
     const deletedCourse = await prisma.course.update({
-      where: { id: params.id },
+      where: { id },
       data: { isActive: false }
     });
 

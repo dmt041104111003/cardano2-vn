@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name } = body;
+    const { name, image } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
     const newCourse = await prisma.course.create({
       data: {
         name,
+        image,
         order: (maxOrder._max.order || 0) + 1
       }
     });

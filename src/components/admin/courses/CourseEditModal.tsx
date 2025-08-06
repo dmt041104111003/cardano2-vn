@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 import { CourseEditModalProps } from '~/constants/admin';
+import MediaInput from '~/components/ui/media-input';
 
 export default function CourseEditModal({ 
   course, 
@@ -10,20 +11,27 @@ export default function CourseEditModal({
   isSaving
 }: CourseEditModalProps) {
   const [name, setName] = useState('');
+  const [image, setImage] = useState('');
 
   useEffect(() => {
     if (course) {
       setName(course.name);
+      setImage(course.image || '');
     }
   }, [course]);
 
   const handleSave = () => {
     if (!course || !name.trim()) return;
-    onSave(course.id, name.trim());
+    onSave(course.id, name.trim(), image);
+  };
+
+  const handleMediaSelect = (media: { id: string; url: string; type: string }) => {
+    setImage(media.url);
   };
 
   const handleClose = () => {
     setName('');
+    setImage('');
     onClose();
   };
 
@@ -34,7 +42,7 @@ export default function CourseEditModal({
       title="Edit Course"
       maxWidth="max-w-md"
     >
-      <div className="space-y-6">
+            <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Course Name
@@ -48,15 +56,34 @@ export default function CourseEditModal({
           />
         </div>
 
-                 <div className="flex items-center justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
-           <button
-             onClick={handleSave}
-             disabled={!name.trim() || isSaving}
-             className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-2 border-blue-500 dark:border-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 disabled:opacity-50 transition-colors font-medium"
-           >
-             {isSaving ? 'Saving...' : 'Save'}
-           </button>
-         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Course Image (Optional)
+          </label>
+          <MediaInput
+            onMediaAdd={handleMediaSelect}
+            mediaType="image"
+          />
+          {image && (
+            <div className="mt-2">
+              <img
+                src={image}
+                alt="Selected course image"
+                className="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={handleSave}
+            disabled={!name.trim() || isSaving}
+            className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-2 border-blue-500 dark:border-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 disabled:opacity-50 transition-colors font-medium"
+          >
+            {isSaving ? 'Saving...' : 'Save'}
+          </button>
+        </div>
       </div>
     </Modal>
   );
