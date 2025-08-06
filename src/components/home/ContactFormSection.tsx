@@ -8,6 +8,8 @@ import ContactFormManager from './ContactFormManager';
 import { ContactFormData, FormErrors } from '~/constants/contact';
 import ContactFormQuoteBlock from './ContactFormQuoteBlock';
 import ContactFormImage from './ContactFormImage';
+import ContactFormTabs from './ContactFormTabs';
+import ContactFormSkeleton from './ContactFormSkeleton';
 import { useQuery } from '@tanstack/react-query';
 
 type TabType = "form" | "manage";
@@ -142,15 +144,6 @@ export default function ContactFormSection() {
   }, [courses, selectedCourse, formData["your-course"]]);
 
   const memoizedContactFormManager = useMemo(() => {
-    if (coursesLoading) {
-      return (
-        <div className="flex items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="ml-3 text-gray-600 dark:text-gray-400">Loading courses...</span>
-        </div>
-      );
-    }
-    
     if (coursesError) {
       return (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -162,7 +155,7 @@ export default function ContactFormSection() {
     }
     
     return <ContactFormManager />;
-  }, [coursesLoading, coursesError]);
+  }, [coursesError]);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -302,52 +295,7 @@ export default function ContactFormSection() {
           )}
           <div className={`relative ${activeTab === "manage" ? "lg:col-span-1" : "lg:col-span-1"}`}>
             {isAdmin && (
-              <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
-                <nav className="-mb-px flex flex-wrap gap-1 sm:gap-2 md:gap-8 overflow-x-auto pb-2">
-                  <button
-                    onClick={() => handleTabChange("form")}
-                    className={`py-2 px-2 sm:px-3 md:px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex-shrink-0 ${
-                      activeTab === "form"
-                        ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <svg className="h-4 w-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                      <span className="hidden sm:inline">Contact Form</span>
-                      <span className="sm:hidden">Form</span>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => handleTabChange("manage")}
-                    className={`py-2 px-2 sm:px-3 md:px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex-shrink-0 ${
-                      activeTab === "manage"
-                        ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <svg className="h-4 w-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                      </svg>
-                      <span className="hidden sm:inline">Manage Options</span>
-                      <span className="sm:hidden">Manage</span>
-                    </div>
-                  </button>
-                </nav>
-              </div>
+              <ContactFormTabs activeTab={activeTab} onTabChange={handleTabChange} />
             )}
             {activeTab === "form" ? (
               <ContactForm
@@ -362,7 +310,17 @@ export default function ContactFormSection() {
               />
             ) : (
               <div style={{ display: activeTab === "manage" ? "block" : "none" }}>
-                {memoizedContactFormManager}
+                {coursesLoading ? (
+                  <ContactFormSkeleton />
+                ) : coursesError ? (
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                    <p className="text-red-700 dark:text-red-300">
+                      Error loading courses: {(coursesError as Error).message}
+                    </p>
+                  </div>
+                ) : (
+                  memoizedContactFormManager
+                )}
               </div>
             )}
           </div>
