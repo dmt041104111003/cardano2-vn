@@ -88,4 +88,31 @@ export interface CourseEditModalProps {
   onClose: () => void;
   onSave: (id: string, name: string) => void;
   isSaving: boolean;
+}
+
+export interface LandingContentFormData {
+  section: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  mainText: string;
+  subText: string;
+  media1Url: string;
+  media2Url: string;
+  media3Url: string;
+  media4Url: string;
+}
+
+export interface LandingContentProps {
+  content: {
+    title: string;
+    subtitle: string;
+    description: string;
+    mainText: string;
+    subText: string;
+  };
+}
+
+export interface LandingMediaProps {
+  mediaItems: string[];
 } 
