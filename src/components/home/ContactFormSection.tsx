@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useToastContext } from '~/components/toast-provider';
 import { ContactForm } from './ContactForm';
@@ -119,14 +119,50 @@ export default function ContactFormSection() {
     fetchUserData();
   }, [session]);
 
-  const { data: courses = [] } = useQuery({
-    queryKey: ['courses'],
+  const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useQuery({
+    queryKey: ['contact-courses'],
     queryFn: async () => {
       const response = await fetch('/api/admin/courses');
       if (!response.ok) throw new Error('Failed to fetch courses');
       return response.json();
-    }
+    },
+    staleTime: 5 * 60 * 1000, 
+    gcTime: 10 * 60 * 1000, 
+    refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    if (courses.length > 0 && !selectedCourse && formData["your-course"]) {
+      const course = (courses as any[]).find((c: any) => c.name === formData["your-course"]);
+      if (course) {
+        setSelectedCourse(course);
+        setSelectedCourseImage(course.image || '');
+      }
+    }
+  }, [courses, selectedCourse, formData["your-course"]]);
+
+  const memoizedContactFormManager = useMemo(() => {
+    if (coursesLoading) {
+      return (
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="ml-3 text-gray-600 dark:text-gray-400">Loading courses...</span>
+        </div>
+      );
+    }
+    
+    if (coursesError) {
+      return (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <p className="text-red-700 dark:text-red-300">
+            Error loading courses: {(coursesError as Error).message}
+          </p>
+        </div>
+      );
+    }
+    
+    return <ContactFormManager />;
+  }, [coursesLoading, coursesError]);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -177,12 +213,12 @@ export default function ContactFormSection() {
     }
   };
 
-  const handleCourseChange = (courseName: string) => {
-    const selected = courses.find((course: any) => course.name === courseName);
+  const handleCourseChange = useCallback((courseName: string) => {
+    const selected = (courses as any[]).find((course: any) => course.name === courseName);
     setSelectedCourse(selected || null);
     const imageUrl = selected?.image || '';
     setSelectedCourseImage(imageUrl);
-  };
+  }, [courses]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -325,7 +361,9 @@ export default function ContactFormSection() {
                 onCourseChange={handleCourseChange}
               />
             ) : (
-              <ContactFormManager />
+              <div style={{ display: activeTab === "manage" ? "block" : "none" }}>
+                {memoizedContactFormManager}
+              </div>
             )}
           </div>
         </div>

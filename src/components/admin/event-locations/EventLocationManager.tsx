@@ -19,14 +19,17 @@ export default function EventLocationManager() {
   const [editingLocation, setEditingLocation] = useState<EventLocation | null>(null);
 
   const { data: eventLocations, isLoading } = useQuery({
-    queryKey: ['eventLocations'],
+    queryKey: ['admin-event-locations'],
     queryFn: async () => {
       const response = await fetch('/api/admin/event-locations');
       if (!response.ok) {
         throw new Error('Failed to fetch event locations');
       }
       return response.json();
-    }
+    },
+    staleTime: 2 * 60 * 1000, 
+    gcTime: 5 * 60 * 1000, 
+    refetchOnWindowFocus: false,
   });
 
 
@@ -45,7 +48,8 @@ export default function EventLocationManager() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['eventLocations'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-event-locations'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-form-event-locations'] });
       setNewName('');
       showSuccess('Event location created successfully');
     },
@@ -68,7 +72,8 @@ export default function EventLocationManager() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['eventLocations'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-event-locations'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-form-event-locations'] });
       setEditingLocation(null);
       showSuccess('Event location updated successfully');
     },
@@ -89,7 +94,8 @@ export default function EventLocationManager() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['eventLocations'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-event-locations'] });
+      queryClient.invalidateQueries({ queryKey: ['contact-form-event-locations'] });
       showSuccess('Event location deleted successfully');
     },
     onError: (error: Error) => {

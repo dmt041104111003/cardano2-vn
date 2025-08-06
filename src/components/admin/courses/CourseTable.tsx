@@ -3,6 +3,32 @@ import { useState } from 'react';
 import Modal from '../common/Modal';
 import { Course, CourseTableProps } from '~/constants/admin';
 
+function TruncatedText({ text, maxLength = 50 }: { text?: string; maxLength?: number }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  if (!text) {
+    return null;
+  }
+  
+  const shouldTruncate = text.length > maxLength;
+  const displayText = shouldTruncate && !isExpanded ? text.substring(0, maxLength) + '...' : text;
+  
+  return (
+    <div className="text-sm text-gray-900 dark:text-white">
+      <span>{displayText}</span>
+      {shouldTruncate && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="ml-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-xs"
+          title={isExpanded ? "Show less" : "Show more"}
+        >
+          {isExpanded ? "..." : "..."}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function CourseTable({
   courses = [],
   onEdit,
@@ -26,8 +52,8 @@ export function CourseTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-[1200px] md:min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                         <thead className="bg-gray-50 dark:bg-gray-800">
+      <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead className="bg-gray-50 dark:bg-gray-800">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Image
@@ -35,13 +61,16 @@ export function CourseTable({
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Name
             </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Title
+            </th>
             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Actions
             </th>
           </tr>
         </thead>
         <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                    {Array.isArray(courses) && courses.map((course) => (
+          {Array.isArray(courses) && courses.map((course) => (
             <tr key={course.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
               <td className="px-6 py-4">
                 {course.image ? (
@@ -58,6 +87,9 @@ export function CourseTable({
               </td>
               <td className="px-6 py-4">
                 <div className="text-sm font-medium text-gray-900 dark:text-white">{course.name}</div>
+              </td>
+              <td className="px-6 py-4">
+                <TruncatedText text={course.title} maxLength={30} />
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div className="flex items-center justify-end space-x-2">

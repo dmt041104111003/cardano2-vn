@@ -26,42 +26,42 @@ export function EventLocationTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-[1200px] md:min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                 <thead className="bg-gray-50 dark:bg-gray-800">
-           <tr>
-                                           <th className="px-16 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                 Name
-               </th>
-               <th className="px-16 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                 Actions
-               </th>
-           </tr>
-         </thead>
+      <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead className="bg-gray-50 dark:bg-gray-800">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Name
+            </th>
+            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
         <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
           {Array.isArray(eventLocations) && eventLocations.map((location) => (
-                         <tr key={location.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                               <td className="px-16 py-4">
-                   <div className="text-sm font-medium text-gray-900 dark:text-white">{location.name}</div>
-                 </td>
-                 <td className="px-16 py-4 whitespace-nowrap text-right text-sm font-medium">
-                 <div className="flex items-center justify-end space-x-2">
-                   <button
-                     onClick={() => onEdit(location)}
-                     className="text-blue-600 hover:text-blue-900"
-                     title={`Edit ${location.name}`}
-                   >
-                     <Edit className="h-4 w-4" />
-                   </button>
-                   <button
-                     onClick={() => handleDeleteClick(location)}
-                     className="text-red-600 hover:text-red-900"
-                     title={`Delete ${location.name}`}
-                   >
-                     <Trash2 className="h-4 w-4" />
-                   </button>
-                 </div>
-               </td>
-             </tr>
+            <tr key={location.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+              <td className="px-6 py-4">
+                <div className="text-sm font-medium text-gray-900 dark:text-white">{location.name}</div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div className="flex items-center justify-end space-x-2">
+                  <button
+                    onClick={() => onEdit(location)}
+                    className="text-blue-600 hover:text-blue-900"
+                    title={`Edit ${location.name}`}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(location)}
+                    className="text-red-600 hover:text-red-900"
+                    title={`Delete ${location.name}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>
