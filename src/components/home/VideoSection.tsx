@@ -1,5 +1,6 @@
 "use client";
 
+import Action from "~/components/action";
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import VideoSectionSkeleton from "./VideoSectionSkeleton";
@@ -28,10 +29,14 @@ export default function VideoSection() {
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
   const [showAllVideos, setShowAllVideos] = useState(false);
 
-  const { data: videos = [], isLoading, error } = useQuery({
+  const {
+    data: videos = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["video-section"],
     queryFn: fetchVideos,
-    staleTime: 5 * 60 * 1000, 
+    staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
@@ -126,29 +131,29 @@ export default function VideoSection() {
               <p className="text-sm lg:text-lg text-gray-600 dark:text-gray-400 font-medium">{currentVideo.channelName}</p>
             </div>
 
-            <div className={`w-full lg:w-[40%] ${showAllVideos ? 'max-h-[60vh] lg:max-h-[84vh]' : 'max-h-fit'} p-4 lg:p-6 border border-gray-200 dark:border-gray-600 rounded-lg lg:rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg lg:shadow-xl`}>
+            <div
+              className={`w-full lg:w-[40%] ${showAllVideos ? "max-h-[60vh] lg:max-h-[94vh]" : "max-h-fit"} custom-scrollbar p-4 lg:p-6 border border-gray-200 dark:border-gray-600 rounded-lg lg:rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg lg:shadow-xl`}
+            >
               <div className="mb-4 lg:mb-6">
                 <h3 className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white mb-1 lg:mb-2">Playlist – Videos Cardano2vn</h3>
                 <p className="text-xs lg:text-sm text-gray-500 dark:text-gray-400">Select a video to watch</p>
               </div>
 
-              <div className={`space-y-3 lg:space-y-4 ${showAllVideos ? 'max-h-[45vh] lg:max-h-[70vh] overflow-y-auto' : ''} scrollbar-thick scrollbar-thumb-red-500 dark:scrollbar-thumb-red-400 scrollbar-track-gray-300 dark:scrollbar-track-gray-600 hover:scrollbar-thumb-red-600 dark:hover:scrollbar-thumb-red-300 pr-2 lg:pr-3`}>
+              <div
+                className={`space-y-3 lg:space-y-4 ${showAllVideos ? "max-h-[45vh] lg:max-h-[70vh] overflow-y-auto" : ""} scrollbar-thick scrollbar-thumb-red-500 dark:scrollbar-thumb-red-400 scrollbar-track-gray-300 dark:scrollbar-track-gray-600 hover:scrollbar-thumb-red-600 dark:hover:scrollbar-thumb-red-300 pr-2 lg:pr-3`}
+              >
                 {displayedVideos.map((video) => (
                   <div
                     key={video.id}
                     className={`flex gap-3 lg:gap-4 p-3 lg:p-4 rounded-lg lg:rounded-xl cursor-pointer transition-all duration-200 ${
-                      currentVideo.id === video.id 
-                        ? "bg-blue-50 dark:bg-blue-900/50 border-2 border-blue-200 dark:border-blue-700 shadow-lg" 
+                      currentVideo.id === video.id
+                        ? "bg-blue-50 dark:bg-blue-900/50 border-2 border-blue-200 dark:border-blue-700 shadow-lg"
                         : "bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600/50 hover:shadow-md"
                     }`}
                     onClick={() => handleVideoSelect(video)}
                   >
                     <div className="relative w-24 h-16 lg:w-32 lg:h-20 shrink-0 rounded-lg overflow-hidden shadow-md">
-                      <img 
-                        src={video.thumbnailUrl} 
-                        alt={video.title} 
-                        className="w-full h-full object-cover" 
-                      />
+                      <img src={video.thumbnailUrl} alt={video.title} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex flex-col justify-between overflow-hidden flex-1">
                       <p className="text-xs lg:text-sm font-semibold line-clamp-2 text-gray-900 dark:text-white leading-tight">{video.title}</p>
@@ -169,6 +174,7 @@ export default function VideoSection() {
           </div>
         </div>
       </div>
+      <Action title="Scroll" href="#trust" />
     </section>
   );
 }

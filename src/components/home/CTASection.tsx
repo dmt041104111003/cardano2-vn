@@ -1,89 +1,79 @@
 "use client";
 
-import Link from "next/link";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { images } from "~/public/images";
+import Action from "~/components/action";
+const events = [
+  {
+    title: "Cardano Coffee Lounge",
+    location: "Hanoi",
+    imageUrl: images.landing01,
+  },
+  {
+    title: "Khoá Học Web3 cho Sinh Viên",
+    location: "Đại Học Giao Thông Vận Tải",
+    imageUrl: images.landing01,
+  },
+  {
+    title: "Cardano Summit 2022",
+    location: "Hà Nội",
+    imageUrl: images.landing01,
+  },
+  {
+    title: "Workshop Blockchain",
+    location: "TP. HCM",
+    imageUrl: images.landing01,
+  },
+  {
+    title: "Cardano Summit 2022",
+    location: "Hà Nội",
+    imageUrl: images.landing01,
+  },
+  {
+    title: "Workshop Blockchain",
+    location: "TP. HCM",
+    imageUrl: images.landing01,
+  },
+];
 
 export default function CTASection() {
   return (
-    <section
-      id="cta"
-      className="relative flex min-h-screen items-center overflow-hidden border-t border-gray-200 dark:border-white/10 bg-white dark:bg-gradient-to-br dark:from-blue-900 dark:via-blue-800 dark:to-indigo-900"
-    >
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/50 dark:via-white/5 to-transparent"></div>
-      <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <div className="grid items-center gap-16 lg:grid-cols-2">
-          <div>
-            <div className="mb-8 flex items-center gap-4">
-              <div className="h-1 w-12 bg-gradient-to-r from-blue-600 dark:from-white to-transparent"></div>
-              <h2 className="text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">Ready to enable trust for distributed work?</h2>
-            </div>
-            <p className="mb-10 text-xl leading-relaxed text-gray-600 dark:text-blue-100">
-              Join projects and contributors building the future of decentralized collaboration.
-            </p>
-            <div className="mb-10 flex flex-col gap-6 sm:flex-row">
-              <Link href="https://app.andamio.io/course/86affc4de251b0fb7636c376383bcebf6ca7ca426528f9b7a5adc298">
-                <button className="inline-flex items-center justify-center whitespace-nowrap rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:text-success text-xl bg-blue-600 dark:bg-white px-8 py-4 font-semibold text-white dark:text-blue-900 shadow-xl hover:bg-blue-700 dark:hover:bg-gray-100">
-                  Start with Cardano2VN
-                </button>
-              </Link>
-              <Link href="https://docs.andamio.io/docs/">
-                <button className="inline-flex items-center justify-center whitespace-nowrap rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-100 dark:bg-gray-800 text-xl border-gray-300 dark:border-white/70 px-8 py-4 font-semibold text-gray-900 dark:text-white shadow-lg hover:bg-gray-200 dark:hover:bg-gray-700">
-                  View Documentation
-                </button>
-              </Link>
-            </div>
-            <div className="grid gap-6 text-gray-600 dark:text-blue-200 sm:grid-cols-2">
-              <div className="flex items-center gap-4 rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 p-6 backdrop-blur-sm">
-                <span className="text-3xl">👤</span>
-                <div>
-                  <div className="text-lg font-semibold text-gray-900 dark:text-white">Curious Users</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-300">Start with Andamio 101</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4 rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 p-6 backdrop-blur-sm">
-                <span className="text-3xl">👩‍💻</span>
-                <div>
-                  <div className="text-lg font-semibold text-gray-900 dark:text-white">Developers</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-300">Explore Documentation</div>
-                </div>
-              </div>
-            </div>
+    <section id="CTA" className="w-full border-t border-gray-200 dark:border-gray-700">
+      <div className="mx-auto w-5/6 max-w-screen-2xl px-4 py-12 lg:px-8 lg:py-20">
+        {/* SECTION HEADER */}
+        <div className="mb-8 lg:mb-16">
+          <div className="mb-4 lg:mb-6 flex items-center gap-2 lg:gap-4">
+            <div className="h-1 w-8 lg:w-12 bg-gradient-to-r from-blue-500 to-transparent" />
+            <h2 className="text-2xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-white">Events</h2>
           </div>
-          <div className="relative hidden lg:block">
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-gray-100/50 dark:from-white/10 via-transparent to-gray-50/30 dark:to-white/5"></div>
-            <div className="relative p-8">
-              <div className="grid h-80 grid-cols-3 gap-4">
-                <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 backdrop-blur-sm ">
-                  <div className="h-full w-full rounded-sm bg-gradient-to-br from-blue-400/20 to-transparent"></div>
-                </div>
-                <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 backdrop-blur-sm mt-8">
-                  <div className="h-full w-full rounded-sm bg-gradient-to-br from-blue-400/20 to-transparent"></div>
-                </div>
-                <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 backdrop-blur-sm -mt-4">
-                  <div className="h-full w-full rounded-sm bg-gradient-to-br from-blue-400/20 to-transparent"></div>
-                </div>
-                <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 backdrop-blur-sm ">
-                  <div className="h-full w-full rounded-sm bg-gradient-to-br from-blue-400/20 to-transparent"></div>
-                </div>
-                <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 backdrop-blur-sm mt-8">
-                  <div className="h-full w-full rounded-sm bg-gradient-to-br from-blue-400/20 to-transparent"></div>
-                </div>
-                <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 backdrop-blur-sm -mt-4">
-                  <div className="h-full w-full rounded-sm bg-gradient-to-br from-blue-400/20 to-transparent"></div>
-                </div>
-                <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 backdrop-blur-sm ">
-                  <div className="h-full w-full rounded-sm bg-gradient-to-br from-blue-400/20 to-transparent"></div>
-                </div>
-                <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 backdrop-blur-sm mt-8">
-                  <div className="h-full w-full rounded-sm bg-gradient-to-br from-blue-400/20 to-transparent"></div>
-                </div>
-                <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/10 backdrop-blur-sm -mt-4">
-                  <div className="h-full w-full rounded-sm bg-gradient-to-br from-blue-400/20 to-transparent"></div>
+          <p className="max-w-3xl text-base lg:text-xl text-gray-700 dark:text-gray-300">
+            Discover the highlights of our recent events and community activities.
+          </p>
+        </div>
+
+        {/* EVENT CARDS - Masonry layout */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+          {events.map((event, idx) => (
+            <motion.div
+              key={idx}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+              className="break-inside-avoid rounded-xl overflow-hidden shadow-lg cursor-pointer group"
+            >
+              <div className="relative w-full h-72">
+                <Image src={event.imageUrl} alt={event.title} fill className="object-cover group-hover:brightness-90 transition-all" />
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-all" />
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h4 className="text-lg font-semibold leading-tight">{event.title}</h4>
+                  <p className="text-sm opacity-80">{event.location}</p>
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          ))}
         </div>
       </div>
+      <Action title="Join Us" href="#join" />
     </section>
   );
-} 
+}
