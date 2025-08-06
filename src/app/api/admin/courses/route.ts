@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, image } = body;
+    const { name, image, title, description } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -59,6 +59,8 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         image,
+        title,
+        description,
         order: (maxOrder._max.order || 0) + 1
       }
     });

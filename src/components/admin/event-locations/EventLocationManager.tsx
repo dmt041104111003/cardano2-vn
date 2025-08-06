@@ -29,6 +29,8 @@ export default function EventLocationManager() {
     }
   });
 
+
+
   const createMutation = useMutation({
     mutationFn: async (name: string) => {
       const response = await fetch('/api/admin/event-locations', {

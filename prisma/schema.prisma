@@ -272,6 +272,8 @@ model Course {
   id          String   @id @default(uuid())
   name        String   @unique
   image       String?
+  title       String?
+  description String?
   isActive    Boolean  @default(true)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
