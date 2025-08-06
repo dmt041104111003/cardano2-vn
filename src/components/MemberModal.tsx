@@ -43,7 +43,8 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
                   </div>
                 </div>
                 <div className="w-3/5 flex flex-col overflow-hidden">
-                  <div className="p-8 overflow-y-auto flex-1">
+
+                  <div className="p-8 overflow-y-auto flex-1 transparent-scrollbar">
                     <motion.div
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
