@@ -307,6 +307,22 @@ model LandingContent {
   @@index([section])
 }
 
+model WelcomeModal {
+  id          String   @id @default(uuid())
+  title       String?
+  description String?
+  imageUrl    String?
+  buttonLink  String?
+  startDate   DateTime?
+  endDate     DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([createdAt])
+}
+
 enum ProjectStatus {
   PROPOSED
   APPROVED
