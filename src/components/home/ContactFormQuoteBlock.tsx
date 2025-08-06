@@ -3,14 +3,19 @@ import React, { useState } from 'react';
 interface ContactFormQuoteBlockProps {
   title?: string;
   description?: string;
+  hasSelectedCourse?: boolean;
 }
 
-export default function ContactFormQuoteBlock({ title, description }: ContactFormQuoteBlockProps) {
+export default function ContactFormQuoteBlock({ title, description, hasSelectedCourse = false }: ContactFormQuoteBlockProps) {
   const [isTitleExpanded, setIsTitleExpanded] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   
   const defaultTitle = 'Register for an C2VN course';
   const defaultDescription = `Have questions about Cardano or want to collaborate? We'd love to hear from you. Reach out to our team and let's build the future of blockchain together.`;
+  
+  if (hasSelectedCourse && !title && !description) {
+    return null;
+  }
   
   const displayTitle = title || defaultTitle;
   const displayDescription = description || defaultDescription;
