@@ -1,0 +1,13 @@
+/* TEAM */
+    Developer: Cardano2VN Team
+    Contact: contact@cardano2vn.io
+    From: Vietnam
+
+/* SITE */
+    Last update: 2025/08/07
+    Language: English, Vietnamese
+    Doctype: HTML5
+    IDE: Visual Studio Code
+    Standards: HTML5, CSS3, JavaScript ES6+
+    Components: React, Next.js, TypeScript
+    Software: Node.js, Prisma, Tailwind CSS

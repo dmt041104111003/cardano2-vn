@@ -1,0 +1,25 @@
+{
+  "name": "Cardano2VN - Blockchain Innovation Hub",
+  "short_name": "Cardano2VN",
+  "description": "Vietnam's premier blockchain innovation hub specializing in Cardano ecosystem development",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["business", "finance", "technology"],
+  "lang": "en",
+  "dir": "ltr"
+}
