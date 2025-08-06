@@ -9,25 +9,31 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, onIn
   const [selectedCourseImage, setSelectedCourseImage] = useState<string>('');
 
   const { data: eventLocations } = useQuery({
-    queryKey: ['eventLocations'],
+    queryKey: ['contact-form-event-locations'],
     queryFn: async () => {
       const response = await fetch('/api/admin/event-locations');
       if (!response.ok) {
         throw new Error('Failed to fetch event locations');
       }
       return response.json();
-    }
+    },
+    staleTime: 5 * 60 * 1000, 
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const { data: courses } = useQuery({
-    queryKey: ['courses'],
+    queryKey: ['contact-form-courses'],
     queryFn: async () => {
       const response = await fetch('/api/admin/courses');
       if (!response.ok) {
         throw new Error('Failed to fetch courses');
       }
       return response.json();
-    }
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000, 
+    refetchOnWindowFocus: false,
   });
   return (
          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden max-w-2xl mx-auto">
