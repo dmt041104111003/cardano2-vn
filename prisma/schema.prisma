@@ -255,6 +255,32 @@ enum MediaType {
   VIDEO
 }
 
+model EventLocation {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
+  @@index([createdAt])
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
+  @@index([createdAt])
+}
+
 enum ProjectStatus {
   PROPOSED
   APPROVED
