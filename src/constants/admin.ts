@@ -118,4 +118,14 @@ export interface LandingContentProps {
 
 export interface LandingMediaProps {
   mediaItems: string[];
+}
+
+// Welcome Modal interfaces
+export interface WelcomeModalData {
+  title: string;
+  description: string;
+  imageUrl: string | null;
+  buttonLink: string | null;
+  startDate: string | null;
+  endDate: string | null;
 } 
