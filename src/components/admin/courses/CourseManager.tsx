@@ -21,7 +21,7 @@ export default function CourseManager() {
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
 
   const { data: courses, isLoading } = useQuery({
-    queryKey: ['courses'],
+    queryKey: ['admin-courses'],
     queryFn: async () => {
       const response = await fetch('/api/admin/courses');
       if (!response.ok) {
@@ -30,6 +30,8 @@ export default function CourseManager() {
       return response.json();
     }
   });
+
+
 
   const createMutation = useMutation({
     mutationFn: async ({ name, image }: { name: string; image?: string }) => {
@@ -45,6 +47,7 @@ export default function CourseManager() {
       return response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-courses'] });
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       setNewName('');
       setNewImage('');
@@ -69,6 +72,7 @@ export default function CourseManager() {
       return response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-courses'] });
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       setEditingCourse(null);
       showSuccess('Course updated successfully');
@@ -90,6 +94,7 @@ export default function CourseManager() {
       return response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-courses'] });
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       showSuccess('Course deleted successfully');
     },

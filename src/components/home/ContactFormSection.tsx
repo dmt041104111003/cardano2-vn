@@ -8,6 +8,7 @@ import ContactFormManager from './ContactFormManager';
 import { ContactFormData, FormErrors } from '~/constants/contact';
 import ContactFormQuoteBlock from './ContactFormQuoteBlock';
 import ContactFormImage from './ContactFormImage';
+import { useQuery } from '@tanstack/react-query';
 
 type TabType = "form" | "manage";
 
@@ -117,6 +118,15 @@ export default function ContactFormSection() {
     fetchUserData();
   }, [session]);
 
+  const { data: courses = [] } = useQuery({
+    queryKey: ['courses'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/courses');
+      if (!response.ok) throw new Error('Failed to fetch courses');
+      return response.json();
+    }
+  });
+
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -167,20 +177,9 @@ export default function ContactFormSection() {
   };
 
   const handleCourseChange = (courseName: string) => {
-    console.log('handleCourseChange called with:', courseName);
-    fetch('/api/admin/courses')
-      .then(response => response.json())
-      .then(courses => {
-        console.log('Fetched courses:', courses);
-        const selectedCourse = courses.find((course: any) => course.name === courseName);
-        console.log('Selected course:', selectedCourse);
-        const imageUrl = selectedCourse?.image || '';
-        console.log('Setting image URL:', imageUrl);
-        setSelectedCourseImage(imageUrl);
-      })
-      .catch(error => {
-        console.error('Error fetching courses:', error);
-      });
+    const selectedCourse = courses.find((course: any) => course.name === courseName);
+    const imageUrl = selectedCourse?.image || '';
+    setSelectedCourseImage(imageUrl);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
