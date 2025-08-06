@@ -71,6 +71,8 @@ export interface Course {
   id: string;
   name: string;
   image?: string;
+  title?: string;
+  description?: string;
   isActive: boolean;
   order: number;
   createdAt: string;
@@ -87,7 +89,7 @@ export interface CourseEditModalProps {
   course: Course | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (id: string, name: string, image?: string) => void;
+  onSave: (id: string, name: string, image?: string, title?: string, description?: string) => void;
   isSaving: boolean;
 }
 

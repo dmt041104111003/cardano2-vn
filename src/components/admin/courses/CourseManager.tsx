@@ -15,6 +15,8 @@ export default function CourseManager() {
   const queryClient = useQueryClient();
   const [newName, setNewName] = useState('');
   const [newImage, setNewImage] = useState('');
+  const [newTitle, setNewTitle] = useState('');
+  const [newDescription, setNewDescription] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 4;
@@ -34,11 +36,11 @@ export default function CourseManager() {
 
 
   const createMutation = useMutation({
-    mutationFn: async ({ name, image }: { name: string; image?: string }) => {
+    mutationFn: async ({ name, image, title, description }: { name: string; image?: string; title?: string; description?: string }) => {
       const response = await fetch('/api/admin/courses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, image })
+        body: JSON.stringify({ name, image, title, description })
       });
       if (!response.ok) {
         const error = await response.json();
@@ -59,11 +61,11 @@ export default function CourseManager() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, name, image }: { id: string; name: string; image?: string }) => {
+    mutationFn: async ({ id, name, image, title, description }: { id: string; name: string; image?: string; title?: string; description?: string }) => {
       const response = await fetch(`/api/admin/courses/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, image })
+        body: JSON.stringify({ name, image, title, description })
       });
       if (!response.ok) {
         const error = await response.json();
@@ -106,7 +108,7 @@ export default function CourseManager() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim()) {
-      showError('Name is required');
+      showError('Course name is required');
       return;
     }
     
@@ -119,14 +121,14 @@ export default function CourseManager() {
       return;
     }
     
-    createMutation.mutate({ name: newName.trim(), image: newImage });
+    createMutation.mutate({ name: newName.trim(), image: newImage, title: newTitle.trim(), description: newDescription.trim() });
   };
 
   const handleMediaSelect = (media: { id: string; url: string; type: string }) => {
     setNewImage(media.url);
   };
 
-  const handleUpdate = (id: string, name: string, image?: string) => {
+  const handleUpdate = (id: string, name: string, image?: string, title?: string, description?: string) => {
     if (!name.trim()) {
       showError('Name is required');
       return;
@@ -143,7 +145,7 @@ export default function CourseManager() {
       return;
     }
     
-    updateMutation.mutate({ id, name: name.trim(), image });
+    updateMutation.mutate({ id, name: name.trim(), image, title, description });
   };
 
   const handleDelete = (id: string) => {
@@ -205,7 +207,23 @@ export default function CourseManager() {
               {createMutation.isPending ? 'Adding...' : 'Add'}
             </button>
           </div>
-          
+          <div className="flex gap-4">
+            <input
+              type="text"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              placeholder="Course title (optional)"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <textarea
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              placeholder="Course description (optional)"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[60px]"
+            />
+          </div>
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Course Image (Optional)

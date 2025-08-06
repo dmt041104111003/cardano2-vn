@@ -18,7 +18,7 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { name, image, isActive, order } = body;
+    const { name, image, isActive, order, title, description } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -46,6 +46,8 @@ export async function PUT(
       data: {
         name,
         image,
+        title,
+        description,
         isActive: isActive !== undefined ? isActive : true,
         order: order !== undefined ? order : 0
       }

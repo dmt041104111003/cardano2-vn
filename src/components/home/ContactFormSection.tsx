@@ -19,6 +19,7 @@ export default function ContactFormSection() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("form");
   const [selectedCourseImage, setSelectedCourseImage] = useState<string>('');
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
   
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -177,8 +178,9 @@ export default function ContactFormSection() {
   };
 
   const handleCourseChange = (courseName: string) => {
-    const selectedCourse = courses.find((course: any) => course.name === courseName);
-    const imageUrl = selectedCourse?.image || '';
+    const selected = courses.find((course: any) => course.name === courseName);
+    setSelectedCourse(selected || null);
+    const imageUrl = selected?.image || '';
     setSelectedCourseImage(imageUrl);
   };
 
@@ -254,7 +256,10 @@ export default function ContactFormSection() {
                 <ContactFormImage imageUrl={selectedCourseImage} />
                 {/* Overlay text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
-                  <ContactFormQuoteBlock />
+                  <ContactFormQuoteBlock
+                    title={selectedCourse?.title}
+                    description={selectedCourse?.description}
+                  />
                 </div>
               </div>
             </div>
