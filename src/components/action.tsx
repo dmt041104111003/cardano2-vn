@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Action({ title = "Next", href = "#home" }: { title?: string; href?: string }) {
   return (
-    <div className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 transform lg:flex">
+    <div className="absolute bottom-2 left-1/2 hidden -translate-x-1/2 transform lg:flex">
       <Link href={href} className="group flex flex-col items-center text-white/60 transition-colors duration-300 hover:text-white">
         <div className="mb-2 text-xs font-medium uppercase tracking-widest">{title}</div>
         <div className="h-8 w-px bg-white/20 transition-colors duration-300 group-hover:bg-white/40" />
