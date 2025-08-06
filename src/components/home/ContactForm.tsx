@@ -1,10 +1,33 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { ContactFormData, FormErrors, ContactFormProps } from '~/constants/contact';
 import { Captcha } from '~/components/ui/captcha';
 
 export function ContactForm({ formData, errors, isSubmitting, captchaValid, onInputChange, onSubmit, onCaptchaChange }: ContactFormProps) {
   const typedFormData: ContactFormData = formData;
   const typedErrors: FormErrors = errors;
+
+  const { data: eventLocations } = useQuery({
+    queryKey: ['eventLocations'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/event-locations');
+      if (!response.ok) {
+        throw new Error('Failed to fetch event locations');
+      }
+      return response.json();
+    }
+  });
+
+  const { data: courses } = useQuery({
+    queryKey: ['courses'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/courses');
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses');
+      }
+      return response.json();
+    }
+  });
   return (
          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden max-w-2xl mx-auto">
        <form onSubmit={onSubmit} className="p-4 sm:p-5 space-y-2 sm:space-y-3">
@@ -99,9 +122,11 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, onIn
               className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm"
             >
               <option value="">Select Event Location</option>
-              <option value="Ha Noi">Ha Noi</option>
-              <option value="HCM">HCM</option>
-              <option value="Da Nang">Da Nang</option>
+              {eventLocations?.map((location: any) => (
+                <option key={location.id} value={location.name}>
+                  {location.name}
+                </option>
+              ))}
             </select>
           </div>
           
@@ -131,9 +156,11 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, onIn
                 className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm"
               >
                 <option value="">Select Course</option>
-                <option value="Aiken">Aiken</option>
-                <option value="Blockchain Basic">Blockchain Basic</option>
-                <option value="Smart Contract">Smart Contract</option>
+                {courses?.map((course: any) => (
+                  <option key={course.id} value={course.name}>
+                    {course.name}
+                  </option>
+                ))}
               </select>
              {typedErrors["your-course"] && (
                <p className="text-red-500 text-xs mt-1 flex items-start sm:items-center">

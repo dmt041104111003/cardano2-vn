@@ -40,4 +40,52 @@ export interface ModalProps {
   title?: string;
   children: React.ReactNode;
   maxWidth?: string;
+}
+
+// Event Location interfaces
+export interface EventLocation {
+  id: string;
+  name: string;
+  isActive: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EventLocationTableProps {
+  eventLocations: EventLocation[];
+  onEdit: (location: EventLocation) => void;
+  onDelete: (id: string) => void;
+}
+
+export interface EventLocationEditModalProps {
+  eventLocation: EventLocation | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (id: string, name: string) => void;
+  isSaving: boolean;
+}
+
+// Course interfaces
+export interface Course {
+  id: string;
+  name: string;
+  isActive: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CourseTableProps {
+  courses: Course[];
+  onEdit: (course: Course) => void;
+  onDelete: (id: string) => void;
+}
+
+export interface CourseEditModalProps {
+  course: Course | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (id: string, name: string) => void;
+  isSaving: boolean;
 } 
