@@ -2,11 +2,11 @@
   "name": "cardano-websocket-server",
   "version": "1.0.0",
   "description": "WebSocket server for real-time comments",
-  "main": "server.js",
+  "main": "websocket-server.js",
   "scripts": {
     "build": "echo 'WebSocket server build completed'",
-    "start": "node ../scripts/websocket-server.js",
-    "dev": "nodemon ../scripts/websocket-server.js"
+    "start": "node websocket-server.js",
+    "dev": "nodemon websocket-server.js"
   },
   "dependencies": {
     "ws": "^8.14.2",
@@ -19,3 +19,4 @@
     "node": ">=18.0.0"
   }
 }
+
