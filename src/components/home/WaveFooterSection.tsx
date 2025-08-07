@@ -88,7 +88,7 @@ export default function WaveFooterSection({
                   showSuccess('Copied pool ID!');
                 }}
               >
-                pool-id: d0f005a0a823b331583a5d0083f3745f39fd36ad13bbc0845e14<br />7892
+                pool-id: d0f005a0a823b331583a5d0083f3745f39fd36ad13b<br />bc0845e147892
               </div>
             )}
           </div>

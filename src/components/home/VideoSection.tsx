@@ -59,6 +59,18 @@ export default function VideoSection() {
 
   const displayedVideos = showAllVideos ? sortedVideos : sortedVideos.slice(0, 2);
 
+  function getYoutubeIdFromUrl(url: string) {
+    const match = url.match(/(?:youtube\.com.*[?&]v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return match ? match[1] : null;
+  }
+
+  function getThumbnail(video: Video) {
+    if (video.thumbnailUrl && video.thumbnailUrl !== "") return video.thumbnailUrl;
+    const youtubeId = getYoutubeIdFromUrl(video.videoUrl);
+    if (youtubeId) return `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+    return "/images/common/loading.png";
+  }
+
   if (isLoading) {
     return <VideoSectionSkeleton />;
   }
@@ -153,7 +165,7 @@ export default function VideoSection() {
                     onClick={() => handleVideoSelect(video)}
                   >
                     <div className="relative w-24 h-16 lg:w-32 lg:h-20 shrink-0 rounded-lg overflow-hidden shadow-md">
-                      <img src={video.thumbnailUrl} alt={video.title} className="w-full h-full object-cover" />
+                      <img src={getThumbnail(video)} alt={video.title} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex flex-col justify-between overflow-hidden flex-1">
                       <p className="text-xs lg:text-sm font-semibold line-clamp-2 text-gray-900 dark:text-white leading-tight">{video.title}</p>

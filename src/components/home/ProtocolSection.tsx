@@ -9,6 +9,11 @@ import { useQuery } from "@tanstack/react-query";
 
 type TabType = "latest" | "popular";
 
+function getYoutubeIdFromUrl(url: string) {
+  const match = url.match(/(?:youtube\.com.*[?&]v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
 export default function ProtocolSection() {
   const [activeTab, setActiveTab] = useState<TabType>("latest");
 
@@ -127,7 +132,17 @@ export default function ProtocolSection() {
                 post ? (
                   <Blog
                     key={post.id}
-                    image={post.media?.[0]?.url || "/images/common/loading.png"}
+                    image={(() => {
+                      const media = post.media?.[0];
+                      if (media && typeof media.url === 'string' && media.url) {
+                        const youtubeId = getYoutubeIdFromUrl(media.url);
+                        if (youtubeId) {
+                          return `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+                        }
+                        return media.url;
+                      }
+                      return "/images/common/loading.png";
+                    })()}
                     title={post.title}
                     author={post.author || "Admin"}
                     slug={post.slug || post.id}

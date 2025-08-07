@@ -37,6 +37,7 @@ export function VideoSectionPageClient() {
   const [isValidUrl, setIsValidUrl] = React.useState<boolean | null>(null);
   const [isAdding, setIsAdding] = React.useState(false);
   const [modifiedVideos, setModifiedVideos] = React.useState<{ [id: string]: Partial<VideoItem> }>({});
+  const [newThumbnailUrl, setNewThumbnailUrl] = React.useState("");
 
   const queryClient = useQueryClient();
 
@@ -62,6 +63,7 @@ export function VideoSectionPageClient() {
           videoUrl: newVideoUrl,
           title: newVideoTitle,
           channelName: newChannelName,
+          thumbnailUrl: newThumbnailUrl,
         }),
       });
 
@@ -153,8 +155,13 @@ export function VideoSectionPageClient() {
 
   const handleVideoUrlChange = (url: string) => {
     setNewVideoUrl(url);
-    const match = url.match(/(?:v=|\/embed\/|youtu.be\/)([\w-]+)/);
+    const match = url.match(/(?:v=|\/embed\/|youtu.be\/)([\w-]{11})/);
     setIsValidUrl(match ? true : url ? false : null);
+    if (match) {
+      setNewThumbnailUrl(`https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`);
+    } else {
+      setNewThumbnailUrl("/images/common/loading.png");
+    }
   };
 
   const handleVideoTitleChange = (title: string) => {
@@ -316,6 +323,7 @@ export function VideoSectionPageClient() {
         onVideoTitleChange={handleVideoTitleChange}
         onChannelNameChange={handleChannelNameChange}
         onAddVideo={handleAddVideo}
+        thumbnailUrl={newThumbnailUrl}
       />
     </div>
   );

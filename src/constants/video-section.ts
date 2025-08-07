@@ -24,6 +24,7 @@ export interface VideoSectionEditorProps {
   onVideoTitleChange: (title: string) => void;
   onChannelNameChange: (channel: string) => void;
   onAddVideo: () => void;
+  thumbnailUrl?: string;
 }
 
 // VideoSectionPagination interfaces
