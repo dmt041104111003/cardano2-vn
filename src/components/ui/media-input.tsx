@@ -70,14 +70,14 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
           <div className="flex gap-2 mb-2">
             <button
               type="button"
-              className={`px-3 py-1 rounded-t border-b-2 ${activeImageTab === 'upload' ? 'border-emerald-500 text-emerald-600 bg-white' : 'border-transparent text-gray-500 bg-gray-50'}`}
+              className={`px-3 py-1 rounded-t border-b-2 ${activeImageTab === 'upload' ? 'border-emerald-500 text-emerald-600 bg-white dark:bg-gray-700 dark:text-emerald-400' : 'border-transparent text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800'}`}
               onClick={() => setActiveImageTab('upload')}
             >
               Upload
             </button>
             <button
               type="button"
-              className={`px-3 py-1 rounded-t border-b-2 ${activeImageTab === 'url' ? 'border-emerald-500 text-emerald-600 bg-white' : 'border-transparent text-gray-500 bg-gray-50'}`}
+              className={`px-3 py-1 rounded-t border-b-2 ${activeImageTab === 'url' ? 'border-emerald-500 text-emerald-600 bg-white dark:bg-gray-700 dark:text-emerald-400' : 'border-transparent text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800'}`}
               onClick={() => setActiveImageTab('url')}
             >
               Paste URL
@@ -87,7 +87,7 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
             <div className="flex flex-col items-center gap-2">
               <button
                 type="button"
-                className="inline-flex items-center px-3 py-2 text-sm font-medium bg-blue-100 text-blue-800 rounded hover:bg-blue-200 border border-blue-200"
+                className="inline-flex items-center px-3 py-2 text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-700"
                 onClick={() => fileInputRef.current?.click()}
                 title="Upload image from your computer"
               >
@@ -108,7 +108,7 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
             <div className="flex flex-col items-center gap-2 w-full">
               <input
                 type="url"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="Paste image URL here..."
                 value={imageUrl}
                 onChange={e => handleImageUrl(e.target.value)}
@@ -127,8 +127,8 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="hidden max-w-full max-h-48 rounded-lg shadow-md bg-gray-100 flex items-center justify-center">
-                <span className="text-gray-400">Image not available</span>
+              <div className="hidden max-w-full max-h-48 rounded-lg shadow-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                <span className="text-gray-400 dark:text-gray-500">Image not available</span>
               </div>
             </div>
           )}
@@ -138,7 +138,7 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
         <div className="flex flex-col items-center gap-2">
           <input
             type="text"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             placeholder="Paste YouTube video link here..."
             onChange={e => onMediaAdd && onMediaAdd({ type: 'youtube', url: e.target.value, id: e.target.value } as MediaInputMedia)}
           />

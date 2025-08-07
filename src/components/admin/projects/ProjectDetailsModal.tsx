@@ -16,13 +16,13 @@ export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetails
           <h3 className="text-2xl font-bold text-gray-900 mb-2">
             {project.fund && `${project.fund}: `}{project.title}
           </h3>
-          <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
             <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-              project.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-              project.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' :
-              project.status === 'APPROVED' ? 'bg-yellow-100 text-yellow-800' :
-              project.status === 'PROPOSED' ? 'bg-gray-100 text-gray-800' :
-              'bg-red-100 text-red-800'
+              project.status === 'COMPLETED' ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300' :
+              project.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300' :
+              project.status === 'APPROVED' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300' :
+              project.status === 'PROPOSED' ? 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300' :
+              'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300'
             }`}>
               {project.status.replace('_', ' ')}
             </span>
@@ -33,14 +33,14 @@ export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetails
         </div>
 
         <div>
-          <h4 className="text-lg font-semibold text-gray-900 mb-2">Description</h4>
-          <p className="text-gray-700 leading-relaxed">{project.description}</p>
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Description</h4>
+          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{project.description}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="font-medium text-gray-900">Created:</span>
-            <span className="ml-2 text-gray-600">
+            <span className="font-medium text-gray-900 dark:text-white">Created:</span>
+            <span className="ml-2 text-gray-600 dark:text-gray-400">
               {project.createdAt ? new Date(project.createdAt).toLocaleString('en-GB', {
                 day: '2-digit',
                 month: '2-digit',
@@ -51,8 +51,8 @@ export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetails
             </span>
           </div>
           <div>
-            <span className="font-medium text-gray-900">Updated:</span>
-            <span className="ml-2 text-gray-600">
+            <span className="font-medium text-gray-900 dark:text-white">Updated:</span>
+            <span className="ml-2 text-gray-600 dark:text-gray-400">
               {project.updatedAt ? new Date(project.updatedAt).toLocaleString('en-GB', {
                 day: '2-digit',
                 month: '2-digit',
@@ -65,7 +65,7 @@ export function ProjectDetailsModal({ project, isOpen, onClose }: ProjectDetails
         </div>
 
         {project.href && (
-          <div className="pt-4 border-t border-gray-200">
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
             <a
               href={project.href}
               target="_blank"
