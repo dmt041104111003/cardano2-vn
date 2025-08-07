@@ -4,6 +4,7 @@
   "description": "WebSocket server for real-time comments",
   "main": "server.js",
   "scripts": {
+    "build": "echo 'WebSocket server build completed'",
     "start": "node ../scripts/websocket-server.js",
     "dev": "nodemon ../scripts/websocket-server.js"
   },
