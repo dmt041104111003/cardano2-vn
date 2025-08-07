@@ -11,6 +11,7 @@ import VideoSection from "~/components/home/VideoSection";
 // import PartnerLogosCarousel from "~/components/home/PartnerLogosCarousel";
 
 import ContactFormSection from "~/components/home/ContactFormSection";
+import WaveFooterSection from "~/components/home/WaveFooterSection";
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -41,7 +42,8 @@ export default function HomePage() {
       {/* <CardanoSection /> */}
       <CTASection />
    
-      <ContactFormSection />
+      <ContactFormSection />      
+      <WaveFooterSection />
     </main>
   );
 }
