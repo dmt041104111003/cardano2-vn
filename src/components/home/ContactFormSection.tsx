@@ -64,6 +64,7 @@ export default function ContactFormSection() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [captchaValid, setCaptchaValid] = useState(false);
+  const [captchaKey, setCaptchaKey] = useState(0); 
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -247,6 +248,10 @@ export default function ContactFormSection() {
           message: ""
         });
         setErrors({});
+        setCaptchaValid(false);
+        setCaptchaKey(prev => prev + 1);
+        setSelectedCourse(null);
+        setSelectedCourseImage('');
         showSuccess("Thank you! Your message has been sent successfully.");
       } else {
         throw new Error('Network response was not ok');
@@ -304,6 +309,7 @@ export default function ContactFormSection() {
                 errors={errors}
                 isSubmitting={isSubmitting}
                 captchaValid={captchaValid}
+                captchaKey={captchaKey}
                 onInputChange={handleInputChange}
                 onSubmit={handleSubmit}
                 onCaptchaChange={setCaptchaValid}
