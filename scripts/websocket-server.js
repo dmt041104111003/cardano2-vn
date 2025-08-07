@@ -5,7 +5,7 @@ const ReplyHandler = require('./handlers/reply-handler');
 const RoomManager = require('./utils/room-manager');
 
 class CommentWebSocketServer {
-  constructor(port = 3001) {
+  constructor(port = 4001) {
     this.wss = new WebSocketServer({ port });
     this.clients = new Map();
     this.postRooms = new Map();
@@ -143,7 +143,7 @@ class CommentWebSocketServer {
 console.log('Starting WebSocket server for realtime comments...');
 
 try {
-  const port = process.env.WEBSOCKET_PORT || 3001;
+  const port = process.env.WEBSOCKET_PORT;
   const wsServer = new CommentWebSocketServer(port);
   
 //   console.log(`WebSocket server started successfully on port ${port}`);

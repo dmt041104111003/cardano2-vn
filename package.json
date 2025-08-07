@@ -9,11 +9,7 @@
     "lint": "next lint",
     "export": "next export",
     "postinstall": "fumadocs-mdx",
-    "seed": "tsx prisma/seed.ts",
-    "websocket": "node scripts/websocket-server.js",
-    "websocket:prod": "node scripts/websocket-server.js",
-    "dev:websocket": "concurrently \"npm run dev\" \"npm run websocket\"",
-    "start:websocket": "concurrently \"npm start\" \"npm run websocket\""
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@harmoniclabs/cbor": "1.6.0",
@@ -88,7 +84,6 @@
     "sonner": "^2.0.6",
     "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",
-    "ws": "^8.18.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

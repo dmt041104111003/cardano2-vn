@@ -19,9 +19,9 @@ export function useConnection({ postId, userId, onError, onMessage }: UseConnect
     }
     
     try {
-      const wsUrl = process.env.NODE_ENV === 'production' 
+      const wsUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL 
         ? `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}?postId=${postId}&userId=${userId || ''}`
-        : `ws://localhost:3001?postId=${postId}&userId=${userId || ''}`;
+        : `ws://localhost:4001?postId=${postId}&userId=${userId || ''}`;
       
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
