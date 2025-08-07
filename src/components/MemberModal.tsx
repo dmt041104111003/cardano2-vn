@@ -8,9 +8,28 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={{
+            opacity: 0,
+            scaleX: 0,
+            filter: "blur(12px)",
+            transformOrigin: "right",
+          }}
+          animate={{
+            opacity: 1,
+            scaleX: 1,
+            filter: "blur(0px)",
+            transformOrigin: "right",
+          }}
+          exit={{
+            opacity: 0,
+            scaleX: 0,
+            filter: "blur(12px)",
+            transformOrigin: "right",
+          }}
+          transition={{
+            duration: 0.6,
+            ease: [0.25, 1, 0.5, 1],
+          }}
           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={onClose}
         >
@@ -19,10 +38,10 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="relative w-full max-w-4xl max-h-[80vh] overflow-hidden"
+            className="relative w-full max-w-4xl max-h-[95vh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-600 rounded-2xl overflow-hidden shadow-2xl">
+            <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-600 rounded-[40px] overflow-hidden shadow-2xl">
               <div className="flex h-96">
                 <div className="w-2/5 relative overflow-hidden">
                   <motion.img
@@ -43,7 +62,6 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
                   </div>
                 </div>
                 <div className="w-3/5 flex flex-col overflow-hidden">
-
                   <div className="p-8 overflow-y-auto flex-1 transparent-scrollbar">
                     <motion.div
                       initial={{ opacity: 0, x: 20 }}
@@ -51,7 +69,6 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
                       transition={{ delay: 0.2, duration: 0.5 }}
                       className="space-y-6"
                     >
-         
                       <div>
                         <motion.h2
                           initial={{ opacity: 0, y: 10 }}
