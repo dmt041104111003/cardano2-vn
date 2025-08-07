@@ -9,7 +9,11 @@
     "lint": "next lint",
     "export": "next export",
     "postinstall": "fumadocs-mdx",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "websocket": "node scripts/websocket-server.js",
+    "websocket:prod": "node scripts/websocket-server.js",
+    "dev:websocket": "concurrently \"npm run dev\" \"npm run websocket\"",
+    "start:websocket": "concurrently \"npm start\" \"npm run websocket\""
   },
   "dependencies": {
     "@harmoniclabs/cbor": "1.6.0",
@@ -55,6 +59,7 @@
     "@tiptap/starter-kit": "^3.0.7",
     "@types/mdx": "^2.0.13",
     "@types/styled-components": "^5.1.34",
+    "@types/ws": "^8.18.1",
     "blockies-identicon": "^0.1.0",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.7.0",
@@ -83,6 +88,7 @@
     "sonner": "^2.0.6",
     "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",
+    "ws": "^8.18.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -92,6 +98,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-responsive-masonry": "^2.6.0",
+    "concurrently": "^9.2.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "eslint-config-prettier": "^10.1.5",

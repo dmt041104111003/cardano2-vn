@@ -17,6 +17,7 @@ export interface Comment {
   avatar?: string;
   isPostAuthor?: boolean;
   postId?: string;
+  isTemp?: boolean; // For temporary comments during realtime updates
 }
 
 export interface CommentInputProps {
