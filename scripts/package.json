@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "ws": "^8.14.2",
-    "@prisma/client": "^5.7.1"
+    "@prisma/client": "^5.7.1",
+    "prisma": "^5.7.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
