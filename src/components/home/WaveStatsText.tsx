@@ -84,23 +84,23 @@ export default function WaveStatsText() {
             <div className="text-sm sm:text-base text-white/80">Paid to Delegates</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">{delegates}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">{delegates ?? 'None'}</div>
             <div className="text-sm sm:text-base text-white/80">delegates</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">3,600 <span className="align-super text-sm sm:text-lg">₳</span></div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">None<span className="align-super text-sm sm:text-lg">₳</span></div>
             <div className="text-sm sm:text-base text-white/80">Causes Fund</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">23.93M <span className="align-super text-sm sm:text-lg">₳</span></div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">None M<span className="align-super text-sm sm:text-lg">₳</span></div>
             <div className="text-sm sm:text-base text-white/80">Staked with C2VN</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">92,000 <span className="align-super text-sm sm:text-lg">₳</span></div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">None<span className="align-super text-sm sm:text-lg">₳</span></div>
             <div className="text-sm sm:text-base text-white/80">Founders Pledge</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">14</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">None</div>
             <div className="text-sm sm:text-base text-white/80">Community Contributors</div>
           </div>
         </div>
