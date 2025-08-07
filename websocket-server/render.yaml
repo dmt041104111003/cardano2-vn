@@ -3,7 +3,7 @@ services:
     name: cardano-websocket-server
     runtime: node
     buildCommand: npm install
-    startCommand: npm run websocket
+    startCommand: npm start
     envVars:
       - key: WEBSOCKET_PORT
         value: 10000
