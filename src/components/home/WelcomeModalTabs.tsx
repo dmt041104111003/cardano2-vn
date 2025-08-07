@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 interface WelcomeModalTabsProps {
   isAdmin: boolean;
   activeTab: "welcome" | "edit";

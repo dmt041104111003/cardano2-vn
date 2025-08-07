@@ -4,6 +4,7 @@ import Action from "~/components/action";
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import VideoSectionSkeleton from "./VideoSectionSkeleton";
+import NotFoundInline from "~/components/ui/not-found-inline";
 
 interface Video {
   id: string;
@@ -75,7 +76,7 @@ export default function VideoSection() {
     return <VideoSectionSkeleton />;
   }
 
-  if (error) {
+  if (error || !videos || videos.length === 0) {
     return (
       <section id="videos" className="relative flex min-h-screen items-center border-t border-gray-200 dark:border-white/10">
         <div className="mx-auto w-5/6 max-w-screen-2xl px-4 py-12 lg:px-8 lg:py-20">
@@ -87,16 +88,19 @@ export default function VideoSection() {
               </div>
               <p className="max-w-3xl text-base lg:text-xl text-gray-700 dark:text-gray-300">Watch our latest videos and memorable moments.</p>
             </div>
-            <div className="flex items-center justify-center h-32 lg:h-64">
-              <div className="text-base lg:text-lg text-red-600 dark:text-red-400">Error loading videos. Please try again later.</div>
-            </div>
+            <NotFoundInline 
+              onClearFilters={() => {
+                // Refresh the page or refetch data
+                window.location.reload();
+              }}
+            />
           </div>
         </div>
       </section>
     );
   }
 
-  if (!currentVideo || videos.length === 0) {
+  if (!currentVideo) {
     return (
       <section id="videos" className="relative flex min-h-screen items-center border-t border-gray-200 dark:border-white/10">
         <div className="mx-auto w-5/6 max-w-screen-2xl px-4 py-12 lg:px-8 lg:py-20">
@@ -108,9 +112,12 @@ export default function VideoSection() {
               </div>
               <p className="max-w-3xl text-base lg:text-xl text-gray-700 dark:text-gray-300">Watch our latest videos and memorable moments.</p>
             </div>
-            <div className="flex items-center justify-center h-32 lg:h-64">
-              <div className="text-base lg:text-lg text-gray-600 dark:text-gray-400">No videos available.</div>
-            </div>
+            <NotFoundInline 
+              onClearFilters={() => {
+                // Refresh the page or refetch data
+                window.location.reload();
+              }}
+            />
           </div>
         </div>
       </section>
