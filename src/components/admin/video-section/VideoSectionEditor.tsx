@@ -17,6 +17,7 @@ export function VideoSectionEditor({
   onVideoTitleChange,
   onChannelNameChange,
   onAddVideo,
+  thumbnailUrl,
 }: VideoSectionEditorProps) {
   const [videoId, setVideoId] = React.useState<string | null>(null);
 
@@ -90,6 +91,24 @@ export function VideoSectionEditor({
                 allowFullScreen
               />
             </div>
+            {thumbnailUrl && (
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Thumbnail Preview
+                </span>
+                <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600">
+                  <img
+                    src={thumbnailUrl}
+                    alt="Thumbnail preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/images/common/loading.png";
+                    }}
+                  />
+                </div>
+              </div>
+            )}
             <div className="text-xs text-gray-500">
               Video ID: {videoId}
             </div>
