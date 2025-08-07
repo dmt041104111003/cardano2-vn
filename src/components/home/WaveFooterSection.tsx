@@ -71,7 +71,7 @@ export default function WaveFooterSection({
           <div className="w-full sm:w-auto mt-2">
             {activeWalletTab === "daedalus" && (
               <div
-                className="text-base sm:text-lg mt-1 opacity-75 break-all text-blue-200 font-semibold cursor-pointer"
+                className="text-base sm:text-lg mt-1 break-all text-blue-800 dark:text-blue-200 font-semibold cursor-pointer"
                 onClick={() => {
                   navigator.clipboard.writeText('d0f005a0a823b331583a5d0083f3745f39fd36ad13bbc0845e147892');
                   showSuccess('Copied pool ID!');
@@ -82,7 +82,7 @@ export default function WaveFooterSection({
             )}
             {activeWalletTab === "yoroi" && (
               <div
-                className="text-base sm:text-lg mt-1 opacity-75 break-all text-blue-200 font-semibold cursor-pointer"
+                className="text-base sm:text-lg mt-1 break-all text-blue-800 dark:text-blue-200 font-semibold cursor-pointer"
                 onClick={() => {
                   navigator.clipboard.writeText('d0f005a0a823b331583a5d0083f3745f39fd36ad13bbc0845e147892');
                   showSuccess('Copied pool ID!');

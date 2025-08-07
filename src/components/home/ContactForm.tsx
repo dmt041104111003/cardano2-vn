@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ContactFormData, FormErrors, ContactFormProps } from '~/constants/contact';
 import { Captcha } from '~/components/ui/captcha';
 
-export function ContactForm({ formData, errors, isSubmitting, captchaValid, onInputChange, onSubmit, onCaptchaChange, onCourseChange }: ContactFormProps) {
+export function ContactForm({ formData, errors, isSubmitting, captchaValid, captchaKey, onInputChange, onSubmit, onCaptchaChange, onCourseChange }: ContactFormProps) {
   const typedFormData: ContactFormData = formData;
   const typedErrors: FormErrors = errors;
   const [selectedCourseImage, setSelectedCourseImage] = useState<string>('');
@@ -232,7 +232,7 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, onIn
           </div>
           
           <div className="md:col-span-2">
-            <Captcha onCaptchaChange={onCaptchaChange} />
+            <Captcha key={captchaKey} onCaptchaChange={onCaptchaChange} />
           </div>
         </div>
         

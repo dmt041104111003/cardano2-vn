@@ -84,6 +84,13 @@ export function Captcha({ onCaptchaChange }: CaptchaProps) {
     generateCaptcha();
   }, []);
 
+  // Reset captcha when component is remounted (key changes)
+  useEffect(() => {
+    setUserInput("");
+    setIsValid(false);
+    onCaptchaChange(false);
+  }, []);
+
   useEffect(() => {
     const valid = userInput.toUpperCase() === captchaText;
     setIsValid(valid);

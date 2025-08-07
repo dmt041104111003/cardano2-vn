@@ -4,6 +4,7 @@ export interface ContactFormProps {
   errors: FormErrors;
   isSubmitting: boolean;
   captchaValid: boolean;
+  captchaKey?: number;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
   onCaptchaChange: (isValid: boolean) => void;

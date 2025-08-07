@@ -203,6 +203,7 @@ export default function MemberPageClient() {
     "address-wallet": "",
     "email-intro": "",
     "event-location": "",
+    "your-course": "",
     message: "",
   });
 
@@ -382,6 +383,7 @@ export default function MemberPageClient() {
           "address-wallet": "",
           "email-intro": "",
           "event-location": "",
+          "your-course": "",
           message: "",
         });
         setErrors({});
