@@ -50,8 +50,8 @@ export default function WaveFooterSection({
               className={cn(
                 "px-4 sm:px-6 py-3 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 border-2 whitespace-normal",
                 activeWalletTab === "daedalus"
-                  ? "bg-teal-400/80 border-teal-600 shadow-lg"
-                  : "bg-teal-100/60 dark:bg-teal-900/40 border-teal-600 dark:border-teal-600 hover:bg-teal-200/70 dark:hover:bg-teal-800/50 backdrop-blur-sm"
+                  ? "bg-teal-400/80 border-white shadow-lg"
+                  : "bg-teal-100/60 dark:bg-teal-900/40 border-white dark:border-white hover:bg-teal-200/70 dark:hover:bg-teal-800/50 backdrop-blur-sm"
               )}
             >
               <span className={cn("font-semibold", activeWalletTab === "daedalus" ? "text-blue-800 dark:text-white" : "text-blue-800/80 dark:text-gray-200")}>DAEDALUS</span>
@@ -61,8 +61,8 @@ export default function WaveFooterSection({
               className={cn(
                 "px-4 sm:px-6 py-3 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 border-2 whitespace-normal",
                 activeWalletTab === "yoroi"
-                  ? "bg-teal-400/80 border-teal-600 shadow-lg"
-                  : "bg-teal-100/60 dark:bg-teal-900/40 border-teal-600 dark:border-teal-600 hover:bg-teal-200/70 dark:hover:bg-teal-800/50 backdrop-blur-sm"
+                  ? "bg-teal-400/80 border-white shadow-lg"
+                  : "bg-teal-100/60 dark:bg-teal-900/40 border-white dark:border-white hover:bg-teal-200/70 dark:hover:bg-teal-800/50 backdrop-blur-sm"
               )}
             >
               <span className={cn("font-semibold", activeWalletTab === "yoroi" ? "text-blue-800 dark:text-white" : "text-blue-800/80 dark:text-gray-200")}>YOROI & OTHERS</span>
@@ -71,7 +71,7 @@ export default function WaveFooterSection({
           <div className="w-full sm:w-auto mt-2">
             {activeWalletTab === "daedalus" && (
               <div
-                className="text-base sm:text-lg mt-1 opacity-75 break-all text-blue-800 dark:text-white font-semibold cursor-pointer"
+                className="text-base sm:text-lg mt-1 opacity-75 break-all text-white font-semibold cursor-pointer"
                 onClick={() => {
                   navigator.clipboard.writeText('pool1kks6sgxvx7p6fe3hhnne68xzwa9jg8qgy50yt3w3lrelvns7390');
                   showSuccess('Copied pool ID!');
@@ -82,7 +82,7 @@ export default function WaveFooterSection({
             )}
             {activeWalletTab === "yoroi" && (
               <div
-                className="text-base sm:text-lg mt-1 opacity-75 break-all text-blue-800 dark:text-white font-semibold cursor-pointer"
+                className="text-base sm:text-lg mt-1 opacity-75 break-all text-white font-semibold cursor-pointer"
                 onClick={() => {
                   navigator.clipboard.writeText('b5a1a820cc3783a4e637bce79d1cc2774b241c08251e45c5d1f8f3f6');
                   showSuccess('Copied pool ID!');
