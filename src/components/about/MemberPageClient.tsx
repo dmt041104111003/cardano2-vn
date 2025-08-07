@@ -388,6 +388,10 @@ export default function MemberPageClient() {
         });
         setErrors({});
         showSuccess("Thank you! Your message has been sent successfully.");
+        
+        setTimeout(() => {
+          showSuccess("Please check your email for confirmation. If you don't see it within a few minutes, please check your spam folder or resend the form. For any issues, please contact cardano2vn@gmail.com");
+        }, 1000);
       } else {
         throw new Error("Network response was not ok");
       }
