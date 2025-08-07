@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Action from "~/components/action";
+// import Action from "~/components/action";
 
 interface Event {
   title: string;
@@ -69,7 +69,7 @@ export default function CTASection() {
         </div>
 
         <div className="relative mt-12 text-center">
-          <Action title="Next" href="#home" />
+          {/* <Action title="Next" href="#home" /> */}
         </div>
       </div>
     </section>

@@ -1,7 +1,7 @@
 "use client";
 
 import Timeline from "~/components/timeline";
-import Action from "~/components/action";
+// import Action from "~/components/action";
 
 export default function TrustSection() {
   return (
@@ -127,7 +127,7 @@ export default function TrustSection() {
           </div>
         </div>
       </div>
-      <Action title="Scroll" href="#protocol" />
+      {/* <Action title="Scroll" href="#protocol" /> */}
     </section>
   );
 } 

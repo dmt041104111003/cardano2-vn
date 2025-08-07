@@ -1,6 +1,6 @@
 "use client";
 
-import Action from "~/components/action";
+// import Action from "~/components/action";
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import VideoSectionSkeleton from "./VideoSectionSkeleton";
@@ -193,7 +193,7 @@ export default function VideoSection() {
           </div>
         </div>
       </div>
-      <Action title="Scroll" href="#trust" />
+      {/* <Action title="Scroll" href="#trust" /> */}
     </section>
   );
 }
