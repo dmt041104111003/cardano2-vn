@@ -4,7 +4,7 @@
   "description": "WebSocket server for real-time comments",
   "main": "websocket-server.js",
   "scripts": {
-    "build": "echo 'WebSocket server build completed'",
+    "build": "prisma generate && echo 'WebSocket server build completed'",
     "start": "node websocket-server.js",
     "dev": "nodemon websocket-server.js"
   },
