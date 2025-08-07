@@ -3,11 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import ProjectModal from "~/components/project-modal";
 import { ProjectCardProps } from '~/constants/projects';
 
-export default function ProjectCard({ project }: ProjectCardProps) {
-  const [showModal, setShowModal] = useState(false);
+export default function ProjectCard({ project, onOpenModal }: ProjectCardProps & { onOpenModal: (project: any) => void }) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -30,7 +28,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         className="group w-full rounded-sm border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 shadow-xl backdrop-blur-sm transition-all hover:border-gray-300 dark:hover:border-white/40 hover:shadow-2xl cursor-pointer"
-        onClick={() => setShowModal(true)}
+        onClick={() => onOpenModal(project)}
       >
         <div className="flex w-full">
           <div className="flex-grow border-l-4 bg-gray-50 dark:bg-gray-900/60 border-green-500 rounded-l-lg">
@@ -75,12 +73,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </div>
         </div>
       </motion.div>
-
-      <ProjectModal
-        project={project}
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-      />
     </>
   );
 } 

@@ -72,7 +72,7 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
             duration: 0.6,
             ease: [0.25, 1, 0.5, 1],
           }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4"
           onClick={onClose}
         >
           <motion.div
@@ -80,83 +80,15 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="relative w-full max-w-4xl max-h-[95vh] overflow-y-auto transparent-scrollbar"
+            className="relative w-full max-w-4xl max-h-[95vh] overflow-y-auto transparent-scrollbar z-[9999999]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-600 rounded-[40px] shadow-2xl">
               <div className="p-8">
-                <div className="flex items-center justify-between mb-6">
+                <div className="mb-6">
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                     Project Details
                   </h2>
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3, duration: 0.3 }}
-                    onClick={onClose}
-                    className="button"
-                    style={{
-                      position: 'relative',
-                      width: '4em',
-                      height: '4em',
-                      border: 'none',
-                      background: 'rgba(180, 83, 107, 0.11)',
-                      borderRadius: '5px',
-                      transition: 'background 0.5s',
-                      zIndex: 50
-                    }}
-                  >
-                    <span 
-                      className="X"
-                      style={{
-                        content: "",
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        width: '2em',
-                        height: '1.5px',
-                        backgroundColor: 'rgb(255, 255, 255)',
-                        transform: 'translateX(-50%) rotate(45deg)'
-                      }}
-                    ></span>
-                    <span 
-                      className="Y"
-                      style={{
-                        content: "",
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        width: '2em',
-                        height: '1.5px',
-                        backgroundColor: '#fff',
-                        transform: 'translateX(-50%) rotate(-45deg)'
-                      }}
-                    ></span>
-                    <div 
-                      className="close"
-                      style={{
-                        position: 'absolute',
-                        display: 'flex',
-                        padding: '0.8rem 1.5rem',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transform: 'translateX(-50%)',
-                        top: '-70%',
-                        left: '50%',
-                        width: '3em',
-                        height: '1.7em',
-                        fontSize: '12px',
-                        backgroundColor: 'rgb(19, 22, 24)',
-                        color: 'rgb(187, 229, 236)',
-                        border: 'none',
-                        borderRadius: '3px',
-                        pointerEvents: 'none',
-                        opacity: '0'
-                      }}
-                    >
-                      Close
-                    </div>
-                  </motion.button>
                 </div>
 
                 <div className="space-y-6">
@@ -222,6 +154,77 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
               </div>
             </div>
           </motion.div>
+          
+          <motion.button
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+            onClick={onClose}
+            className="absolute button"
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              width: '4em',
+              height: '4em',
+              border: 'none',
+              background: 'rgba(180, 83, 107, 0.11)',
+              borderRadius: '5px',
+              transition: 'background 0.5s',
+              zIndex: 9999999
+            }}
+          >
+            <span 
+              className="X"
+              style={{
+                content: "",
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: '2em',
+                height: '1.5px',
+                backgroundColor: 'rgb(255, 255, 255)',
+                transform: 'translateX(-50%) rotate(45deg)'
+              }}
+            ></span>
+            <span 
+              className="Y"
+              style={{
+                content: "",
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: '2em',
+                height: '1.5px',
+                backgroundColor: '#fff',
+                transform: 'translateX(-50%) rotate(-45deg)'
+              }}
+            ></span>
+            <div 
+              className="close"
+              style={{
+                position: 'absolute',
+                display: 'flex',
+                padding: '0.8rem 1.5rem',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transform: 'translateX(-50%)',
+                top: '-70%',
+                left: '50%',
+                width: '3em',
+                height: '1.7em',
+                fontSize: '12px',
+                backgroundColor: 'rgb(19, 22, 24)',
+                color: 'rgb(187, 229, 236)',
+                border: 'none',
+                borderRadius: '3px',
+                pointerEvents: 'none',
+                opacity: '0'
+              }}
+            >
+              Close
+            </div>
+          </motion.button>
         </motion.div>
       )}
     </AnimatePresence>
