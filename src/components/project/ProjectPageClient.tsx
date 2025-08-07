@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import ProjectCard from "~/components/project-card";
+import ProjectModal from "~/components/project-modal";
 import ProjectSkeleton from "~/components/project/ProjectSkeleton";
 import Pagination from "~/components/pagination";
 import Navigation from "~/components/navigation";
@@ -19,6 +20,8 @@ function ProjectPageContent() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [fundFilter, setFundFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("catalyst");
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const ITEMS_PER_PAGE = 6;
   
   const { data, isLoading } = useQuery({
@@ -75,6 +78,16 @@ function ProjectPageContent() {
     setStatusFilter("all");
     setFundFilter("all");
     setTypeFilter("catalyst");
+  };
+
+  const handleOpenModal = (project: any) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProject(null);
   };
   
   return (
@@ -160,7 +173,7 @@ function ProjectPageContent() {
                         ) : (
                           <>
                             {paginatedProjects.map((proposal: any, index: number) => (
-                              <ProjectCard key={index} project={proposal} />
+                              <ProjectCard key={index} project={proposal} onOpenModal={handleOpenModal} />
                             ))}
 
                             {totalPages > 1 && (
@@ -185,6 +198,14 @@ function ProjectPageContent() {
           </div>
         </div>
       </div>
+      
+      {selectedProject && (
+        <ProjectModal
+          project={selectedProject}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
+      )}
     </main>
   );
 }

@@ -1,15 +1,44 @@
+// "use client";
+
+// import { motion } from "framer-motion";
 // import Link from "next/link";
 
-// export default function Action({ title = "Next", href = "#home" }: { title?: string; href?: string }) {
+// interface ActionProps {
+//   title: string;
+//   href: string;
+// }
+
+// export default function Action({ title, href }: ActionProps) {
 //   return (
-//     <div className="absolute bottom-2 left-1/2 hidden -translate-x-1/2 transform lg:flex">
-//       <Link href={href} className="group flex flex-col items-center text-white/60 transition-colors duration-300 hover:text-white">
-//         <div className="mb-2 text-xs font-medium uppercase tracking-widest">{title}</div>
-//         <div className="h-8 w-px bg-white/20 transition-colors duration-300 group-hover:bg-white/40" />
-//         <svg className="mt-2 h-4 w-4 animate-[throb_2s_ease-in-out_infinite]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//           <path strokeLinecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-//         </svg>
+//     <motion.div
+//       initial={{ opacity: 0, y: 20 }}
+//       whileInView={{ opacity: 1, y: 0 }}
+//       transition={{ duration: 0.5 }}
+//       className="relative mt-12 text-center"
+//     >
+//       <Link
+//         href={href}
+//         className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-3 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
+//       >
+//         <span>{title}</span>
+//         <motion.svg
+//           xmlns="http://www.w3.org/2000/svg"
+//           width="16"
+//           height="16"
+//           viewBox="0 0 24 24"
+//           fill="none"
+//           stroke="currentColor"
+//           strokeWidth="2"
+//           strokeLinecap="round"
+//           strokeLinejoin="round"
+//           className="transition-transform duration-300 group-hover:translate-x-1"
+//           initial={{ x: 0 }}
+//           whileHover={{ x: 4 }}
+//         >
+//           <path d="M5 12h14" />
+//           <path d="m12 5 7 7-7 7" />
+//         </motion.svg>
 //       </Link>
-//     </div>
+//     </motion.div>
 //   );
 // }
