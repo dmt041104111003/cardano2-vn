@@ -5,7 +5,7 @@ import { PenSquare } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
-import EventCard from "~/components/home/EventCard";
+import EventCard from "~/components/home/CTAEventCard";
 import { images } from "~/public/images";
 
 interface Event {

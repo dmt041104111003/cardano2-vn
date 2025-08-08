@@ -312,10 +312,10 @@ model EventImages {
   location    String
   tittle      String
   imageUrl    String
+  publicId    String
   orderNumber Int      @default(0)
   createdAt   DateTime @default(now())
 
-  @@index([isActive])
   @@index([orderNumber])
   @@index([createdAt])
 }
