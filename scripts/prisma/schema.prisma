@@ -8,21 +8,22 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  wallet    String?    @unique
-  email     String?    @unique
-  name      String?
-  image     String?
-  provider  String?    // "google", "github", "cardano", etc.
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  roleId    String
-  comments  Comment[]  @relation("UserComments")
-  media     Media[]    @relation("UserMedia")
-  posts     Post[]     @relation("UserPosts")
-  reactions Reaction[]
-  sessions  Session[]
-  role      Role       @relation(fields: [roleId], references: [id])
+  id            String         @id @default(cuid())
+  wallet        String?        @unique
+  email         String?        @unique
+  name          String?
+  image         String?
+  provider      String?        // "google", "github", "cardano", etc.
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  roleId        String
+  comments      Comment[]      @relation("UserComments")
+  media         Media[]        @relation("UserMedia")
+  posts         Post[]         @relation("UserPosts")
+  reactions     Reaction[]
+  sessions      Session[]
+  notifications Notification[] @relation("UserNotifications")
+  role          Role           @relation(fields: [roleId], references: [id])
 
   @@index([createdAt])
   @@index([provider])
@@ -89,6 +90,22 @@ model Reaction {
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId, type])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // "mention", "reply", "like", etc.
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  data      Json?    // Additional data like postId, commentId, etc.
+  createdAt DateTime @default(now())
+  user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
 }
 
 model Media {

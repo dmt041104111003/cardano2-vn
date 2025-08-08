@@ -2,6 +2,7 @@
 const { WebSocketServer } = require('ws');
 const CommentHandler = require('./handlers/comment-handler');
 const ReplyHandler = require('./handlers/reply-handler');
+const NotificationHandler = require('./handlers/notification-handler');
 const RoomManager = require('./utils/room-manager');
 
 class CommentWebSocketServer {
@@ -9,10 +10,12 @@ class CommentWebSocketServer {
     this.wss = new WebSocketServer({ port });
     this.clients = new Map();
     this.postRooms = new Map();
+    this.userRooms = new Map();
     this.tempIdMapping = new Map();
     this.pendingReplies = new Map();
     this.commentHandler = new CommentHandler(this);
     this.replyHandler = new ReplyHandler(this);
+    this.notificationHandler = new NotificationHandler(this);
     this.roomManager = new RoomManager(this);
     
     this.setupWebSocketServer();
@@ -36,6 +39,10 @@ class CommentWebSocketServer {
       this.clients.set(clientId, { ws, postId, userId });
 
       this.roomManager.joinPostRoom(clientId, postId);
+      
+      if (userId) {
+        this.joinUserRoom(clientId, userId);
+      }
 
       ws.on('message', (data) => {
         try {
@@ -99,8 +106,45 @@ class CommentWebSocketServer {
       case 'update':
         await this.commentHandler.handleUpdateComment(clientId, message);
         break;
+      case 'get_notifications':
+        await this.notificationHandler.handleGetNotifications(clientId, message);
+        break;
+      case 'mark_notification_read':
+        await this.notificationHandler.handleMarkAsRead(clientId, message);
+        break;
       default:
         this.sendError(client.ws, 'Unknown message type');
+    }
+  }
+
+  joinUserRoom(clientId, userId) {
+    if (!this.userRooms.has(userId)) {
+      this.userRooms.set(userId, new Set());
+    }
+    this.userRooms.get(userId).add(clientId);
+    console.log(`Client ${clientId} joined user room ${userId}`);
+  }
+
+  leaveUserRoom(clientId, userId) {
+    const userRoom = this.userRooms.get(userId);
+    if (userRoom) {
+      userRoom.delete(clientId);
+      if (userRoom.size === 0) {
+        this.userRooms.delete(userId);
+      }
+      console.log(`Client ${clientId} left user room ${userId}`);
+    }
+  }
+
+  broadcastToUser(userId, message) {
+    const userRoom = this.userRooms.get(userId);
+    if (userRoom) {
+      userRoom.forEach(clientId => {
+        const client = this.clients.get(clientId);
+        if (client && client.ws.readyState === 1) {
+          this.sendMessage(client.ws, message);
+        }
+      });
     }
   }
 
@@ -120,8 +164,13 @@ class CommentWebSocketServer {
 
   handleClientDisconnect(clientId) {
     const client = this.clients.get(clientId);
-    if (client && client.postId) {
-      this.roomManager.leavePostRoom(clientId, client.postId);
+    if (client) {
+      if (client.postId) {
+        this.roomManager.leavePostRoom(clientId, client.postId);
+      }
+      if (client.userId) {
+        this.leaveUserRoom(clientId, client.userId);
+      }
     }
     this.clients.delete(clientId);
     console.log(`Client ${clientId} disconnected`);

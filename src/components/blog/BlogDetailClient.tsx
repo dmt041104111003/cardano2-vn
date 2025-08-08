@@ -14,6 +14,7 @@ import { TipTapPreview } from '~/components/ui/tiptap-preview';
 import { useQuery } from '@tanstack/react-query';
 import { BlogPostDetail, BlogTag } from '~/constants/posts';
 import { Comment } from '~/constants/comment';
+import { scrollToCommentWithRetry } from '~/lib/mention-highlight';
 
 export default function BlogDetailClient({ slug }: { slug: string }) {
   const { data: session } = useSession();
@@ -24,6 +25,22 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
   const proseRef = useRef<HTMLDivElement>(null);
   const { showSuccess, showError } = useToastContext();
 
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#comment-')) {
+        const commentId = hash.replace('#comment-', '');
+        setTimeout(() => {
+          scrollToCommentWithRetry(commentId);
+        }, 1000);
+      }
+    };
+
+    handleHashChange();
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   const {
     data: postData,

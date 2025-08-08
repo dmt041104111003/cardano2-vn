@@ -55,7 +55,73 @@ class CommentHandler {
         include: {
           user: true,
         },
-      }).then((savedComment) => {
+      }).then(async (savedComment) => {
+        try {
+          const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+          const mentions = message.content.match(mentionRegex);
+          
+          if (mentions) {
+            for (const mention of mentions) {
+              const username = mention.slice(1);
+              
+              const mentionedUser = await prisma.user.findFirst({
+                where: {
+                  OR: [
+                    { wallet: { contains: username, mode: 'insensitive' } },
+                    { name: { contains: username, mode: 'insensitive' } },
+                  ],
+                },
+              });
+              
+              if (mentionedUser && mentionedUser.id !== message.userId) {
+                const post = await prisma.post.findUnique({
+                  where: { id: message.postId },
+                  select: { slug: true },
+                });
+                
+                await this.createNotification({
+                  userId: mentionedUser.id,
+                  type: 'mention',
+                  title: 'You were mentioned',
+                  message: `${user?.name || 'Someone'} mentioned you in a comment`,
+                  data: {
+                    postId: message.postId,
+                    postSlug: post?.slug,
+                    commentId: savedComment.id,
+                    mentionedBy: message.userId,
+                  },
+                });
+              }
+            }
+          }
+
+          if (message.parentCommentId && savedComment.parent) {
+            const parentUserId = savedComment.parent.userId;
+            
+            if (parentUserId && parentUserId !== message.userId) {
+              const post = await prisma.post.findUnique({
+                where: { id: message.postId },
+                select: { slug: true },
+              });
+              
+              await this.createNotification({
+                userId: parentUserId,
+                type: 'reply',
+                title: 'New reply',
+                message: `${user?.name || 'Someone'} replied to your comment`,
+                data: {
+                  postId: message.postId,
+                  postSlug: post?.slug,
+                  commentId: savedComment.id,
+                  repliedBy: message.userId,
+                },
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error creating notifications:', error);
+        }
+
         const realCommentData = {
           id: savedComment.id,
           content: savedComment.content,
@@ -94,6 +160,39 @@ class CommentHandler {
     } catch (error) {
       console.error('Error handling new comment:', error);
       this.server.sendError(this.server.clients.get(clientId).ws, 'Failed to process comment');
+    }
+  }
+
+  async createNotification(notificationData) {
+    try {
+      const notification = await prisma.notification.create({
+        data: {
+          userId: notificationData.userId,
+          type: notificationData.type,
+          title: notificationData.title,
+          message: notificationData.message,
+          data: notificationData.data || {},
+          isRead: false,
+        },
+      });
+      
+      this.server.broadcastToUser(notificationData.userId, {
+        type: 'new_notification',
+        notification: {
+          id: notification.id,
+          userId: notification.userId,
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          data: notification.data,
+          isRead: notification.isRead,
+          createdAt: notification.createdAt.toISOString(),
+        },
+        timestamp: new Date().toISOString(),
+      });
+      
+    } catch (error) {
+      console.error('Error creating notification:', error);
     }
   }
 

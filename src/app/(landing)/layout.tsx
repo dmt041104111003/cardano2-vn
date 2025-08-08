@@ -5,7 +5,7 @@ import Footer from "~/components/footer";
 
 
 // seo basic -- start
-import ClientHeader from "~/components/ClientHeader";
+import Header from "~/components/header";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -50,7 +50,7 @@ export default function LandingLayout({
           />
         </div>
         
-        <ClientHeader />
+        <Header />
         <div>{children}</div>
         <Footer />
       </div>

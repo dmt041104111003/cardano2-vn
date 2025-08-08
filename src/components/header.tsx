@@ -11,6 +11,7 @@ import { images } from "~/public/images";
 import { routers, NavbarType } from "~/constants/routers";
 import { useUser } from "~/hooks/useUser";
 import { WalletAvatar } from "~/components/WalletAvatar";
+import NotificationBell from "~/components/ui/notification-bell";
 
 
 function UserAvatar({ session }: { session: any }) {
@@ -128,24 +129,29 @@ export default function Header() {
             )}
 
             {session && (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <UserAvatar session={session} />
-                  <span className="text-sm text-gray-700 dark:text-white font-mono">
-                    {(session.user as { address?: string })?.address
-                      ? formatWalletAddress((session.user as { address?: string }).address || "")
-                      : (session.user as { email?: string })?.email
-                        ? formatEmail((session.user as { email?: string }).email || "")
-                        : (session.user as { name?: string })?.name || "User"}
-                  </span>
-                </div>
-                <button
-                  onClick={() => signOut()}
-                  className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white"
-                >
-                  Sign out
-                </button>
+              <NotificationBell />
+            )}
+
+            {session && (
+              <div className="flex items-center gap-2">
+                <UserAvatar session={session} />
+                <span className="text-sm text-gray-700 dark:text-white font-mono">
+                  {(session.user as { address?: string })?.address
+                    ? formatWalletAddress((session.user as { address?: string }).address || "")
+                    : (session.user as { email?: string })?.email
+                      ? formatEmail((session.user as { email?: string }).email || "")
+                      : (session.user as { name?: string })?.name || "User"}
+                </span>
               </div>
+            )}
+
+            {session && (
+              <button
+                onClick={() => signOut()}
+                className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-gray-900 dark:hover:text-white"
+              >
+                Sign out
+              </button>
             )}
           </section>
 
@@ -229,6 +235,10 @@ export default function Header() {
                       <span>Admin Panel</span>
                     </Link>
                   </div>
+                )}
+
+                {session && (
+                  <NotificationBell />
                 )}
 
                 {session && (

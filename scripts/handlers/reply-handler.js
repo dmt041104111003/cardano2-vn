@@ -114,7 +114,31 @@ class ReplyHandler {
             },
           },
         },
-      }).then((savedReply) => {
+      }).then(async (savedReply) => {
+        try {          
+          if (savedReply.parent && savedReply.parent.userId && savedReply.parent.userId !== message.userId) {
+            const post = await prisma.post.findUnique({
+              where: { id: message.postId },
+              select: { slug: true },
+            });
+            
+            await this.createNotification({
+              userId: savedReply.parent.userId,
+              type: 'reply',
+              title: 'New reply',
+              message: `${user?.name || 'Someone'} replied to your comment`,
+              data: {
+                postId: message.postId,
+                postSlug: post?.slug,
+                commentId: savedReply.id,
+                repliedBy: message.userId,
+              },
+            });
+          }
+        } catch (error) {
+          console.error('Error creating reply notification:', error);
+        }
+
         const realReplyData = {
           id: savedReply.id,
           content: savedReply.content,
@@ -164,6 +188,42 @@ class ReplyHandler {
     } catch (error) {
       console.error('Error handling new reply:', error);
       this.server.sendError(this.server.clients.get(clientId).ws, 'Failed to process reply');
+    }
+  }
+
+  async createNotification(notificationData) {
+    try {
+      console.log('Creating notification:', notificationData);
+      
+      const notification = await prisma.notification.create({
+        data: {
+          userId: notificationData.userId,
+          type: notificationData.type,
+          title: notificationData.title,
+          message: notificationData.message,
+          data: notificationData.data || {},
+          isRead: false,
+        },
+      });
+      
+      
+      this.server.broadcastToUser(notificationData.userId, {
+        type: 'new_notification',
+        notification: {
+          id: notification.id,
+          userId: notification.userId,
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          data: notification.data,
+          isRead: notification.isRead,
+          createdAt: notification.createdAt.toISOString(),
+        },
+        timestamp: new Date().toISOString(),
+      });
+      
+    } catch (error) {
+      console.error('Error creating notification:', error);
     }
   }
 
