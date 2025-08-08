@@ -197,6 +197,7 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
 
   return (
     <div
+      id={`comment-${comment.id}`}
       className={comment.parentCommentId ? `relative ml-[${indentMobile}px] md:ml-[${indentDesktop}px]` : ''}
       style={{ maxWidth: '100%' }}
       onMouseEnter={() => setHoveredId && setHoveredId(comment.id)}

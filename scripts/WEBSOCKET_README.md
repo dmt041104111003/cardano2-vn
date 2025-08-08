@@ -8,7 +8,7 @@
 │                 │    │                  │    │                 │
 │ - API Routes    │    │ - WebSocket      │    │ - Comments      │
 │ - Static Files  │    │ - Real-time      │    │ - Replies       │
-│ - React App     │    │ - Broadcasting   │    │                 │
+│ - React App     │    │ - Broadcasting   │    │ - Notifications │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
@@ -32,6 +32,7 @@ class CommentWebSocketServer {
     this.wss = new WebSocketServer({ port }); // WebSocket server
     this.clients = new Map();                 // Manage clients
     this.postRooms = new Map();               // Manage rooms by postId
+    this.userRooms = new Map();               // Manage user-specific rooms
     this.tempIdMapping = new Map();           // Map temp ID → real ID
     this.pendingReplies = new Map();          // Queue replies waiting for parent
   }
@@ -54,7 +55,14 @@ User Replies → Check Parent → If Temp → Queue Reply → Parent Saved → P
    Send Reply   Parent ID   Temp ID?   Add to Queue   Real ID       Broadcast
 ```
 
-### 3. Optimistic Updates
+### 3. Notification Flow
+```
+Comment/Reply → Server Detects → Create Notification → Save DB → Broadcast to User
+     ↓              ↓              ↓              ↓              ↓
+   User Action   @mention/Reply   Notification   Database     Real-time Update
+```
+
+### 4. Optimistic Updates
 ```
 Temp Comment (immediate) → Database Save → Real Comment (update)
      ↓                        ↓                ↓
@@ -100,7 +108,37 @@ prisma.comment.create({...}).then(savedComment => {
 });
 ```
 
-### 4. Nested Reply Handling
+### 4. Notification Processing
+```javascript
+// 1. Server detects @mention or reply
+if (content.includes('@')) {
+  const mentionedUsers = extractMentions(content);
+  mentionedUsers.forEach(userId => {
+    this.createNotification({
+      type: 'mention',
+      userId: userId,
+      title: 'You were mentioned',
+      message: `${author} mentioned you in a comment`,
+      data: { postId, commentId: savedComment.id }
+    });
+  });
+}
+
+// 2. Create and broadcast notification
+async createNotification(notificationData) {
+  const notification = await prisma.notification.create({
+    data: notificationData
+  });
+  
+  // Broadcast to specific user
+  this.broadcastToUserRoom(notificationData.userId, {
+    type: 'new_notification',
+    notification: notification
+  });
+}
+```
+
+### 5. Nested Reply Handling
 ```javascript
 // 1. Client sends reply with parentCommentId (could be temp ID)
 ws.send(JSON.stringify({
@@ -140,7 +178,7 @@ prisma.comment.create({
 });
 ```
 
-### 5. Process Pending Replies
+### 6. Process Pending Replies
 ```javascript
 // When parent comment is saved
 this.processPendingReplies(savedComment.id);
@@ -165,6 +203,12 @@ processPendingReplies(realParentId) {
 - Background save to database
 - Update real data when save completes
 
+### Real-time Notifications
+- @mention detection and notification creation
+- Reply notification to parent comment author
+- User-specific WebSocket rooms for notifications
+- Auto-delete read notifications from database
+
 ### Temp ID Mapping
 ```javascript
 // When comment is saved
@@ -186,10 +230,24 @@ this.pendingReplies.set('temp_parent_id', [
 // When parent ready → process all
 ```
 
+### User Notification Rooms
+```javascript
+// Join user to their notification room
+this.joinUserRoom(userId, clientId);
+
+// Broadcast notification to specific user
+this.broadcastToUserRoom(userId, {
+  type: 'new_notification',
+  notification: notificationData
+});
+```
+
 ## Benefits
 
 - **Immediate Real-time**: No database waiting
 - **Nested Reply Handling**: Parent-child relationship
+- **Real-time Notifications**: @mention and reply alerts
 - **Safe Fallback**: Queue when parent not ready
 - **Optimistic UI**: User sees results immediately
 - **Data Consistency**: Ensures foreign key constraints
+- **User-specific Channels**: Targeted notification delivery
