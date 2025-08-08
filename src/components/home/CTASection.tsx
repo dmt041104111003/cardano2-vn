@@ -1,103 +1,206 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import Image from "next/image";
-// import Action from "~/components/action";
+import { useState, useEffect } from "react";
+import { PenSquare } from "lucide-react";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import EventCard from "~/components/home/EventCard";
+import EditModal from "~/components/home/CTAEditModal";
+import { images } from "~/public/images";
 
 interface Event {
+  id: number;
   title: string;
   location: string;
   imageUrl: string;
+  order: number;
 }
 
 export default function CTASection() {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: session } = useSession();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedEventIndex, setSelectedEventIndex] = useState<number | null>(null);
+
+  const { data: userData } = useQuery({
+    queryKey: ["user-role"],
+    queryFn: async () => {
+      if (!session?.user) return null;
+
+      const sessionUser = session.user as {
+        address?: string;
+        email?: string;
+      };
+      const url = new URL("/api/auth/me", window.location.origin);
+      if (sessionUser.address) url.searchParams.set("address", sessionUser.address);
+      if (sessionUser.email) url.searchParams.set("email", sessionUser.email);
+
+      const response = await fetch(url.toString());
+      if (!response.ok) throw new Error("Failed to fetch user role");
+      return response.json();
+    },
+    enabled: !!session?.user,
+  });
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch("/api/events");
-        const data = await res.json();
-        setEvents(data);
-      } catch (err) {
-        console.error("Failed to fetch events", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setIsAdmin(userData?.user?.role === "ADMIN");
+  }, [userData]);
 
-    fetchEvents();
-  }, []);
+  const initialEvents: Event[] = [
+    { id: 1, title: "Event 1", location: "Location 1", imageUrl: images.landing01.src, order: 1 },
+    { id: 2, title: "Event 2", location: "Location 2", imageUrl: images.landing01.src, order: 2 },
+    { id: 3, title: "Event 3", location: "Location 3", imageUrl: images.landing01.src, order: 3 },
+    { id: 4, title: "Event 4", location: "Location 4", imageUrl: images.landing01.src, order: 4 },
+    { id: 5, title: "Event 5", location: "Location 5", imageUrl: images.landing04.src, order: 5 },
+    { id: 6, title: "Event 6", location: "Location 6", imageUrl: images.landing02.src, order: 6 },
+  ];
 
-  if (loading) return <div className="text-center py-20 text-lg">Đang tải sự kiện...</div>;
-  if (!events.length) return <div className="text-center py-20 text-lg">Không có sự kiện nào.</div>;
+  const [events, setEvents] = useState<Event[]>(initialEvents);
+  const [editMode, setEditMode] = useState(false);
+
+  const handleEditClick = (index: number) => {
+    setSelectedEventIndex(index);
+    setModalOpen(true);
+  };
+
+  const handleSaveEvent = (index: number, updatedEvent: Partial<Event>) => {
+    const updated = [...events];
+    updated[index] = { ...updated[index], ...updatedEvent };
+    setEvents(updated);
+    toast.success("Event updated!");
+  };
+
+  const handleImageUpload = (file: File, index: number) => {
+    const fakeUrl = URL.createObjectURL(file);
+    const updated = [...events];
+    updated[index].imageUrl = fakeUrl;
+    setEvents(updated);
+    toast.success("Image updated!");
+  };
+
+  const handleSave = () => {
+    // No-op since saving is handled in EditModal
+  };
+
+  const handleToggleEdit = () => {
+    if (editMode) {
+      setEvents(initialEvents);
+      toast.info("Changes discarded");
+    }
+    setEditMode(!editMode);
+  };
+
+  const sortedEvents = [...events].sort((a, b) => a.order - b.order);
 
   return (
     <section id="CTA" className="w-full border-t border-gray-200 dark:border-gray-700">
       <div className="mx-auto w-5/6 max-w-screen-2xl px-4 py-12 lg:px-8 lg:py-20">
         {/* HEADER */}
-        <div className="mb-8 lg:mb-16">
-          <div className="mb-4 lg:mb-6 flex items-center gap-2 lg:gap-4">
-            <div className="h-1 w-8 lg:w-12 bg-gradient-to-r from-blue-500 to-transparent" />
-            <h2 className="text-2xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-white">Events</h2>
+        <div className="mb-8 lg:mb-16 flex flex-wrap justify-between items-center gap-4">
+          <div>
+            <div className="mb-4 lg:mb-6 flex items-center gap-2 lg:gap-4">
+              <div className="h-1 w-8 lg:w-12 bg-gradient-to-r from-blue-500 to-transparent" />
+              <h2 className="text-2xl lg:text-4xl xl:text-5xl font-bold text-gray-900 dark:text-white">Events</h2>
+            </div>
+            <p className="max-w-3xl text-base lg:text-xl text-gray-700 dark:text-gray-300">
+              Discover the highlights of our recent events and community activities.
+            </p>
           </div>
-          <p className="max-w-3xl text-base lg:text-xl text-gray-700 dark:text-gray-300">
-            Discover the highlights of our recent events and community activities.
-          </p>
+
+          {isAdmin && (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleToggleEdit}
+                className={`flex items-center gap-1 pb-1 transition border-b-2 ${
+                  editMode ? "text-blue-500 border-blue-500" : "text-gray-400 border-transparent hover:text-blue-500 hover:border-blue-500"
+                }`}
+              >
+                {editMode ? (
+                  "Exit Edit Mode"
+                ) : (
+                  <>
+                    <PenSquare className="mr-1" size={16} /> Edit
+                  </>
+                )}
+              </button>
+              {/* Removed the Save button */}
+            </div>
+          )}
         </div>
 
         {/* GRID */}
         <div className="space-y-6">
           <div className="flex flex-col lg:flex-row gap-6">
-            <EventCard event={events[0]} className="lg:w-[70%] h-80" />
-            <EventCard event={events[1]} className="lg:w-[30%] h-80" />
+            <EventCard
+              event={sortedEvents[0]}
+              index={0}
+              editMode={editMode}
+              onEditClick={handleEditClick}
+              onUpload={handleImageUpload}
+              className="lg:w-[70%] h-80"
+            />
+            <EventCard
+              event={sortedEvents[1]}
+              index={1}
+              editMode={editMode}
+              onEditClick={handleEditClick}
+              onUpload={handleImageUpload}
+              className="lg:w-[30%] h-80"
+            />
           </div>
 
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="flex flex-col sm:flex-row gap-6 lg:w-[70%]">
-              <EventCard event={events[2]} className="sm:w-1/2 h-80" />
-              <EventCard event={events[3]} className="sm:w-1/2 h-80" />
+              <EventCard
+                event={sortedEvents[2]}
+                index={2}
+                editMode={editMode}
+                onEditClick={handleEditClick}
+                onUpload={handleImageUpload}
+                className="sm:w-1/2 h-80"
+              />
+              <EventCard
+                event={sortedEvents[3]}
+                index={3}
+                editMode={editMode}
+                onEditClick={handleEditClick}
+                onUpload={handleImageUpload}
+                className="sm:w-1/2 h-80"
+              />
             </div>
-
             <div className="flex flex-col gap-6 lg:w-[30%]">
-              <EventCard event={events[4]} className="h-40" />
-              <EventCard event={events[5]} className="h-40" />
+              <EventCard
+                event={sortedEvents[4]}
+                index={4}
+                editMode={editMode}
+                onEditClick={handleEditClick}
+                onUpload={handleImageUpload}
+                className="h-37"
+              />
+              <EventCard
+                event={sortedEvents[5]}
+                index={5}
+                editMode={editMode}
+                onEditClick={handleEditClick}
+                onUpload={handleImageUpload}
+                className="h-37"
+              />
             </div>
           </div>
         </div>
 
-        <div className="relative mt-12 text-center">
-          {/* <Action title="Next" href="#home" /> */}
-        </div>
+        {/* MODAL */}
+        {selectedEventIndex !== null && events[selectedEventIndex] && (
+          <EditModal
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            event={events[selectedEventIndex]}
+            index={selectedEventIndex}
+            onSave={handleSaveEvent}
+          />
+        )}
       </div>
     </section>
-  );
-}
-
-function EventCard({ event, className }: { event: Event; className?: string }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className={`relative rounded-xl overflow-hidden shadow-lg group cursor-pointer ${className}`}
-    >
-      <div className="relative w-full h-full">
-        <Image
-          src={event.imageUrl}
-          alt={event.title}
-          className="object-cover w-full h-full transition-all group-hover:brightness-90"
-          fill
-          quality={90}
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-all" />
-        <div className="absolute bottom-4 left-4 text-white z-10">
-          <h4 className="text-lg font-semibold">{event.title}</h4>
-          <p className="text-sm opacity-80">{event.location}</p>
-        </div>
-      </div>
-    </motion.div>
   );
 }
