@@ -307,6 +307,20 @@ model LandingContent {
   @@index([section])
 }
 
+model EventImages {
+  id          String   @id @default(uuid())
+  location    String
+  tittle      String
+  imageUrl    String
+  orderNumber Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([isActive])
+  @@index([orderNumber])
+  @@index([createdAt])
+}
+
+
 model WelcomeModal {
   id          String   @id @default(uuid())
   title       String?
