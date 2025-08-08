@@ -6,12 +6,15 @@
   "scripts": {
     "build": "prisma generate && echo 'WebSocket server build completed'",
     "start": "node websocket-server.js",
-    "dev": "nodemon websocket-server.js"
+    "dev": "nodemon websocket-server.js",
+    "health": "node health-server.js",
+    "start:all": "concurrently \"npm run start\" \"npm run health\""
   },
   "dependencies": {
     "ws": "^8.14.2",
     "@prisma/client": "^5.7.1",
-    "prisma": "^5.7.1"
+    "prisma": "^5.7.1",
+    "concurrently": "^8.2.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
