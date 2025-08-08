@@ -1,0 +1,332 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  wallet    String?    @unique
+  email     String?    @unique
+  name      String?
+  image     String?
+  provider  String?    // "google", "github", "cardano", etc.
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  roleId    String
+  comments  Comment[]  @relation("UserComments")
+  media     Media[]    @relation("UserMedia")
+  posts     Post[]     @relation("UserPosts")
+  reactions Reaction[]
+  sessions  Session[]
+  role      Role       @relation(fields: [roleId], references: [id])
+
+  @@index([createdAt])
+  @@index([provider])
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        RoleName @unique
+  description String?
+  users       User[]
+}
+
+model Post {
+  id           String     @id @default(uuid())
+  title        String
+  slug         String     @unique
+  content      String
+  status       PostStatus @default(DRAFT)
+  authorId     String
+  githubRepo   String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  comments     Int        @default(0)
+  likes        Int        @default(0)
+  shares       Int        @default(0)
+  views        Int        @default(0)
+  comments_rel Comment[]  @relation("PostComments")
+  media        Media[]    @relation("PostMedia")
+  author       User       @relation("UserPosts", fields: [authorId], references: [id])
+  tags         PostTag[]
+  reactions    Reaction[]
+
+  @@index([status])
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([slug])
+}
+
+model Comment {
+  id              String    @id @default(uuid())
+  postId          String
+  userId          String?
+  content         String
+  parentCommentId String?
+  isApproved      Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  parent          Comment?  @relation("CommentToReplies", fields: [parentCommentId], references: [id])
+  replies         Comment[] @relation("CommentToReplies")
+  post            Post      @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade)
+  user            User?     @relation("UserComments", fields: [userId], references: [id])
+
+  @@index([postId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Reaction {
+  id        String       @id @default(uuid())
+  userId    String
+  postId    String?
+  type      ReactionType
+  createdAt DateTime     @default(now())
+  post      Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId, type])
+}
+
+model Media {
+  id         String    @id @default(uuid())
+  url        String
+  type       MediaType
+  uploadedBy String?
+  uploadedAt DateTime  @default(now())
+  postId     String?
+  mediaId    String?
+  post       Post?     @relation("PostMedia", fields: [postId], references: [id])
+  user       User?     @relation("UserMedia", fields: [uploadedBy], references: [id])
+
+  @@index([type])
+  @@index([uploadedBy])
+  @@index([uploadedAt])
+}
+
+model VideoSection {
+  id           String   @id @default(uuid())
+  videoId      String
+  channelName   String
+  videoUrl     String
+  title        String
+  thumbnailUrl String
+  isFeatured   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Tag {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  posts     PostTag[]
+
+  @@index([name])
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
+model Session {
+  id         String    @id @default(cuid())
+  userId     String
+  accessTime DateTime?
+  lastAccess DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  href        String?
+  year        Int
+  quarterly   String
+  fund        String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  status      ProjectStatus @default(PROPOSED)
+
+  @@index([status])
+  @@index([year])
+  @@index([createdAt])
+}
+
+model Technology {
+  id          String   @id @default(uuid())
+  title       String
+  name        String
+  description String
+  href        String
+  image       String
+  githubRepo  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+model AboutContent {
+  id          String   @id @default(uuid())
+  title       String
+  subtitle    String
+  description String
+  youtubeUrl  String
+  buttonText  String
+  buttonUrl   String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([createdAt])
+}
+
+model Member {
+  id          String   @id @default(uuid())
+  name        String
+  role        String
+  description String
+  image       String
+  email       String?
+  color       String?  @default("blue")
+  skills      String[] @default([])
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  tabId       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tab         Tab?     @relation(fields: [tabId], references: [id], onDelete: SetNull)
+
+  @@index([isActive])
+  @@index([order])
+  @@index([createdAt])
+  @@index([tabId])
+}
+
+model Tab {
+  id          String   @id @default(uuid())
+  name        String
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  members     Member[]
+
+  @@index([isActive])
+  @@index([order])
+  @@index([createdAt])
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum RoleName {
+  ADMIN
+  USER
+}
+
+enum ReactionType {
+  LIKE
+  HEART
+  HAHA
+  SAD
+  ANGRY
+  SHARE
+  WOW
+}
+
+enum MediaType {
+  IMAGE
+  YOUTUBE
+  VIDEO
+}
+
+model EventLocation {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
+  @@index([createdAt])
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  image       String?
+  title       String?
+  description String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
+  @@index([createdAt])
+}
+
+model LandingContent {
+  id          String   @id @default(uuid())
+  section     String   @unique // "hero"
+  title       String?
+  subtitle    String?
+  description String?
+  mainText    String?
+  subText     String?
+  media1Url   String?
+  media2Url   String?
+  media3Url   String?
+  media4Url   String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
+  @@index([createdAt])
+  @@index([section])
+}
+
+model WelcomeModal {
+  id          String   @id @default(uuid())
+  title       String?
+  description String?
+  imageUrl    String?
+  buttonLink  String?
+  startDate   DateTime?
+  endDate     DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([createdAt])
+}
+
+enum ProjectStatus {
+  PROPOSED
+  APPROVED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}

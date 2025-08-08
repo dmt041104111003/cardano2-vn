@@ -2,7 +2,7 @@
 
 // import { protocols } from "~/constants/protocols";
 // import Protocol from "~/components/protocol";
-import Action from "~/components/action";
+// import Action from "~/components/action";
 import { useState } from "react";
 import Blog from "~/components/blog";
 import { useQuery } from "@tanstack/react-query";
@@ -165,7 +165,7 @@ export default function ProtocolSection() {
           </div>
         </div>
       </section>
-      <Action title="Next" href="#cardano" />
+      {/* <Action title="Next" href="#cardano" /> */}
     </section>
   );
 } 

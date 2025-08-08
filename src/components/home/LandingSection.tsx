@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { images } from "~/public/images";
-import Action from "~/components/action";
+// import Action from "~/components/action";
 import AdminTabs from "./AdminTabs";
 import LandingContentSection from "./LandingContentSection";
 import LandingMediaSection from "./LandingMediaSection";
@@ -165,7 +165,7 @@ export default function LandingSection() {
             )}
           </motion.div>
         </div>
-        <Action title="Next" href="#trust" />
+        {/* <Action title="Next" href="#trust" /> */}
       </section>
       
       <FloatingNotification />

@@ -1,12 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CommentInput from "./CommentInput";
 import CommentItem from "./CommentItem";
 import { CommentSkeletonList } from "./CommentSkeleton";
 import { useUser } from '~/hooks/useUser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Comment, CommentSectionProps } from '~/constants/comment';
+import { useWebSocket } from '~/hooks/useWebSocket';
+import { toast } from 'sonner';
+
+function addReplyToNestedReplies(replies: Comment[], newReply: Comment): Comment[] {
+  return replies.map(reply => {
+    if (reply.id === newReply.parentCommentId && newReply.parentCommentId) {
+      return {
+        ...reply,
+        replies: [...(reply.replies || []), newReply]
+      };
+    }
+    
+    if (reply.replies && reply.replies.length > 0) {
+      const updatedNestedReplies = addReplyToNestedReplies(reply.replies, newReply);
+      if (updatedNestedReplies !== reply.replies) {
+        return {
+          ...reply,
+          replies: updatedNestedReplies
+        };
+      }
+    }
+    
+    return reply;
+  });
+}
+
+function updateNestedReplies(replies: Comment[], updatedComment: Comment): Comment[] {
+  return replies.map(reply => {
+    if (reply.isTemp && updatedComment.id !== reply.id) {
+      return reply;
+    }
+    if (reply.id === updatedComment.id) {
+      return updatedComment;
+    }
+    
+    if (reply.replies && reply.replies.length > 0) {
+      const updatedNestedReplies = updateNestedReplies(reply.replies, updatedComment);
+      if (updatedNestedReplies !== reply.replies) {
+        return {
+          ...reply,
+          replies: updatedNestedReplies
+        };
+      }
+    }
+    
+    return reply;
+  });
+}
 
 export default function CommentSection({ comments: initialComments, onSubmitComment, showAllComments = true, postId }: CommentSectionProps) {
   const { isAuthenticated, user } = useUser();
@@ -15,6 +63,83 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
   const [loading, setLoading] = useState(false);
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  const {
+    isConnected,
+    isConnecting,
+    sendComment,
+    sendReply,
+    deleteComment,
+    updateComment,
+  } = useWebSocket({
+    postId,
+    userId: user?.id,
+    onNewComment: (newComment) => {
+      console.log('Adding new comment:', newComment);
+      setComments(prev => [newComment, ...prev]);
+      if (!newComment.isTemp) {
+        toast.success('New comment received!');
+      }
+    },
+    onNewReply: (newReply) => {
+      console.log('Adding new reply:', newReply);
+      setComments(prev => prev.map(comment => {
+        if (comment.id === newReply.parentCommentId) {
+          console.log(`Adding reply to parent comment ${comment.id}:`, newReply);
+          return {
+            ...comment,
+            replies: [...(comment.replies || []), newReply]
+          };
+        }
+        
+        if (comment.replies && comment.replies.length > 0) {
+          const updatedReplies = addReplyToNestedReplies(comment.replies, newReply);
+          if (updatedReplies !== comment.replies) {
+            console.log(`Adding nested reply to comment ${comment.id}:`, newReply);
+            return {
+              ...comment,
+              replies: updatedReplies
+            };
+          }
+        }
+        
+        return comment;
+      }));
+      if (!newReply.isTemp) {
+        toast.success('New reply received!');
+      }
+    },
+    onCommentDeleted: (commentId) => {
+      setComments(prev => prev.filter(comment => comment.id !== commentId));
+      toast.info('Comment deleted');
+    },
+    onCommentUpdated: (updatedComment) => {
+      console.log('Updating comment:', updatedComment);
+      setComments(prev => prev.map(comment => {
+        if (comment.isTemp && updatedComment.id !== comment.id) {
+          return comment;
+        }
+        return comment.id === updatedComment.id ? updatedComment : comment;
+      }));
+      
+      setComments(prev => prev.map(comment => ({
+        ...comment,
+        replies: comment.replies?.map(reply => {
+          if (reply.isTemp && updatedComment.id !== reply.id) {
+            return reply;
+          }
+          return reply.id === updatedComment.id ? updatedComment : reply;
+        }) || []
+      })));
+      
+      if (!updatedComment.isTemp) {
+        toast.success('Comment updated successfully');
+      }
+    },
+    onError: (error) => {
+      toast.error(`WebSocket error: ${error}`);
+    },
+  });
 
   const commentMutation = useMutation({
     mutationFn: async (comment: string) => {
@@ -44,7 +169,27 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
   });
 
   const handleSubmitComment = async (comment: string) => {
-    commentMutation.mutate(comment);
+    if (isConnected) {
+      const success = sendComment(comment);
+      if (success) {
+        const avatar = user?.image && (user.image.startsWith('http') || user.image.startsWith('data:image')) ? user.image : '';
+        const newComment: Comment = {
+          id: Math.random().toString(36).slice(2),
+          userId: user?.id || '',
+          author: user?.address || 'Unknown',
+          content: comment,
+          createdAt: new Date().toISOString(),
+          time: new Date().toISOString(),
+          avatar,
+          replies: [],
+        };
+        setComments(prev => [newComment, ...prev]);
+      } else {
+        commentMutation.mutate(comment);
+      }
+    } else {
+      commentMutation.mutate(comment);
+    }
   };
 
   const replyMutation = useMutation({
@@ -85,7 +230,16 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
   });
 
   const handleSubmitReply = async (parentId: string, replyText: string, userInfo: { id?: string; address?: string; image?: string }) => {
-    replyMutation.mutate({ parentId, replyText, userInfo });
+    if (isConnected) {
+      const success = sendReply(replyText, parentId);
+      if (success) {
+        console.log('Reply sent via WebSocket, waiting for realtime update');
+      } else {
+        replyMutation.mutate({ parentId, replyText, userInfo });
+      }
+    } else {
+      replyMutation.mutate({ parentId, replyText, userInfo });
+    }
   };
 
   const handleLoadMore = () => {
@@ -102,6 +256,13 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
 
   return (
     <div className="mt-8 space-y-4">
+      <div className="flex items-center gap-2 text-sm">
+        <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : isConnecting ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
+        <span className={`${isConnected ? 'text-green-600' : isConnecting ? 'text-yellow-600' : 'text-red-600'}`}>
+          {isConnected ? 'enabled' : isConnecting ? 'Connecting...' : 'Realtime comments disabled'}
+        </span>
+      </div>
+
       {isAuthenticated ? (
         <CommentInput onSubmit={handleSubmitComment} user={user} />
       ) : (
