@@ -1,12 +1,13 @@
 
 const { WebSocketServer } = require('ws');
+const http = require('http');
 const CommentHandler = require('./handlers/comment-handler');
 const ReplyHandler = require('./handlers/reply-handler');
 const RoomManager = require('./utils/room-manager');
 
 class CommentWebSocketServer {
   constructor(port = 4001) {
-    this.wss = new WebSocketServer({ port });
+    this.port = port;
     this.clients = new Map();
     this.postRooms = new Map();
     this.tempIdMapping = new Map();
@@ -15,7 +16,34 @@ class CommentWebSocketServer {
     this.replyHandler = new ReplyHandler(this);
     this.roomManager = new RoomManager(this);
     
+    this.setupServer();
+  }
+
+  setupServer() {
+    this.httpServer = http.createServer((req, res) => {
+      if (req.url === '/health') {
+        this.handleHealthCheck(req, res);
+      } else {
+        res.writeHead(404);
+        res.end('Not Found');
+      }
+    });
+
+    this.wss = new WebSocketServer({ port: this.port });
+    
     this.setupWebSocketServer();
+  }
+
+  handleHealthCheck(req, res) {
+    const health = {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      connections: this.clients.size,
+      uptime: process.uptime()
+    };
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(health));
   }
 
   setupWebSocketServer() {
@@ -146,17 +174,24 @@ try {
   const port = process.env.WEBSOCKET_PORT;
   const wsServer = new CommentWebSocketServer(port);
   
-//   console.log(`WebSocket server started successfully on port ${port}`);
-//   console.log('Server stats:', wsServer.getStats());
+  wsServer.httpServer.listen(80, () => {
+    console.log(`Health check available at http://localhost:80/health`);
+  });
+  
+  console.log(`WebSocket server started on port ${port}`);
   
   process.on('SIGINT', () => {
     console.log('\nShutting down WebSocket server...');
-    process.exit(0);
+    wsServer.httpServer.close(() => {
+      process.exit(0);
+    });
   });
   
   process.on('SIGTERM', () => {
     console.log('\nShutting down WebSocket server...');
-    process.exit(0);
+    wsServer.httpServer.close(() => {
+      process.exit(0);
+    });
   });
   
 } catch (error) {
