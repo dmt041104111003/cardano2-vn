@@ -12,4 +12,3 @@ services:
           name: cardano-db
           property: connectionString
     plan: free
-    healthCheckPath: /health
