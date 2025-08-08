@@ -30,8 +30,7 @@ class CommentWebSocketServer {
     });
 
     this.wss = new WebSocketServer({ 
-      server: this.httpServer,
-      path: '/ws'
+      server: this.httpServer
     });
     
     this.setupWebSocketServer();
