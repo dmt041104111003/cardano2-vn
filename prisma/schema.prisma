@@ -310,7 +310,7 @@ model LandingContent {
 model EventImages {
   id          String   @id @default(uuid())
   location    String
-  tittle      String
+  title      String
   imageUrl    String
   publicId    String
   orderNumber Int      @default(0)

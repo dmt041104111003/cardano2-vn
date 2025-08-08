@@ -80,8 +80,7 @@ export default function CTASection() {
   };
 
   const handleSave = () => {
-    setEditMode(false);
-    toast.success("Changes saved!");
+    // No-op since saving is handled in EditModal
   };
 
   const handleToggleEdit = () => {
@@ -125,11 +124,7 @@ export default function CTASection() {
                   </>
                 )}
               </button>
-              {editMode && (
-                <button onClick={handleSave} className="px-4 py-1 bg-blue-700 text-white rounded-lg hover:bg-blue-600 transition shadow-md">
-                  Save
-                </button>
-              )}
+              {/* Removed the Save button */}
             </div>
           )}
         </div>

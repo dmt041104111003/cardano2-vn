@@ -4,6 +4,8 @@ import { Fragment, useCallback, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { UploadCloud } from "lucide-react";
 import { useDropzone } from "react-dropzone";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 interface Event {
   id: number;
@@ -22,15 +24,15 @@ interface EditModalProps {
 }
 
 export default function EditModal({ isOpen, onClose, event, index, onSave }: EditModalProps) {
+  const { data: session } = useSession();
   const [title, setTitle] = useState(event.title);
   const [location, setLocation] = useState(event.location);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  // Sync local state with event prop when it changes
   useEffect(() => {
     setTitle(event.title);
     setLocation(event.location);
-    setImageFile(null); // Reset imageFile when modal opens or event changes
+    setImageFile(null);
   }, [event]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -45,13 +47,37 @@ export default function EditModal({ isOpen, onClose, event, index, onSave }: Edi
     maxFiles: 1,
   });
 
-  const handleSave = () => {
-    const updatedEvent: Partial<Event> = { title, location };
-    if (imageFile) {
-      updatedEvent.imageUrl = URL.createObjectURL(imageFile);
+  const handleSave = async () => {
+    if (!session?.user) {
+      toast.error("Please log in to save changes");
+      return;
     }
-    onSave(index, updatedEvent);
-    onClose();
+
+    const formData = new FormData();
+    formData.append("file", imageFile || "");
+    formData.append("title", title);
+    formData.append("location", location);
+    formData.append("order", event.order.toString());
+
+    const res = await fetch("/api/admin/event-images", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const updatedEvent: Partial<Event> = {
+        title,
+        location,
+        imageUrl: data.media.url || event.imageUrl,
+      };
+      onSave(index, updatedEvent);
+      onClose();
+      toast.success("Event saved successfully!");
+    } else {
+      const errorData = await res.json();
+      toast.error(errorData.error || "Failed to save event");
+    }
   };
 
   return (
