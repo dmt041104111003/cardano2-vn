@@ -2,17 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '~/app/api/auth/[...nextauth]/route';
 import { prisma } from '~/lib/prisma';
-import cloudinary from '~/lib/cloudinary';
+import { uploadImageFromFile, uploadImageFromUrl } from '~/lib/uploadImage';
 
 export async function POST(request: NextRequest) {
   try {
+
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
     const sessionUser = session.user as { address?: string; email?: string };
     let user = null;
-    
+
     if (sessionUser.address) {
       user = await prisma.user.findUnique({
         where: { wallet: sessionUser.address },
@@ -24,42 +26,40 @@ export async function POST(request: NextRequest) {
         include: { role: true }
       });
     }
+
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
     if (user.role.name !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+
+ 
     const formData = await request.formData();
-    let imageUrl = '';
-    let publicId = '';
     const file = formData.get('file');
     const url = formData.get('url');
+
+    let imageUrl = '';
+    let publicId = '';
+
+
     if (file && typeof file === 'object' && 'arrayBuffer' in file) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const uploadRes = await new Promise<any>((resolve, reject) => {
-        cloudinary.uploader.upload_stream({ resource_type: 'image' }, (err: any, result: any) => {
-          if (err || !result) reject(err);
-          else resolve(result);
-        }).end(buffer);
-      });
-      imageUrl = uploadRes.url;
-      publicId = uploadRes.public_id;
+      const res = await uploadImageFromFile(file);
+      imageUrl = res.url;
+      publicId = res.publicId;
     } else if (url && typeof url === 'string') {
-      if (/^data:image\//.test(url)) {
-        const uploadRes = await cloudinary.uploader.upload(url, { resource_type: 'image' });
-        imageUrl = uploadRes.url;
-        publicId = uploadRes.public_id;
-      } else if (/^https?:\/\//.test(url)) {
-        const uploadRes = await cloudinary.uploader.upload(url, { resource_type: 'image' });
-        imageUrl = uploadRes.url;
-        publicId = uploadRes.public_id;
+      if (/^data:image\//.test(url) || /^https?:\/\//.test(url)) {
+        const res = await uploadImageFromUrl(url);
+        imageUrl = res.url;
+        publicId = res.publicId;
       } else {
         return NextResponse.json({ error: 'Invalid image input' }, { status: 400 });
       }
     } else {
       return NextResponse.json({ error: 'No image provided' }, { status: 400 });
     }
+
+   
     return NextResponse.json({
       message: 'Image uploaded to Cloudinary',
       media: {
@@ -75,4 +75,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

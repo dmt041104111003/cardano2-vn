@@ -19,21 +19,16 @@ function compact(str?: string | null) {
 
 function UserAvatar({ user }: { user: any }) {
   const [imageError, setImageError] = useState(false);
-  
+
   if (user?.image && !imageError) {
     return (
-      <img 
-        src={user.image} 
-        alt="avatar" 
-        className="w-10 h-10 rounded-full object-cover border border-gray-200" 
-        onError={() => setImageError(true)}
-      />
+      <img src={user.image} alt="avatar" className="w-10 h-10 rounded-full object-cover border border-gray-200" onError={() => setImageError(true)} />
     );
   }
-  
+
   return (
     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg">
-      {user?.name?.charAt(0) || 'U'}
+      {user?.name?.charAt(0) || "U"}
     </div>
   );
 }
@@ -62,11 +57,10 @@ const adminNavItems = [
   },
 
   {
-    title: "Video Section",
+    title: "Memories & Events",
     href: "/admin/video-section",
     icon: Info,
   },
-
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
