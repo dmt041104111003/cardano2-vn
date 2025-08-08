@@ -5,7 +5,8 @@ import { PenSquare } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
-import EventCard from "~/components/home/CTAEventCard";
+import EventCard from "~/components/home/EventCard";
+import EditModal from "~/components/home/CTAEditModal";
 import { images } from "~/public/images";
 
 interface Event {
@@ -19,6 +20,8 @@ interface Event {
 export default function CTASection() {
   const { data: session } = useSession();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedEventIndex, setSelectedEventIndex] = useState<number | null>(null);
 
   const { data: userData } = useQuery({
     queryKey: ["user-role"],
@@ -56,10 +59,16 @@ export default function CTASection() {
   const [events, setEvents] = useState<Event[]>(initialEvents);
   const [editMode, setEditMode] = useState(false);
 
-  const handleDeleteImage = (index: number) => {
+  const handleEditClick = (index: number) => {
+    setSelectedEventIndex(index);
+    setModalOpen(true);
+  };
+
+  const handleSaveEvent = (index: number, updatedEvent: Partial<Event>) => {
     const updated = [...events];
-    updated[index].imageUrl = "";
+    updated[index] = { ...updated[index], ...updatedEvent };
     setEvents(updated);
+    toast.success("Event updated!");
   };
 
   const handleImageUpload = (file: File, index: number) => {
@@ -129,60 +138,73 @@ export default function CTASection() {
         <div className="space-y-6">
           <div className="flex flex-col lg:flex-row gap-6">
             <EventCard
-              {...{
-                event: sortedEvents[0],
-                index: 0,
-                editMode,
-                onDelete: handleDeleteImage,
-                onUpload: handleImageUpload,
-                className: "lg:w-[70%] h-80",
-              }}
+              event={sortedEvents[0]}
+              index={0}
+              editMode={editMode}
+              onEditClick={handleEditClick}
+              onUpload={handleImageUpload}
+              className="lg:w-[70%] h-80"
             />
             <EventCard
-              {...{
-                event: sortedEvents[1],
-                index: 1,
-                editMode,
-                onDelete: handleDeleteImage,
-                onUpload: handleImageUpload,
-                className: "lg:w-[30%] h-80",
-              }}
+              event={sortedEvents[1]}
+              index={1}
+              editMode={editMode}
+              onEditClick={handleEditClick}
+              onUpload={handleImageUpload}
+              className="lg:w-[30%] h-80"
             />
           </div>
 
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="flex flex-col sm:flex-row gap-6 lg:w-[70%]">
               <EventCard
-                {...{
-                  event: sortedEvents[2],
-                  index: 2,
-                  editMode,
-                  onDelete: handleDeleteImage,
-                  onUpload: handleImageUpload,
-                  className: "sm:w-1/2 h-80",
-                }}
+                event={sortedEvents[2]}
+                index={2}
+                editMode={editMode}
+                onEditClick={handleEditClick}
+                onUpload={handleImageUpload}
+                className="sm:w-1/2 h-80"
               />
               <EventCard
-                {...{
-                  event: sortedEvents[3],
-                  index: 3,
-                  editMode,
-                  onDelete: handleDeleteImage,
-                  onUpload: handleImageUpload,
-                  className: "sm:w-1/2 h-80",
-                }}
+                event={sortedEvents[3]}
+                index={3}
+                editMode={editMode}
+                onEditClick={handleEditClick}
+                onUpload={handleImageUpload}
+                className="sm:w-1/2 h-80"
               />
             </div>
             <div className="flex flex-col gap-6 lg:w-[30%]">
               <EventCard
-                {...{ event: sortedEvents[4], index: 4, editMode, onDelete: handleDeleteImage, onUpload: handleImageUpload, className: "h-37" }}
+                event={sortedEvents[4]}
+                index={4}
+                editMode={editMode}
+                onEditClick={handleEditClick}
+                onUpload={handleImageUpload}
+                className="h-37"
               />
               <EventCard
-                {...{ event: sortedEvents[5], index: 5, editMode, onDelete: handleDeleteImage, onUpload: handleImageUpload, className: "h-37" }}
+                event={sortedEvents[5]}
+                index={5}
+                editMode={editMode}
+                onEditClick={handleEditClick}
+                onUpload={handleImageUpload}
+                className="h-37"
               />
             </div>
           </div>
         </div>
+
+        {/* MODAL */}
+        {selectedEventIndex !== null && events[selectedEventIndex] && (
+          <EditModal
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            event={events[selectedEventIndex]}
+            index={selectedEventIndex}
+            onSave={handleSaveEvent}
+          />
+        )}
       </div>
     </section>
   );

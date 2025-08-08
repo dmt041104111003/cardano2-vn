@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { XIcon, UploadCloud } from "lucide-react";
-import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { useCallback } from "react";
 
 interface Event {
   id: number;
@@ -20,12 +18,12 @@ interface EventCardProps {
   event: Event;
   index: number;
   editMode: boolean;
-  onDelete?: (index: number) => void;
+  onEditClick?: (index: number) => void;
   onUpload?: (file: File, index: number) => void;
   className?: string;
 }
 
-export default function EventCard({ event, index, editMode, onDelete, onUpload, className }: EventCardProps) {
+export default function EventCard({ event, index, editMode, onEditClick, onUpload, className }: EventCardProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles[0] && onUpload) {
@@ -68,14 +66,13 @@ export default function EventCard({ event, index, editMode, onDelete, onUpload, 
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDelete?.(index);
+                  onEditClick?.(index);
                 }}
-                className="absolute top-2 right-2 p-1.5 rounded-full cursor-pointer"
+                className="absolute top-2 right-2 p-1.5 rounded-full cursor-pointer bg-white shadow"
               >
-                <XIcon className="h-8 w-8 text-red-700" />
+                <XIcon className="h-6 w-6 text-red-700" />
               </div>
             )}
-
             {!editMode && (
               <div className="absolute bottom-4 left-4 text-white z-10">
                 <h4 className="text-lg font-semibold">{event.title}</h4>
@@ -92,7 +89,12 @@ export default function EventCard({ event, index, editMode, onDelete, onUpload, 
             <UploadCloud className="h-12 w-12 text-blue-500 mb-2" />
             <p className="text-sm font-medium text-blue-500">{isDragActive ? "Drop the file here" : "Drag & drop or click to upload"}</p>
           </div>
-        ) : null}
+        ) : (
+          <div className="flex flex-col items-center justify-center w-full h-full border-2 border-dashed rounded-lg bg-white">
+            <UploadCloud className="h-12 w-12 text-blue-500 mb-2" />
+            <p className="text-sm font-medium text-blue-500">No image</p>
+          </div>
+        )}
       </div>
     </motion.div>
   );
