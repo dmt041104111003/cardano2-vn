@@ -121,7 +121,6 @@ export default function CTASection() {
               Discover the highlights of our recent events and community activities.
             </p>
           </div>
-
           {isAdmin && (
             <div className="flex items-center gap-3">
               <button
@@ -155,7 +154,7 @@ export default function CTASection() {
                   editMode={editMode}
                   onEditClick={handleEditClick}
                   onUpload={handleImageUpload}
-                  className="lg:w-[70%] h-80"
+                  className="lg:w-[70%] h-70"
                 />
               )}
               {sortedEvents[1] && (
@@ -165,7 +164,7 @@ export default function CTASection() {
                   editMode={editMode}
                   onEditClick={handleEditClick}
                   onUpload={handleImageUpload}
-                  className="lg:w-[30%] h-80"
+                  className="lg:w-[30%] h-70"
                 />
               )}
             </div>
@@ -179,7 +178,7 @@ export default function CTASection() {
                     editMode={editMode}
                     onEditClick={handleEditClick}
                     onUpload={handleImageUpload}
-                    className="sm:w-1/2 h-80"
+                    className="sm:w-1/2 h-70"
                   />
                 )}
                 {sortedEvents[3] && (
@@ -189,7 +188,7 @@ export default function CTASection() {
                     editMode={editMode}
                     onEditClick={handleEditClick}
                     onUpload={handleImageUpload}
-                    className="sm:w-1/2 h-80"
+                    className="sm:w-1/2 h-70"
                   />
                 )}
               </div>
@@ -202,7 +201,7 @@ export default function CTASection() {
                     editMode={editMode}
                     onEditClick={handleEditClick}
                     onUpload={handleImageUpload}
-                    className="h-37"
+                    className="h-32"
                   />
                 )}
                 {sortedEvents[5] && (
@@ -212,7 +211,7 @@ export default function CTASection() {
                     editMode={editMode}
                     onEditClick={handleEditClick}
                     onUpload={handleImageUpload}
-                    className="h-37"
+                    className="h-32"
                   />
                 )}
               </div>
