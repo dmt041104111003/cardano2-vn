@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     const newImage = await prisma.eventImages.create({
       data: {
         location,
-        title, // Corrected from tittle to title
+        title,
         imageUrl,
         publicId,
         orderNumber,
@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
       },
       eventImage: newImage,
     });
+
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
