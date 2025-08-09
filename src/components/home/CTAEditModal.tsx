@@ -28,7 +28,7 @@ export default function EditModal({ isOpen, onClose, event, index, onSave }: Edi
   const [title, setTitle] = useState(event.title);
   const [location, setLocation] = useState(event.location);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [isSaving, setIsSaving] = useState(false); // <-- thêm state isSaving
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setTitle(event.title);
@@ -67,7 +67,6 @@ export default function EditModal({ isOpen, onClose, event, index, onSave }: Edi
     }
     formData.append("title", title);
     formData.append("location", location);
-    
 
     try {
       const res = await fetch(`/api/admin/event-images/${event.id}`, {
@@ -111,7 +110,7 @@ export default function EditModal({ isOpen, onClose, event, index, onSave }: Edi
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm bg-opacity-50" />
         </Transition.Child>
 
-        <div className="fixed inset-0 overflow-y-auto">
+        <div className="fixed inset-0 overflow-y-auto ">
           <div className="flex min-h-full items-center justify-center p-4">
             <Transition.Child
               as={Fragment}
@@ -122,29 +121,29 @@ export default function EditModal({ isOpen, onClose, event, index, onSave }: Edi
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Title as="h3" className="text-lg font-semibold dark:text-white text-gray-900">
                   Edit Event
                 </Dialog.Title>
                 <div className="mt-4 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Title</label>
+                    <label className="block text-sm font-medium dark:text-white text-gray-700">Title</label>
                     <input
                       type="text"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="mt-1 w-full text-black rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
-                      disabled={isSaving} // disable khi đang save
+                      className="mt-1 w-full text-black dark:text-white dark:bg-gray-700  rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
+                      disabled={isSaving}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Location</label>
+                    <label className="block text-sm font-medium  dark:text-white text-gray-700">Location</label>
                     <input
                       type="text"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      className="mt-1 w-full text-black rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
-                      disabled={isSaving} // disable khi đang save
+                      className="mt-1 w-full text-black dark:bg-gray-700 dark:text-white rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
+                      disabled={isSaving}
                     />
                   </div>
                   <div>
@@ -152,13 +151,12 @@ export default function EditModal({ isOpen, onClose, event, index, onSave }: Edi
                     <div
                       {...getRootProps()}
                       className={`mt-1 flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg transition ${
-                        isDragActive ? "border-blue-400 bg-blue-50" : "border-blue-300 bg-white"
+                        isDragActive ? "border-blue-400 bg-blue-50" : "border-blue-300 bg-white dark:bg-gray-700"
                       } ${isSaving ? "opacity-50 pointer-events-none" : ""}`}
                     >
-                      s
                       <input {...getInputProps()} disabled={isSaving} />
-                      <UploadCloud className="h-12 w-12 text-blue-500 mb-2" />
-                      <p className="text-sm font-medium text-blue-500">
+                      <UploadCloud className="h-12 w-12 text-blue-500 mb-2 dark:text-blue-400" />
+                      <p className="text-sm font-medium text-blue-500 dark:text-blue-400">
                         {isDragActive
                           ? "Drop the file here"
                           : imageFile

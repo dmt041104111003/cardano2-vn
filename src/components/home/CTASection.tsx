@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { PenSquare } from "lucide-react";
-import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import EventCard from "~/components/home/EventCard";
@@ -81,7 +80,6 @@ export default function CTASection() {
     const updated = [...events];
     updated[index] = { ...updated[index], ...updatedEvent };
     setEvents(updated);
-    toast.success("Event updated!");
   };
 
   const handleImageUpload = (file: File, index: number) => {
@@ -89,7 +87,6 @@ export default function CTASection() {
     const updated = [...events];
     updated[index].imageUrl = fakeUrl;
     setEvents(updated);
-    toast.success("Image updated!");
   };
 
   const handleToggleEdit = () => {
@@ -101,9 +98,7 @@ export default function CTASection() {
           if (!res.ok) throw new Error("Failed to fetch events");
           const data: Event[] = await res.json();
           setEvents(data);
-          toast.info("Changes discarded");
         } catch {
-          toast.error("Failed to reload events");
         } finally {
           setLoadingEvents(false);
         }
@@ -143,7 +138,7 @@ export default function CTASection() {
                 }`}
               >
                 {editMode ? (
-                  "Exit Edit Mode"
+                  "Exit edit mode"
                 ) : (
                   <>
                     <PenSquare className="mr-1" size={16} /> Edit
@@ -202,6 +197,7 @@ export default function CTASection() {
                 />
               )}
             </div>
+
             <div className="flex flex-col gap-6 lg:w-[30%]">
               {sortedEvents[4] && (
                 <EventCard

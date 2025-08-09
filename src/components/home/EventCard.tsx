@@ -68,7 +68,7 @@ export default function EventCard({ event, index, editMode, onEditClick, onUploa
                   e.stopPropagation();
                   onEditClick?.(index);
                 }}
-                className="absolute top-2 right-2 p-1.5 rounded-full cursor-pointer bg-white shadow"
+                className="absolute top-0 right-0 p-1.5 rounded-full cursor-pointer bg-transparent"
               >
                 <XIcon className="h-6 w-6 text-red-700" />
               </div>
