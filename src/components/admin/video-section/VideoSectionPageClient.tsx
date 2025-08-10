@@ -14,6 +14,7 @@ import { VideoSectionEditor } from "./VideoSectionEditor";
 import AdminTableSkeleton from "../common/AdminTableSkeleton";
 import NotFoundInline from "~/components/ui/not-found-inline";
 import { VideoItem } from "~/constants/video-section";
+import { useNotifications } from "~/hooks/useNotifications";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -40,6 +41,8 @@ export function VideoSectionPageClient() {
   const [newThumbnailUrl, setNewThumbnailUrl] = React.useState("");
 
   const queryClient = useQueryClient();
+  
+  useNotifications();
 
   const { data: videos = [], isLoading, error, refetch } = useQuery({
     queryKey: ["admin-videos"],

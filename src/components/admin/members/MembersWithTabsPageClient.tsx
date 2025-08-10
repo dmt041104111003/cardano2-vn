@@ -17,9 +17,13 @@ import NotFoundInline from "~/components/ui/not-found-inline";
 import AboutEditor from "~/components/admin/about/AboutEditor";
 import { useToastContext } from "~/components/toast-provider";
 import { Users, Layers } from "lucide-react";
+import { useNotifications } from "~/hooks/useNotifications";
 
 export default function MembersWithTabsPageClient() {
   const { showSuccess, showError } = useToastContext();
+  
+  useNotifications();
+  
   const {
     searchTerm,
     currentPage,
