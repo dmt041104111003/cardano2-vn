@@ -1,16 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from './useUser';
 import { useNotificationWebSocket } from './useNotificationWebSocket';
+import { useNotificationSound } from './useNotificationSound';
 import { Notification } from '~/constants/notifications';
 
 export function useNotifications() {
   const { user } = useUser();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { playNotificationSound } = useNotificationSound();
 
   const handleNewNotification = useCallback((notification: Notification) => {
     setNotifications(prev => [notification, ...prev]);
-  }, []);
+    playNotificationSound();
+  }, [playNotificationSound]);
 
   const handleNotificationDeleted = useCallback((notificationId: string) => {
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
