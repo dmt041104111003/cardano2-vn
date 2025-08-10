@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Loading from "~/components/ui/Loading";
+import { useNotifications } from "~/hooks/useNotifications";
 
 function compact(str?: string | null) {
   if (!str) return "";
@@ -71,6 +72,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const { user, loading, isAdmin } = useUser();
   const router = useRouter();
+
+  useNotifications();
 
   useEffect(() => {
     if (!loading && !isAdmin) {
