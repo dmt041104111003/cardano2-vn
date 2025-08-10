@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import AdminTableSkeleton from "~/components/admin/common/AdminTableSkeleton";
 import NotFoundInline from "~/components/ui/not-found-inline";
 import { Technology } from "~/constants/technologies";
+import { useNotifications } from "~/hooks/useNotifications";
 
 export default function TechnologiesPageClient() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,6 +27,8 @@ export default function TechnologiesPageClient() {
   const [showTechnologyModal, setShowTechnologyModal] = useState<Technology | null>(null);
   const [activeTab, setActiveTab] = useState<'technologies' | 'projects'>('technologies');
   const { showSuccess, showError } = useToastContext();
+  
+  useNotifications();
 
   const {
     data: queryData,
