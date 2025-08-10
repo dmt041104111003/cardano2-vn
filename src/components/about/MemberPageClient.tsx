@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useToastContext } from "~/components/toast-provider";
 import { ContactFormData, FormErrors } from "~/constants/contact";
+import { useNotifications } from "~/hooks/useNotifications";
 // import { Pagination } from "~/components/ui/pagination";
 import Pagination from "../pagination";
 
@@ -193,6 +194,8 @@ export default function MemberPageClient() {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
+  
+  useNotifications();
   const { data: session } = useSession();
   const { showSuccess, showError } = useToastContext();
 

@@ -12,9 +12,13 @@ import VideoSection from "~/components/home/VideoSection";
 
 import ContactFormSection from "~/components/home/ContactFormSection";
 import WaveFooterSection from "~/components/home/WaveFooterSection";
+import { useNotifications } from "~/hooks/useNotifications";
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
+  
+  useNotifications();
+  
   useEffect(() => {
     const timeout = setTimeout(() => setLoading(false), 600);
     return () => clearTimeout(timeout);
