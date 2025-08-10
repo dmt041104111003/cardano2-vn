@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { PenSquare } from "lucide-react";
-import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import EventCard from "~/components/home/EventCard";
+import CTALoadingGrid from "~/components/home/CTALoadingGrid";
 import EditModal from "~/components/home/CTAEditModal";
-import { images } from "~/public/images";
 
 interface Event {
   id: number;
@@ -28,10 +27,7 @@ export default function CTASection() {
     queryFn: async () => {
       if (!session?.user) return null;
 
-      const sessionUser = session.user as {
-        address?: string;
-        email?: string;
-      };
+      const sessionUser = session.user as { address?: string; email?: string };
       const url = new URL("/api/auth/me", window.location.origin);
       if (sessionUser.address) url.searchParams.set("address", sessionUser.address);
       if (sessionUser.email) url.searchParams.set("email", sessionUser.email);
@@ -47,17 +43,29 @@ export default function CTASection() {
     setIsAdmin(userData?.user?.role === "ADMIN");
   }, [userData]);
 
-  const initialEvents: Event[] = [
-    { id: 1, title: "Event 1", location: "Location 1", imageUrl: images.landing01.src, order: 1 },
-    { id: 2, title: "Event 2", location: "Location 2", imageUrl: images.landing01.src, order: 2 },
-    { id: 3, title: "Event 3", location: "Location 3", imageUrl: images.landing01.src, order: 3 },
-    { id: 4, title: "Event 4", location: "Location 4", imageUrl: images.landing01.src, order: 4 },
-    { id: 5, title: "Event 5", location: "Location 5", imageUrl: images.landing04.src, order: 5 },
-    { id: 6, title: "Event 6", location: "Location 6", imageUrl: images.landing02.src, order: 6 },
-  ];
-
-  const [events, setEvents] = useState<Event[]>(initialEvents);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [errorEvents, setErrorEvents] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      setLoadingEvents(true);
+      setErrorEvents(null);
+
+      try {
+        const res = await fetch("/api/admin/event-images");
+        if (!res.ok) throw new Error("Failed to fetch events");
+        const data: Event[] = await res.json();
+        setEvents(data);
+      } catch (err: any) {
+        setErrorEvents(err.message || "Unknown error");
+      } finally {
+        setLoadingEvents(false);
+      }
+    }
+    fetchEvents();
+  }, []);
 
   const handleEditClick = (index: number) => {
     setSelectedEventIndex(index);
@@ -68,7 +76,6 @@ export default function CTASection() {
     const updated = [...events];
     updated[index] = { ...updated[index], ...updatedEvent };
     setEvents(updated);
-    toast.success("Event updated!");
   };
 
   const handleImageUpload = (file: File, index: number) => {
@@ -76,20 +83,27 @@ export default function CTASection() {
     const updated = [...events];
     updated[index].imageUrl = fakeUrl;
     setEvents(updated);
-    toast.success("Image updated!");
-  };
-
-  const handleSave = () => {
-    // No-op since saving is handled in EditModal
   };
 
   const handleToggleEdit = () => {
     if (editMode) {
-      setEvents(initialEvents);
-      toast.info("Changes discarded");
+      (async () => {
+        setLoadingEvents(true);
+        try {
+          const res = await fetch("/api/admin/event-images");
+          if (!res.ok) throw new Error("Failed to fetch events");
+          const data: Event[] = await res.json();
+          setEvents(data);
+        } finally {
+          setLoadingEvents(false);
+        }
+      })();
     }
     setEditMode(!editMode);
   };
+
+  // if (errorEvents) return <p className="text-red-500">Error loading events: {errorEvents}</p>;
+  // if (userData === undefined) return <p>Loading user info...</p>;
 
   const sortedEvents = [...events].sort((a, b) => a.order - b.order);
 
@@ -107,7 +121,6 @@ export default function CTASection() {
               Discover the highlights of our recent events and community activities.
             </p>
           </div>
-
           {isAdmin && (
             <div className="flex items-center gap-3">
               <button
@@ -117,78 +130,94 @@ export default function CTASection() {
                 }`}
               >
                 {editMode ? (
-                  "Exit Edit Mode"
+                  "Exit edit mode"
                 ) : (
                   <>
                     <PenSquare className="mr-1" size={16} /> Edit
                   </>
                 )}
               </button>
-              {/* Removed the Save button */}
             </div>
           )}
         </div>
 
         {/* GRID */}
-        <div className="space-y-6">
-          <div className="flex flex-col lg:flex-row gap-6">
-            <EventCard
-              event={sortedEvents[0]}
-              index={0}
-              editMode={editMode}
-              onEditClick={handleEditClick}
-              onUpload={handleImageUpload}
-              className="lg:w-[70%] h-80"
-            />
-            <EventCard
-              event={sortedEvents[1]}
-              index={1}
-              editMode={editMode}
-              onEditClick={handleEditClick}
-              onUpload={handleImageUpload}
-              className="lg:w-[30%] h-80"
-            />
-          </div>
+        {loadingEvents ? (
+          <CTALoadingGrid />
+        ) : (
+          <div className="space-y-6">
+            <div className="flex flex-col lg:flex-row gap-6">
+              {sortedEvents[0] && (
+                <EventCard
+                  event={sortedEvents[0]}
+                  index={0}
+                  editMode={editMode}
+                  onEditClick={handleEditClick}
+                  onUpload={handleImageUpload}
+                  className="lg:w-[70%] h-70"
+                />
+              )}
+              {sortedEvents[1] && (
+                <EventCard
+                  event={sortedEvents[1]}
+                  index={1}
+                  editMode={editMode}
+                  onEditClick={handleEditClick}
+                  onUpload={handleImageUpload}
+                  className="lg:w-[30%] h-70"
+                />
+              )}
+            </div>
 
-          <div className="flex flex-col lg:flex-row gap-6">
-            <div className="flex flex-col sm:flex-row gap-6 lg:w-[70%]">
-              <EventCard
-                event={sortedEvents[2]}
-                index={2}
-                editMode={editMode}
-                onEditClick={handleEditClick}
-                onUpload={handleImageUpload}
-                className="sm:w-1/2 h-80"
-              />
-              <EventCard
-                event={sortedEvents[3]}
-                index={3}
-                editMode={editMode}
-                onEditClick={handleEditClick}
-                onUpload={handleImageUpload}
-                className="sm:w-1/2 h-80"
-              />
-            </div>
-            <div className="flex flex-col gap-6 lg:w-[30%]">
-              <EventCard
-                event={sortedEvents[4]}
-                index={4}
-                editMode={editMode}
-                onEditClick={handleEditClick}
-                onUpload={handleImageUpload}
-                className="h-37"
-              />
-              <EventCard
-                event={sortedEvents[5]}
-                index={5}
-                editMode={editMode}
-                onEditClick={handleEditClick}
-                onUpload={handleImageUpload}
-                className="h-37"
-              />
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="flex flex-col sm:flex-row gap-6 lg:w-[70%]">
+                {sortedEvents[2] && (
+                  <EventCard
+                    event={sortedEvents[2]}
+                    index={2}
+                    editMode={editMode}
+                    onEditClick={handleEditClick}
+                    onUpload={handleImageUpload}
+                    className="sm:w-1/2 h-70"
+                  />
+                )}
+                {sortedEvents[3] && (
+                  <EventCard
+                    event={sortedEvents[3]}
+                    index={3}
+                    editMode={editMode}
+                    onEditClick={handleEditClick}
+                    onUpload={handleImageUpload}
+                    className="sm:w-1/2 h-70"
+                  />
+                )}
+              </div>
+
+              <div className="flex flex-col gap-6 lg:w-[30%]">
+                {sortedEvents[4] && (
+                  <EventCard
+                    event={sortedEvents[4]}
+                    index={4}
+                    editMode={editMode}
+                    onEditClick={handleEditClick}
+                    onUpload={handleImageUpload}
+                    className="h-32"
+                  />
+                )}
+                {sortedEvents[5] && (
+                  <EventCard
+                    event={sortedEvents[5]}
+                    index={5}
+                    editMode={editMode}
+                    onEditClick={handleEditClick}
+                    onUpload={handleImageUpload}
+                    className="h-32"
+                  />
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* MODAL */}
         {selectedEventIndex !== null && events[selectedEventIndex] && (

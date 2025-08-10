@@ -68,14 +68,14 @@ export default function EventCard({ event, index, editMode, onEditClick, onUploa
                   e.stopPropagation();
                   onEditClick?.(index);
                 }}
-                className="absolute top-2 right-2 p-1.5 rounded-full cursor-pointer bg-white shadow"
+                className="absolute top-0 right-0 p-1.5 rounded-full cursor-pointer bg-transparent"
               >
                 <XIcon className="h-6 w-6 text-red-700" />
               </div>
             )}
             {!editMode && (
               <div className="absolute bottom-4 left-4 text-white z-10">
-                <h4 className="text-lg font-semibold">{event.title}</h4>
+                <h4 className="text-lg font-semibold truncate">{event.title.length > 30 ? event.title.slice(0, 30) + "..." : event.title}</h4>
                 <p className="text-sm opacity-80">{event.location}</p>
               </div>
             )}
