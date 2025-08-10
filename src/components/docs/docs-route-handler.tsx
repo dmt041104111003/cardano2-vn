@@ -1,9 +1,12 @@
 "use client";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useNotifications } from "~/hooks/useNotifications";
 
 export function DocsRouteHandler() {
   const pathname = usePathname();
+  
+  useNotifications();
   
   useEffect(() => {
     if (!pathname.startsWith('/docs')) {
