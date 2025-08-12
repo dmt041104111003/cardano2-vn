@@ -103,14 +103,40 @@ export function useMessageHandler({
         }
         break;
         
-      case 'comment_deleted':
-        if (onCommentDeleted && message.commentId) {
-          onCommentDeleted(message.commentId);
+             case 'comment_deleted':
+         if (onCommentDeleted && message.commentId) {
+           onCommentDeleted(message.commentId);
+         }
+         break;
+         
+       case 'comment_deleted_sent':
+         if (onCommentDeleted && message.commentId) {
+           onCommentDeleted(message.commentId);
+         }
+         break;
+        
+      case 'comment_updated':
+        if (onCommentUpdated && message.comment) {
+          const comment: Comment = {
+            id: message.comment.id,
+            content: message.comment.content,
+            userId: message.comment.userId,
+            createdAt: message.comment.createdAt,
+            user: message.comment.user,
+            postId: message.comment.postId,
+            parentCommentId: message.comment.parentCommentId,
+            author: message.comment.user?.wallet || '',
+            avatar: message.comment.user?.image || '',
+            replies: [],
+            isTemp: message.comment.isTemp || false,
+          };
+          console.log('Calling onCommentUpdated with:', comment);
+          onCommentUpdated(comment);
         }
         break;
         
-      case 'comment_updated':
-        console.log('Received comment_updated message:', message.comment);
+      case 'comment_updated_sent':
+        console.log('Received comment_updated_sent message:', message.comment);
         if (onCommentUpdated && message.comment) {
           const comment: Comment = {
             id: message.comment.id,
