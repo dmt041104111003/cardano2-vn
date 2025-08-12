@@ -18,7 +18,7 @@ const formatTime = (iso: string) => {
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
-export default function CommentItem({ comment, onSubmitReply, user, activeReplyId, setActiveReplyId, depth = 0, hoveredId, setHoveredId }: CommentItemProps) {
+export default function CommentItem({ comment, onSubmitReply, onDeleteComment, onUpdateComment, user, activeReplyId, setActiveReplyId, depth = 0, hoveredId, setHoveredId }: CommentItemProps) {
   const [replyText, setReplyText] = useState("");
   const [visibleReplies, setVisibleReplies] = useState(2);
   const [expandedComment, setExpandedComment] = useState(false);
@@ -52,22 +52,16 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
       showError('Content cannot be empty');
       return;
     }
-    try {
-      const res = await fetch('/api/blog/comment', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: comment.id, content: editText }),
-      });
-      if (res.ok) {
+    
+    if (onUpdateComment) {
+      try {
+        await onUpdateComment(comment.id, editText);
         setEditing(false);
-        showSuccess('Comment updated successfully');
-        comment.content = editText;
-      } else {
-        const data = await res.json();
-        showError('Update failed', data.error || 'Could not update comment.');
+      } catch (error) {
+        showError('Update error', 'An error occurred while updating the comment.');
       }
-    } catch (e) {
-      showError('Update error', 'An error occurred while updating the comment.');
+    } else {
+      showError('Update error', 'WebSocket not available for update.');
     }
   };
 
@@ -175,21 +169,16 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
 
   const handleDelete = async () => {
     setShowDeleteModal(false);
-    try {
-      const res = await fetch('/api/blog/comment', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: comment.id }),
-      });
-      if (res.ok) {
+    
+    if (onDeleteComment) {
+      try {
+        await onDeleteComment(comment.id);
         setDeleted(true);
-        showSuccess('Comment deleted successfully', 'The comment has been removed from the post.');
-      } else {
-        const data = await res.json();
-        showError('Delete failed', data.error || 'Could not delete comment.');
+      } catch (error) {
+        showError('Delete error', 'An error occurred while deleting the comment.');
       }
-    } catch (e) {
-      showError('Delete error', 'An error occurred while deleting the comment.');
+    } else {
+      showError('Delete error', 'WebSocket not available for delete.');
     }
   };
 
@@ -401,6 +390,8 @@ export default function CommentItem({ comment, onSubmitReply, user, activeReplyI
                   key={reply.id}
                   comment={reply}
                   onSubmitReply={onSubmitReply}
+                  onDeleteComment={onDeleteComment}
+                  onUpdateComment={onUpdateComment}
                   user={user}
                   activeReplyId={activeReplyId}
                   setActiveReplyId={setActiveReplyId}

@@ -33,28 +33,28 @@ function addReplyToNestedReplies(replies: Comment[], newReply: Comment): Comment
   });
 }
 
-function updateNestedReplies(replies: Comment[], updatedComment: Comment): Comment[] {
-  return replies.map(reply => {
-    if (reply.isTemp && updatedComment.id !== reply.id) {
-      return reply;
-    }
-    if (reply.id === updatedComment.id) {
-      return updatedComment;
-    }
+// function updateNestedReplies(replies: Comment[], updatedComment: Comment): Comment[] {
+//   return replies.map(reply => {
+//     if (reply.isTemp && updatedComment.id !== reply.id) {
+//       return reply;
+//     }
+//     if (reply.id === updatedComment.id) {
+//       return updatedComment;
+//     }
     
-    if (reply.replies && reply.replies.length > 0) {
-      const updatedNestedReplies = updateNestedReplies(reply.replies, updatedComment);
-      if (updatedNestedReplies !== reply.replies) {
-        return {
-          ...reply,
-          replies: updatedNestedReplies
-        };
-      }
-    }
+//     if (reply.replies && reply.replies.length > 0) {
+//       const updatedNestedReplies = updateNestedReplies(reply.replies, updatedComment);
+//       if (updatedNestedReplies !== reply.replies) {
+//         return {
+//           ...reply,
+//           replies: updatedNestedReplies
+//         };
+//       }
+//     }
     
-    return reply;
-  });
-}
+//     return reply;
+//   });
+// }
 
 export default function CommentSection({ comments: initialComments, onSubmitComment, showAllComments = true, postId }: CommentSectionProps) {
   const { isAuthenticated, user } = useUser();
@@ -72,20 +72,31 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
     deleteComment,
     updateComment,
   } = useWebSocket({
-    postId,
-    userId: user?.id,
+    postId: postId || '',
+    userId: user?.id || '',
     onNewComment: (newComment) => {
-      console.log('Adding new comment:', newComment);
-      setComments(prev => [newComment, ...prev]);
+      setComments(prev => {
+        const exists = prev.some(comment => 
+          comment.id === newComment.id || 
+          (comment.content === newComment.content && 
+           comment.userId === newComment.userId &&
+           Math.abs(new Date(comment.createdAt).getTime() - new Date(newComment.createdAt).getTime()) < 5000)
+        );
+        
+        if (exists) {
+          return prev;
+        }
+        
+        return [newComment, ...prev];
+      });
+      
       if (!newComment.isTemp) {
         toast.success('New comment received!');
       }
     },
     onNewReply: (newReply) => {
-      console.log('Adding new reply:', newReply);
       setComments(prev => prev.map(comment => {
         if (comment.id === newReply.parentCommentId) {
-          console.log(`Adding reply to parent comment ${comment.id}:`, newReply);
           return {
             ...comment,
             replies: [...(comment.replies || []), newReply]
@@ -95,7 +106,6 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
         if (comment.replies && comment.replies.length > 0) {
           const updatedReplies = addReplyToNestedReplies(comment.replies, newReply);
           if (updatedReplies !== comment.replies) {
-            console.log(`Adding nested reply to comment ${comment.id}:`, newReply);
             return {
               ...comment,
               replies: updatedReplies
@@ -114,7 +124,6 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
       toast.info('Comment deleted');
     },
     onCommentUpdated: (updatedComment) => {
-      console.log('Updating comment:', updatedComment);
       setComments(prev => prev.map(comment => {
         if (comment.isTemp && updatedComment.id !== comment.id) {
           return comment;
@@ -172,18 +181,8 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
     if (isConnected) {
       const success = sendComment(comment);
       if (success) {
-        const avatar = user?.image && (user.image.startsWith('http') || user.image.startsWith('data:image')) ? user.image : '';
-        const newComment: Comment = {
-          id: Math.random().toString(36).slice(2),
-          userId: user?.id || '',
-          author: user?.address || 'Unknown',
-          content: comment,
-          createdAt: new Date().toISOString(),
-          time: new Date().toISOString(),
-          avatar,
-          replies: [],
-        };
-        setComments(prev => [newComment, ...prev]);
+        // Không thêm optimistic comment khi WebSocket connected
+        // Chỉ đợi WebSocket broadcast từ server
       } else {
         commentMutation.mutate(comment);
       }
@@ -233,12 +232,57 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
     if (isConnected) {
       const success = sendReply(replyText, parentId);
       if (success) {
-        console.log('Reply sent via WebSocket, waiting for realtime update');
+        // Không thêm optimistic reply khi WebSocket connected
+        // Chỉ đợi WebSocket broadcast từ server
       } else {
         replyMutation.mutate({ parentId, replyText, userInfo });
       }
     } else {
       replyMutation.mutate({ parentId, replyText, userInfo });
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (isConnected) {
+      setComments(prev => prev.filter(comment => comment.id !== commentId));
+      
+      const success = deleteComment(commentId);
+      if (success) {
+      } else {
+        toast.error('Failed to send delete via WebSocket');
+        const commentToRestore = comments.find(c => c.id === commentId);
+        if (commentToRestore) {
+          setComments(prev => [...prev, commentToRestore]);
+        }
+      }
+    } else {
+      toast.error('WebSocket not connected');
+    }
+  };
+
+  const handleUpdateComment = async (commentId: string, content: string) => {
+    if (isConnected) {
+      setComments(prev => prev.map(comment => {
+        if (comment.id === commentId) {
+          return { ...comment, content };
+        }
+        return comment;
+      }));
+      
+      const success = updateComment(commentId, content);
+      if (success) {
+      } else {
+        toast.error('Failed to send update via WebSocket');
+        setComments(prev => prev.map(comment => {
+          if (comment.id === commentId) {
+            const originalComment = comments.find(c => c.id === commentId);
+            return originalComment || comment;
+          }
+          return comment;
+        }));
+      }
+    } else {
+      toast.error('WebSocket not connected');
     }
   };
 
@@ -279,6 +323,8 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
                 key={comment.id}
                 comment={comment}
                 onSubmitReply={handleSubmitReply}
+                onDeleteComment={handleDeleteComment}
+                onUpdateComment={handleUpdateComment}
                 user={{ id: user?.id, address: user?.address, image: user?.image || '' }}
                 activeReplyId={activeReplyId}
                 setActiveReplyId={setActiveReplyId}

@@ -38,7 +38,6 @@ class CommentHandler {
         isTemp: true,
       };
 
-      console.log(`Broadcasting new comment immediately to post room ${message.postId}`);
       this.server.broadcastToPostRoom(message.postId, {
         type: 'new_comment',
         comment: commentData,
@@ -119,7 +118,6 @@ class CommentHandler {
             }
           }
         } catch (error) {
-          console.error('Error creating notifications:', error);
         }
 
         const realCommentData = {
@@ -148,7 +146,6 @@ class CommentHandler {
         
         this.server.processPendingReplies(savedComment.id);
       }).catch((error) => {
-        console.error('Error saving comment to database:', error);
         this.server.sendMessage(this.server.clients.get(clientId).ws, {
           type: 'comment_error',
           message: 'Failed to save comment',
@@ -158,7 +155,6 @@ class CommentHandler {
       });
 
     } catch (error) {
-      console.error('Error handling new comment:', error);
       this.server.sendError(this.server.clients.get(clientId).ws, 'Failed to process comment');
     }
   }
@@ -192,19 +188,54 @@ class CommentHandler {
       });
       
     } catch (error) {
-      console.error('Error creating notification:', error);
     }
   }
 
   async handleDeleteComment(clientId, message) {
     try {
-      if (!message.commentId || !message.postId) {
-        this.server.sendError(this.server.clients.get(clientId).ws, 'Missing comment ID or post ID');
+      if (!message.commentId || !message.postId || !message.userId) {
+        this.server.sendError(this.server.clients.get(clientId).ws, 'Missing comment ID, post ID, or user ID');
+        return;
+      }
+
+      let realCommentId = message.commentId;
+      if (message.commentId.startsWith('temp_')) {
+        const realId = this.server.tempIdMapping.get(message.commentId);
+        if (!realId) {
+          this.server.sendError(this.server.clients.get(clientId).ws, 'Temporary comment not found in mapping');
+          return;
+        }
+        realCommentId = realId;
+      }
+
+      const comment = await prisma.comment.findUnique({
+        where: { id: realCommentId },
+        include: { user: true }
+      });
+
+      if (!comment) {
+        this.server.sendError(this.server.clients.get(clientId).ws, 'Comment not found');
+        return;
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: message.userId },
+        select: { role: true }
+      });
+
+      if (!user) {
+        this.server.sendError(this.server.clients.get(clientId).ws, 'User not found');
+        return;
+      }
+
+      const canDelete = user.role === 'ADMIN' || comment.userId === message.userId;
+      if (!canDelete) {
+        this.server.sendError(this.server.clients.get(clientId).ws, 'Permission denied: only admin or comment owner can delete');
         return;
       }
 
       await prisma.comment.delete({
-        where: { id: message.commentId },
+        where: { id: realCommentId },
       });
 
       this.server.broadcastToPostRoom(message.postId, {
@@ -213,21 +244,62 @@ class CommentHandler {
         timestamp: new Date().toISOString(),
       });
 
+      this.server.sendMessage(this.server.clients.get(clientId).ws, {
+        type: 'comment_deleted_sent',
+        commentId: message.commentId,
+        timestamp: new Date().toISOString(),
+      });
+
     } catch (error) {
-      console.error('Error handling comment deletion:', error);
       this.server.sendError(this.server.clients.get(clientId).ws, 'Failed to delete comment');
     }
   }
 
   async handleUpdateComment(clientId, message) {
     try {
-      if (!message.commentId || !message.content || !message.postId) {
+      if (!message.commentId || !message.content || !message.postId || !message.userId) {
         this.server.sendError(this.server.clients.get(clientId).ws, 'Missing required fields for update');
         return;
       }
 
+      let realCommentId = message.commentId;
+      if (message.commentId.startsWith('temp_')) {
+        const realId = this.server.tempIdMapping.get(message.commentId);
+        if (!realId) {
+          this.server.sendError(this.server.clients.get(clientId).ws, 'Temporary comment not found in mapping');
+          return;
+        }
+        realCommentId = realId;
+      }
+
+      const comment = await prisma.comment.findUnique({
+        where: { id: realCommentId },
+        include: { user: true }
+      });
+
+      if (!comment) {
+        this.server.sendError(this.server.clients.get(clientId).ws, 'Comment not found');
+        return;
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: message.userId },
+        select: { role: true }
+      });
+
+      if (!user) {
+        this.server.sendError(this.server.clients.get(clientId).ws, 'User not found');
+        return;
+      }
+
+      const canEdit = user.role === 'ADMIN' || comment.userId === message.userId;
+      if (!canEdit) {
+        this.server.sendError(this.server.clients.get(clientId).ws, 'Permission denied: only admin or comment owner can edit');
+        return;
+      }
+
       const updatedComment = await prisma.comment.update({
-        where: { id: message.commentId },
+        where: { id: realCommentId },
         data: { content: message.content },
         include: {
           user: true,
@@ -246,13 +318,15 @@ class CommentHandler {
           image: updatedComment.user.image,
           name: updatedComment.user.name,
         } : null,
+        isTemp: false,
       };
 
       this.server.broadcastToPostRoom(message.postId, {
         type: 'comment_updated',
         comment: commentData,
+        tempId: message.commentId.startsWith('temp_') ? message.commentId : null,
         timestamp: new Date().toISOString(),
-      }, clientId);
+      });
 
       this.server.sendMessage(this.server.clients.get(clientId).ws, {
         type: 'comment_updated_sent',
@@ -261,7 +335,6 @@ class CommentHandler {
       });
 
     } catch (error) {
-      console.error('Error handling comment update:', error);
       this.server.sendError(this.server.clients.get(clientId).ws, 'Failed to update comment');
     }
   }

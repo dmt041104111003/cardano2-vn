@@ -37,24 +37,26 @@ export function useActions({ postId, userId, onError, sendMessage }: UseActionsP
     const message = {
       type: 'delete',
       postId,
+      userId,
       commentId,
       timestamp: new Date().toISOString(),
     };
 
     return sendMessage(message);
-  }, [postId, sendMessage]);
+  }, [postId, userId, sendMessage]);
 
   const updateComment = useCallback((commentId: string, content: string) => {
     const message = {
       type: 'update',
       postId,
+      userId,
       commentId,
       content,
       timestamp: new Date().toISOString(),
     };
 
     return sendMessage(message);
-  }, [postId, sendMessage]);
+  }, [postId, userId, sendMessage]);
 
   return {
     sendComment,
