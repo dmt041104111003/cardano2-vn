@@ -28,6 +28,8 @@ export interface CommentInputProps {
 export interface CommentItemProps {
   comment: Comment;
   onSubmitReply: (parentId: string, replyText: string, userInfo: { id?: string; address?: string; image?: string }) => void;
+  onDeleteComment?: (commentId: string) => void;
+  onUpdateComment?: (commentId: string, content: string) => void;
   user: { id?: string; address?: string; image?: string } | null;
   activeReplyId: string | null;
   setActiveReplyId: (id: string | null) => void;

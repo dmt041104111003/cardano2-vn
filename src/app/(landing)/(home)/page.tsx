@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import LandingSection from "~/components/home/LandingSection";
 import TrustSection from "~/components/home/TrustSection";
 import ProtocolSection from "~/components/home/ProtocolSection";
+import CourseSection from "~/components/home/CourseSection";
 // import CardanoSection from "~/components/home/CardanoSection";
 import CTASection from "~/components/home/CTASection";
 import VideoSection from "~/components/home/VideoSection";
@@ -12,9 +13,13 @@ import VideoSection from "~/components/home/VideoSection";
 
 import ContactFormSection from "~/components/home/ContactFormSection";
 import WaveFooterSection from "~/components/home/WaveFooterSection";
+import { useNotifications } from "~/hooks/useNotifications";
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
+  
+  useNotifications();
+  
   useEffect(() => {
     const timeout = setTimeout(() => setLoading(false), 600);
     return () => clearTimeout(timeout);
@@ -41,7 +46,7 @@ export default function HomePage() {
    
       {/* <CardanoSection /> */}
       <CTASection />
-   
+      <CourseSection />
       <ContactFormSection />      
       <WaveFooterSection />
     </main>

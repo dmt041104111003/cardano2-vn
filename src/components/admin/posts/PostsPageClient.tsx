@@ -16,6 +16,7 @@ import { Pagination } from '~/components/ui/pagination';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
 import NotFoundInline from '~/components/ui/not-found-inline';
+import { useNotifications } from "~/hooks/useNotifications";
 
 export function PostsPageClient() {
   const [isClient, setIsClient] = useState(false);
@@ -25,6 +26,9 @@ export function PostsPageClient() {
   const [editingTag, setEditingTag] = useState<any>(null);
   const [showTagEditor, setShowTagEditor] = useState(false);
   const queryClient = useQueryClient();
+  
+  useNotifications();
+  
   useEffect(() => { setIsClient(true); }, []);
   
   const {

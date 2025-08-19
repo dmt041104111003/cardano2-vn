@@ -9,6 +9,7 @@ import Pagination from "~/components/pagination";
 import { useQuery } from '@tanstack/react-query';
 import NotFoundInline from "~/components/ui/not-found-inline";
 import { BlogPost, BlogMedia, BlogTag } from '~/constants/posts';
+import { useNotifications } from "~/hooks/useNotifications";
 
 function getYoutubeIdFromUrl(url: string) {
   const match = url.match(/(?:youtube\.com.*[?&]v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -20,6 +21,8 @@ export default function BlogPageClient() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
+  
+  useNotifications();
 
   const {
     data: postsData,

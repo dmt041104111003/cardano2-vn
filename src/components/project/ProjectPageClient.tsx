@@ -11,6 +11,7 @@ import Title from "~/components/title";
 import TechnologyPageClient from "~/components/technology/TechnologyPageClient";
 import NotFoundInline from "~/components/ui/not-found-inline";
 import Loading from "~/components/ui/Loading";
+import { useNotifications } from "~/hooks/useNotifications";
 
 function ProjectPageContent() {
   const searchParams = useSearchParams();
@@ -23,6 +24,8 @@ function ProjectPageContent() {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const ITEMS_PER_PAGE = 6;
+  
+  useNotifications();
   
   const { data, isLoading } = useQuery({
     queryKey: ['projects'],

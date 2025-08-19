@@ -1,5 +1,17 @@
 # WebSocket Real-time Comment System
+<div align="center">
+  <a href="../README.md" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Back_to-Main_README-blue?style=for-the-badge" alt="Back to README" />
+  </a>
+  <a href="../MDX_DOCS_GUIDE.md" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Go_to-MDX_Guide-green?style=for-the-badge" alt="MDX Guide" />
+  </a>
+  <a href="#architecture-overview" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Current-WebSocket_Guide-orange?style=for-the-badge" alt="WebSocket Guide" />
+  </a>
+</div>
 
+---
 ## Architecture Overview
 
 ```

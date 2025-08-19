@@ -39,7 +39,35 @@
 **Everyone is welcome—let's build the future of Cardano in Vietnam, together!**
 
 ---
+## Documentation Navigation
 
+<div align="center">
+  <a href="#overview" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Overview-Main_README-blue?style=for-the-badge" alt="Overview" />
+  </a>
+  <a href="MDX_DOCS_GUIDE.md" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/MDX_Guide-Documentation-green?style=for-the-badge" alt="MDX Guide" />
+  </a>
+  <a href="scripts/WEBSOCKET_README.md" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/WebSocket-Real--time_System-orange?style=for-the-badge" alt="WebSocket Guide" />
+  </a>
+</div>
+
+---
+
+<div id="overview"></div>
+
+## Table of Contents
+
+- [**Overview**](#about-cardano-vietnam-community) - Project introduction and mission
+- [**Tech Stack**](#tech-stack) - Technologies and frameworks used
+- [**Architecture**](#architecture) - System architecture overview
+- [**Get Involved**](#get-involved) - How to contribute
+- [**Contributors**](#top-contributors-build-web) - Project contributors
+- [**MDX Documentation Guide**](MDX_DOCS_GUIDE.md) - Complete guide for writing MDX documentation
+- [**WebSocket System Guide**](scripts/WEBSOCKET_README.md) - Real-time comment system documentation
+
+---
 ### Top contributors build web:
 <a href="https://github.com/independenceee/cardano2vn/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=independenceee/cardano2vn" alt="contrib.rocks image" />

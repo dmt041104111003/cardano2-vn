@@ -1,16 +1,34 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useUser } from './useUser';
 import { useNotificationWebSocket } from './useNotificationWebSocket';
+import { useNotificationSound } from './useNotificationSound';
 import { Notification } from '~/constants/notifications';
 
 export function useNotifications() {
   const { user } = useUser();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { playNotificationSound } = useNotificationSound();
+  const originalTitleRef = useRef<string>('');
+
+  useEffect(() => {
+    originalTitleRef.current = document.title;
+  }, []);
+
+  const updateBrowserTitle = useCallback((unreadCount: number) => {
+    const originalTitle = originalTitleRef.current || 'Cardano2 VN';
+    
+    if (unreadCount > 0) {
+      document.title = `(${unreadCount}) ${originalTitle}`;
+    } else {
+      document.title = originalTitle;
+    }
+  }, []);
 
   const handleNewNotification = useCallback((notification: Notification) => {
     setNotifications(prev => [notification, ...prev]);
-  }, []);
+    playNotificationSound();
+  }, [playNotificationSound]);
 
   const handleNotificationDeleted = useCallback((notificationId: string) => {
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
@@ -65,6 +83,10 @@ export function useNotifications() {
   }, [user?.id, notifications, markAsRead]);
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  useEffect(() => {
+    updateBrowserTitle(unreadCount);
+  }, [unreadCount, updateBrowserTitle]);
 
   return {
     notifications,

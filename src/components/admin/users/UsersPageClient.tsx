@@ -12,6 +12,7 @@ import { useToastContext } from '~/components/toast-provider';
 import { useQuery } from '@tanstack/react-query';
 import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
 import NotFoundInline from '~/components/ui/not-found-inline';
+import { useNotifications } from "~/hooks/useNotifications";
 
 export function UsersPageClient() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,6 +26,8 @@ export function UsersPageClient() {
   const ITEMS_PER_PAGE = 6;
   const [editUserName, setEditUserName] = useState('');
   const { showSuccess, showError } = useToastContext();
+  
+  useNotifications();
 
   const {
     data: queryData,
