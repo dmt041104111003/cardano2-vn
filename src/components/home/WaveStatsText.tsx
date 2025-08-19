@@ -78,7 +78,7 @@ export default function WaveStatsText() {
     ? `${(Number(paidToDelegates.replace(" ₳", "").replace(/,/g, "")) * 0.05).toLocaleString(undefined, { maximumFractionDigits: 2 })} ₳`
     : "None";
 
-  const communityContributors = poolInfo.owners.length;
+  const communityContributors = poolInfo?.owners.length.toLocaleString() ?? "None";
 
   return (
     <div className="w-full px-2 sm:px-4 py-4 sm:py-8">
