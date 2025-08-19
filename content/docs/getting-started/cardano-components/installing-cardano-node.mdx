@@ -1,0 +1,219 @@
+---
+id: installing-cardano-node
+title: Cài đặt cardano-node và cardano-cli từ mã nguồn
+description: Hướng dẫn này chỉ ra cách xây dựng và cài đặt cardano-node và cardano-cli từ mã nguồn cho tất cả các hệ điều hành chính.
+sidebar:
+  label: Cài đặt cardano-node
+---
+
+# Tổng quan
+
+Hướng dẫn này sẽ chỉ cho bạn cách biên dịch và cài đặt **`cardano-node`** và **`cardano-cli`** trực tiếp từ mã nguồn.  
+Nó sẽ cho phép bạn tương tác với blockchain **Cardano**, bao gồm (nhưng không giới hạn ở):
+
+- Gửi / nhận **giao dịch**
+- Tạo **NFT**
+- Gửi giao dịch kèm **metadata**
+- Minting / burning **native tokens**
+- Tạo **pool** staking
+- Thực thi **smart contracts**
+
+:::note
+Nếu bạn muốn tránh việc tự biên dịch, có thể tải xuống bản build sẵn từ liên kết sau:
+
+Các thành phần có thể chạy trên **Windows, MacOS và Linux**.  
+Tuy nhiên, **Linux** được khuyến nghị cho môi trường production nhờ hiệu suất tốt hơn.
+:::
+
+---
+
+## Điều kiện tiên quyết
+
+Bạn sẽ cần:
+
+- **Windows**, **MacOS**, hoặc **Linux**
+- CPU Intel/AMD **2 cores+ @ 1.6 GHz+** (2 GHz+ khuyên dùng cho pool/relay)
+- RAM tối thiểu **12GB**
+- Ổ đĩa trống tối thiểu **30GB**
+
+:::note
+Nếu kết nối **mainnet**, cần nhiều RAM và dung lượng hơn đáng kể.
+:::
+
+---
+
+## Chọn nền tảng
+
+- [Linux](#linux)
+- [MacOS](#macos)
+- [Windows](#windows)
+
+---
+
+## Linux
+
+### Cài đặt dependencies hệ điều hành
+
+**RedHat / Fedora / CentOS**:
+
+```bash
+sudo yum update -y
+sudo yum install git gcc gcc-c++ tmux gmp-devel make tar xz wget zlib-devel libtool autoconf jq -y
+sudo yum install systemd-devel ncurses-devel ncurses-compat-libs -y
+```
+
+**Debian / Ubuntu**:
+
+```bash
+sudo apt-get update -y && sudo apt-get upgrade -y
+sudo apt-get install automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf -y
+```
+
+---
+
+### Cài đặt GHC và Cabal
+
+Cách nhanh nhất: [ghcup](https://www.haskell.org/ghcup).
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+```
+
+- PATH → chọn `P`
+- Cài HLS? → `N`
+- Cài stack? → `N`
+
+Sau khi xong:
+
+```bash
+ghcup install ghc 8.10.7
+ghcup set ghc 8.10.7
+
+ghcup install cabal 3.6.2.0
+ghcup set cabal 3.6.2.0
+```
+
+Kiểm tra:
+
+```bash
+ghc --version
+cabal --version
+```
+
+---
+
+### Tải & build libsodium
+
+```bash
+mkdir -p $HOME/cardano-src
+cd $HOME/cardano-src
+
+git clone https://github.com/input-output-hk/libsodium
+cd libsodium
+git checkout 66f017f1
+./autogen.sh
+./configure
+make
+sudo make install
+```
+
+Thêm vào `~/.bashrc` hoặc `~/.zshrc`:
+
+```bash
+export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"
+```
+
+---
+
+### Tải & build cardano-node
+
+```bash
+cd $HOME/cardano-src
+git clone https://github.com/input-output-hk/cardano-node.git
+cd cardano-node
+git fetch --all --recurse-submodules --tags
+git checkout $(curl -s https://api.github.com/repos/input-output-hk/cardano-node/releases/latest | jq -r .tag_name)
+
+cabal configure --with-compiler=ghc-8.10.7
+cabal build cardano-node cardano-cli
+```
+
+Copy binary:
+
+```bash
+mkdir -p $HOME/.local/bin
+cp -p "$(./scripts/bin-path.sh cardano-node)" $HOME/.local/bin/
+cp -p "$(./scripts/bin-path.sh cardano-cli)" $HOME/.local/bin/
+```
+
+Cập nhật PATH:
+
+```bash
+export PATH="$HOME/.local/bin/:$PATH"
+```
+
+Kiểm tra:
+
+```bash
+cardano-cli --version
+cardano-node --version
+```
+
+✅ Hoàn tất cài đặt trên Linux!
+
+---
+
+## MacOS
+
+### Cài dependencies
+
+```bash
+xcode-select --install
+brew install jq libtool autoconf automake pkg-config
+brew install llvm   # cho chip M1
+```
+
+### Cài GHC và Cabal qua ghcup
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+ghcup install ghc 8.10.7
+ghcup set ghc 8.10.7
+ghcup install cabal 3.6.2.0
+ghcup set cabal 3.6.2.0
+```
+
+Kiểm tra:
+
+```bash
+ghc --version
+cabal --version
+```
+
+---
+
+### Build libsodium
+
+```bash
+mkdir -p $HOME/cardano-src
+cd $HOME/cardano-src
+
+git clone https://github.com/input-output-hk/libsodium
+cd libsodium
+git checkout 66f017f1
+./autogen.sh
+./configure
+make
+sudo make install
+```
+
+---
+
+## Windows
+
+:::important
+Hướng dẫn cài đặt Windows đang được cập nhật.  
+Trong thời gian này, nên dùng [WSL (Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/)  
+và làm theo hướng dẫn [Linux](#linux).
+:::
