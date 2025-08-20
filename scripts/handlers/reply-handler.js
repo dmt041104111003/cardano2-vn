@@ -227,21 +227,44 @@ class ReplyHandler {
     }
   }
 
-  processPendingReplies(realParentId) {
-    const pendingReplies = this.server.pendingReplies.get(realParentId);
-    if (pendingReplies && pendingReplies.length > 0) {
+  processPendingReplies(parentKey) {
+    let tempKey = null;
+    let realParentId = parentKey;
+
+    if (typeof parentKey === 'string' && parentKey.startsWith('temp_')) {
+      tempKey = parentKey;
+      const mapped = this.server.tempIdMapping.get(parentKey);
+      if (mapped) realParentId = mapped;
+    } else {
+      for (const [tempId, realId] of this.server.tempIdMapping.entries()) {
+        if (realId === parentKey) {
+          tempKey = tempId;
+          break;
+        }
+      }
+    }
+
+    const pendingByTemp = tempKey ? this.server.pendingReplies.get(tempKey) : undefined;
+    const pendingByReal = this.server.pendingReplies.get(realParentId);
+
+    const pendingReplies = [
+      ...(Array.isArray(pendingByTemp) ? pendingByTemp : []),
+      ...(Array.isArray(pendingByReal) ? pendingByReal : []),
+    ];
+
+    if (pendingReplies.length > 0) {
       console.log(`Processing ${pendingReplies.length} pending replies for parent ${realParentId}`);
-      
+
       pendingReplies.forEach(async (pendingReply) => {
         try {
           pendingReply.message.parentCommentId = realParentId;
-          
           await this.handleNewReply(pendingReply.clientId, pendingReply.message);
         } catch (error) {
           console.error('Error processing pending reply:', error);
         }
       });
-      
+
+      if (tempKey) this.server.pendingReplies.delete(tempKey);
       this.server.pendingReplies.delete(realParentId);
     }
   }
