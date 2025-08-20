@@ -87,7 +87,8 @@ export default function WaveStatsText() {
         <div className="flex flex-wrap gap-x-6 sm:gap-x-12 gap-y-3 sm:gap-y-4">
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-white">
-              {paidToDelegates ?? "None"} <span className="align-super text-sm sm:text-lg">₳</span>
+              {paidToDelegates ?? "None"}
+              {/* <span className="align-super text-sm sm:text-lg">₳</span> */}
             </div>
             <div className="text-sm sm:text-base text-white/80">Paid to Delegates</div>
           </div>
@@ -97,7 +98,8 @@ export default function WaveStatsText() {
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-white">
-              {causesFund} <span className="align-super text-sm sm:text-lg">₳</span>
+              {causesFund}
+               {/* <span className="align-super text-sm sm:text-lg">₳</span> */}
             </div>
             <div className="text-sm sm:text-base text-white/80">Causes Fund</div>
           </div>
@@ -107,7 +109,8 @@ export default function WaveStatsText() {
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-white">
-              {foundersPledge} <span className="align-super text-sm sm:text-lg">₳</span>
+              {foundersPledge} 
+              {/* <span className="align-super text-sm sm:text-lg">₳</span> */}
             </div>
             <div className="text-sm sm:text-base text-white/80">Founders Pledge</div>
           </div>

@@ -63,6 +63,7 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
   const [loading, setLoading] = useState(false);
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [targetCommentId, setTargetCommentId] = useState<string | null>(null);
 
   const {
     isConnected,
@@ -297,6 +298,21 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
   const visibleCommentsList = comments.slice(0, visibleComments);
   const hasMoreComments = visibleComments < comments.length;
   const totalParentComments = comments.length;
+
+  // If navigated with a #comment-<id> hash, auto expand parent list so target comment becomes visible
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash;
+    if (!hash || !hash.startsWith('#comment-')) return;
+    const id = hash.replace('#comment-', '');
+    setTargetCommentId(id);
+
+    // Try to reveal more parent comments to ensure visibility
+    if (comments.length > 0) {
+      setVisibleComments(comments.length);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comments.length]);
 
   return (
     <div className="mt-8 space-y-4">

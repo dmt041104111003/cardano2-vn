@@ -37,6 +37,20 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
   const [editText, setEditText] = useState(comment.content);
   const canEdit = currentUser && currentUser.id === comment.userId;
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      if (hash) {
+        if (comment.replies && comment.replies.length > 0) {
+          setVisibleReplies(comment.replies.length);
+        }
+        if (hash === `#comment-${comment.id}`) {
+          setExpandedComment(true);
+        }
+      }
+    }
+  }, [comment.id]);
+
   const handleEdit = () => {
     setEditText(comment.content);
     setEditing(true);
