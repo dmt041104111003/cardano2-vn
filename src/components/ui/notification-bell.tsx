@@ -47,8 +47,9 @@ export default function NotificationBell() {
         router.push(`/blog/${notification.data.postId}#comment-${notification.data.commentId}`);
       }
 
-      if (notification.data?.commentId) {
-        scrollToCommentWithRetry(notification.data.commentId);
+      const commentId = notification.data?.commentId;
+      if (commentId) {
+        setTimeout(() => scrollToCommentWithRetry(commentId), 600);
       }
     } catch (error) {
       console.error('Error handling notification click:', error);
