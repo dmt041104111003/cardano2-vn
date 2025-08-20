@@ -5,8 +5,8 @@ import { baseOptions } from "~/app/layout.config";
 import { source } from "~/app/lib/source";
 import { DocsThemeHandler } from "~/components/docs/docs-theme-handler";
 import { DocsRouteHandler } from "~/components/docs/docs-route-handler";
-import 'fumadocs-ui/css/ocean.css';
-import 'fumadocs-ui/css/preset.css';
+import "fumadocs-ui/css/ocean.css";
+import "fumadocs-ui/css/preset.css";
 
 const docsOptions: DocsLayoutProps = {
   ...baseOptions,
@@ -25,10 +25,10 @@ export default function Layout({ children }: { children: ReactNode }) {
             alt="Cardano2VN Logo"
             className="w-[1200px] h-[1200px] object-contain"
             draggable={false}
-            style={{ objectPosition: 'left center' }}
+            style={{ objectPosition: "left center" }}
           />
         </div>
-        
+
         <DocsThemeHandler />
         <RootProvider>
           <DocsLayout {...docsOptions}>{children}</DocsLayout>

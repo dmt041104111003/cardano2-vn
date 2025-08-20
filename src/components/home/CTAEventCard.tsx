@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { XIcon, UploadCloud } from "lucide-react";
 import { useDropzone } from "react-dropzone";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface Event {
   id: number;
@@ -24,6 +24,20 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, index, editMode, onEditClick, onUpload, className }: EventCardProps) {
+  const [maxChars, setMaxChars] = useState(30);
+
+  useEffect(() => {
+    const updateMaxChars = () => {
+      const width = window.innerWidth;
+      if (width < 640) setMaxChars(25);
+      else if (width < 1024) setMaxChars(30);
+      else setMaxChars(30);
+    };
+
+    updateMaxChars();
+    window.addEventListener("resize", updateMaxChars);
+    return () => window.removeEventListener("resize", updateMaxChars);
+  }, []);
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles[0] && onUpload) {
@@ -74,8 +88,11 @@ export default function EventCard({ event, index, editMode, onEditClick, onUploa
               </div>
             )}
             {!editMode && (
-              <div className="absolute bottom-4 left-4 text-white z-10">
-                <h4 className="text-lg font-semibold truncate">{event.title.length > 30 ? event.title.slice(0, 30) + "..." : event.title}</h4>
+              <div className="absolute bottom-4 left-4  text-white z-10">
+                <h4 className="text-lg font-semibold truncate text-white drop-shadow-md">
+                  {event.title.length > maxChars ? event.title.slice(0, maxChars) + "..." : event.title}
+                </h4>
+
                 <p className="text-sm opacity-80">{event.location}</p>
               </div>
             )}
