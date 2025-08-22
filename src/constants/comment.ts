@@ -53,6 +53,7 @@ export interface CommentSectionProps {
   onSubmitComment: (comment: string) => void;
   showAllComments?: boolean;
   postId?: string; 
+  targetCommentId?: string | null;
 }
 
 export interface CommentSkeletonListProps {

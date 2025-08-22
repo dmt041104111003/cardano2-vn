@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { PenSquare } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
-import EventCard from "~/components/home/EventCard";
+import EventCard from "~/components/home/CTAEventCard";
 import CTALoadingGrid from "~/components/home/CTALoadingGrid";
 import EditModal from "~/components/home/CTAEditModal";
 
