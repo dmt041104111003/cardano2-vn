@@ -28,7 +28,7 @@ export default function CTASection() {
       if (!session?.user) return null;
 
       const sessionUser = session.user as { address?: string; email?: string };
-      const url = new URL("/api/auth/me", window.location.origin);
+      const url = new URL("/api/user", window.location.origin);
       if (sessionUser.address) url.searchParams.set("address", sessionUser.address);
       if (sessionUser.email) url.searchParams.set("email", sessionUser.email);
 
@@ -40,7 +40,11 @@ export default function CTASection() {
   });
 
   useEffect(() => {
-    setIsAdmin(userData?.user?.role === "ADMIN");
+    console.log('CTASection - userData:', userData);
+    console.log('CTASection - user role:', userData?.role?.name);
+    const adminStatus = userData?.role?.name === "ADMIN";
+    console.log('CTASection - isAdmin:', adminStatus);
+    setIsAdmin(adminStatus);
   }, [userData]);
 
   const [events, setEvents] = useState<Event[]>([]);
@@ -54,10 +58,12 @@ export default function CTASection() {
       setErrorEvents(null);
 
       try {
-        const res = await fetch("/api/admin/event-images");
+        const res = await fetch("/api/admin/event-images", {
+          credentials: 'include'
+        });
         if (!res.ok) throw new Error("Failed to fetch events");
-        const data: Event[] = await res.json();
-        setEvents(data);
+        const data = await res.json();
+        setEvents(data?.images || []);
       } catch (err: any) {
         setErrorEvents(err.message || "Unknown error");
       } finally {
@@ -92,8 +98,8 @@ export default function CTASection() {
         try {
           const res = await fetch("/api/admin/event-images");
           if (!res.ok) throw new Error("Failed to fetch events");
-          const data: Event[] = await res.json();
-          setEvents(data);
+          const data = await res.json();
+          setEvents(data?.images || []);
         } finally {
           setLoadingEvents(false);
         }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { UserHook } from "~/constants/users";
 
 const userCache = new Map<string, { data: UserHook; timestamp: number }>();
@@ -11,23 +11,25 @@ export function useUser() {
   const { data: session, status } = useSession();
   const [user, setUser] = useState<UserHook | null>(null);
   const [loading, setLoading] = useState(true);
-  const lastUpdateRef = useRef<number>(0);
-  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       if (status === "loading") return;
       
-      const address = session?.user && (session.user as { address?: string }).address;
-      const email = session?.user && (session.user as { email?: string }).email;
-      
-      if (!address && !email) {
+      if (!session?.user) {
         setUser(null);
         setLoading(false);
         return;
       }
 
-      const userIdentifier = address || email;
+      const sessionUser = session.user as { 
+        address?: string; 
+        email?: string; 
+        name?: string; 
+        image?: string; 
+      };
+      
+      const userIdentifier = sessionUser.address || sessionUser.email;
       const now = Date.now();
 
       if (userIdentifier) {
@@ -35,86 +37,65 @@ export function useUser() {
         if (cached && (now - cached.timestamp) < CACHE_DURATION) {
           setUser(cached.data);
           setLoading(false);
-          
-          if (now - lastUpdateRef.current > 300000) { 
-            lastUpdateRef.current = now;
-            
-            if (updateTimeoutRef.current) {
-              clearTimeout(updateTimeoutRef.current);
-            }
-            
-            updateTimeoutRef.current = setTimeout(async () => {
-              try {
-                await fetch("/api/auth/session/update", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                });
-              } catch (sessionError) {
-                console.error("Error updating session:", sessionError);
-              }
-            }, 1000);
-          }
           return;
         }
       }
 
       try {
-        let url = '';
-        if (address) {
-          url = `/api/auth/me?address=${encodeURIComponent(address)}`;
-        } else if (email) {
-          url = `/api/auth/me?email=${encodeURIComponent(email)}`;
+        // Fetch full user data with role info from our own endpoint
+        const params = new URLSearchParams();
+        if (sessionUser.address) {
+          params.set('address', sessionUser.address);
+        } else if (sessionUser.email) {
+          params.set('email', sessionUser.email);
         }
         
-        const response = await fetch(url);
+        const response = await fetch(`/api/user?${params}`);
         if (response.ok) {
           const data = await response.json();
-          setUser(data.user);
+          const userData: UserHook = {
+            id: data.id,
+            name: data.name || sessionUser.name || null,
+            email: data.email || sessionUser.email || null,
+            wallet: data.wallet || sessionUser.address || null,
+            image: data.image || sessionUser.image || null,
+            isAdmin: data.role?.name === "ADMIN"
+          };
+          
+          setUser(userData);
           
           if (userIdentifier) {
-            userCache.set(userIdentifier, { data: data.user, timestamp: now });
-          }
-          
-          if (now - lastUpdateRef.current > 300000) { 
-            lastUpdateRef.current = now;
-            
-            if (updateTimeoutRef.current) {
-              clearTimeout(updateTimeoutRef.current);
-            }
-            
-            updateTimeoutRef.current = setTimeout(async () => {
-              try {
-                await fetch("/api/auth/session/update", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                });
-              } catch (sessionError) {
-                console.error("Error updating session:", sessionError);
-              }
-            }, 1000);
+            userCache.set(userIdentifier, { data: userData, timestamp: now });
           }
         } else {
-          setUser(null);
+          // If API fails, create user object from session data
+          const userData: UserHook = {
+            id: userIdentifier || '',
+            name: sessionUser.name || null,
+            email: sessionUser.email || null, 
+            wallet: sessionUser.address || null,
+            image: sessionUser.image || null,
+            isAdmin: false
+          };
+          setUser(userData);
         }
       } catch (error) {
-        console.error("Error fetching user:", error);
-        setUser(null);
+        // Fallback to session data if fetch fails
+        const userData: UserHook = {
+          id: userIdentifier || '',
+          name: sessionUser.name || null,
+          email: sessionUser.email || null,
+          wallet: sessionUser.address || null, 
+          image: sessionUser.image || null,
+          isAdmin: false
+        };
+        setUser(userData);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-    
-    return () => {
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current);
-      }
-    };
   }, [session, status]);
 
   return {

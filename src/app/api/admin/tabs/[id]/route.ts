@@ -1,53 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
+import { withAdmin } from "~/lib/api-wrapper";
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const { name, description, color, order } = await request.json();
-
-    const tab = await prisma.tab.update({
-      where: { id: params.id },
-      data: {
-        name,
-        description,
-        color,
-        order
-      }
-    });
-
-    return NextResponse.json({ tab });
-  } catch (error) {
-    console.error('Error updating tab:', error);
-    return NextResponse.json(
-      { error: 'Failed to update tab' },
-      { status: 500 }
-    );
+export const PUT = withAdmin(async (req) => {
+  const id = req.nextUrl.pathname.split('/').pop();
+  if (!id) {
+    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
   }
-}
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    await prisma.member.updateMany({
-      where: { tabId: params.id },
-      data: { tabId: null }
-    });
+  const { name, order } = await req.json();
 
-    await prisma.tab.delete({
-      where: { id: params.id }
-    });
+  const tab = await prisma.tab.update({
+    where: { id },
+    data: {
+      name,
+      order
+    }
+  });
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting tab:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete tab' },
-      { status: 500 }
-    );
+  return NextResponse.json({ tab });
+});
+
+export const DELETE = withAdmin(async (req) => {
+  const id = req.nextUrl.pathname.split('/').pop();
+  if (!id) {
+    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
   }
-} 
+
+  await prisma.member.updateMany({
+    where: { tabId: id },
+    data: { tabId: null }
+  });
+
+  await prisma.tab.delete({
+    where: { id }
+  });
+
+  return NextResponse.json({ success: true });
+});

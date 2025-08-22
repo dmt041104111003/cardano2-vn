@@ -15,7 +15,7 @@ export function MembersTable({ members, onView, onEdit, onDelete }: MembersTable
   };
 
   const handleConfirmDelete = () => {
-    if (selectedMemberToDelete) {
+    if (selectedMemberToDelete && selectedMemberToDelete.id) {
       onDelete(selectedMemberToDelete.id);
       setIsDeleteModalOpen(false);
       setSelectedMemberToDelete(null);

@@ -290,7 +290,7 @@ export default function MemberPageClient() {
           return;
         }
 
-        const url = new URL("/api/auth/me", window.location.origin);
+        const url = new URL("/api/user", window.location.origin);
         if (address) url.searchParams.set("address", address);
         if (email) url.searchParams.set("email", email);
 

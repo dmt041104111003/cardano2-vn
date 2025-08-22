@@ -48,20 +48,16 @@ export const authOptions = {
         (token as TokenWithAddress).address = user.address;
       }
       if (user && account?.provider === "google") {
-        console.log("[NextAuth] Google user data in JWT:", user);
         token.email = user.email;
         token.provider = "google";
         token.image = user.image;
         token.name = user.name;
-        console.log("[NextAuth] Token after Google update:", token);
       }
       if (user && account?.provider === "github") {
-        console.log("[NextAuth] GitHub user data in JWT:", user);
         token.email = user.email;
         token.provider = "github";
         token.image = user.image;
         token.name = user.name;
-        console.log("[NextAuth] Token after GitHub update:", token);
       }
       return token;
     },
@@ -74,18 +70,14 @@ export const authOptions = {
           
           // Get user data from database for Google/GitHub users
           try {
-            console.log("[NextAuth] Looking for user with email:", token.email);
             const dbUser = await prisma.user.findUnique({
               where: { email: token.email as string },
               select: { image: true, name: true }
             });
-            console.log("[NextAuth] Found DB user:", dbUser);
             
             if (dbUser && dbUser.image) {
               session.user.image = dbUser.image;
-              console.log("[NextAuth] Updated session with DB image:", dbUser.image);
             } else {
-              console.log("[NextAuth] No image found in DB, using token image:", token.image);
               session.user.image = token.image as string;
             }
             
@@ -95,7 +87,6 @@ export const authOptions = {
               session.user.name = token.name as string;
             }
           } catch (error) {
-            console.error("[NextAuth] Error fetching user data for session:", error);
             session.user.image = token.image as string;
             session.user.name = token.name as string;
           }
@@ -104,9 +95,6 @@ export const authOptions = {
       if (!session.expires) {
         session.expires = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(); // 30 ngày
       }
-      console.log("[NextAuth] Final session user:", session.user);
-      console.log("[NextAuth] Session user image:", session.user?.image);
-      console.log("[NextAuth] Session user name:", session.user?.name);
       return { ...session, expires: session.expires! };
     },
     async signIn(params: unknown) {
@@ -125,10 +113,8 @@ export const authOptions = {
             } catch (connectError) {
               retries--;
               if (retries === 0) {
-                console.error("[NextAuth] Failed to connect to database after 3 retries:", connectError);
                 return true;
               }
-              console.warn(`[NextAuth] Database connection failed, retrying... (${retries} attempts left)`);
               await new Promise(resolve => setTimeout(resolve, 1000));
             }
           }
@@ -162,9 +148,7 @@ export const authOptions = {
                   folder: 'google-avatars'
                 });
                 avatar = uploadRes.url;
-                console.log("[NextAuth] Uploaded Google image to Cloudinary:", avatar);
               } catch (uploadError) {
-                console.error("[NextAuth] Failed to upload Google image to Cloudinary:", uploadError);
                 avatar = user.image || null;
               }
             }
@@ -180,9 +164,7 @@ export const authOptions = {
               select: { id: true, name: true, image: true, roleId: true, email: true }
             });
             
-            console.log("[NextAuth] New Google user created:", dbUser.email);
           } else {
-            console.log("[NextAuth] Existing Google user signed in:", dbUser.email);
             
             if (dbUser.image !== user.image || dbUser.name !== user.name) {
               let avatar: string | null = user.image || dbUser.image;
@@ -193,9 +175,7 @@ export const authOptions = {
                     folder: 'google-avatars'
                   });
                   avatar = uploadRes.url;
-                  console.log("[NextAuth] Updated Google image in Cloudinary:", avatar);
                 } catch (uploadError) {
-                  console.error("[NextAuth] Failed to update Google image in Cloudinary:", uploadError);
                   avatar = user.image;
                 }
               }
@@ -209,32 +189,11 @@ export const authOptions = {
               });
             }
           }
-
-          const existingSession = await prisma.session.findFirst({
-            where: { userId: dbUser.id }
-          });
-
-          if (existingSession) {
-            await prisma.session.update({
-              where: { id: existingSession.id },
-              data: { lastAccess: new Date() }
-            });
-          } else {
-            await prisma.session.create({
-              data: {
-                userId: dbUser.id,
-                accessTime: new Date(),
-                lastAccess: new Date(),
-              }
-            });
-          }
           
           return true;
         } catch (e) {
-          console.error("[NextAuth] Database error during Google signIn:", e);
           
           if (e instanceof Error && e.message.includes("Can't reach database server")) {
-            console.warn("[NextAuth] Database server unreachable, allowing authentication without DB operations");
             return true;
           }
           
@@ -252,10 +211,8 @@ export const authOptions = {
             } catch (connectError) {
               retries--;
               if (retries === 0) {
-                console.error("[NextAuth] Failed to connect to database after 3 retries:", connectError);
                 return true;
               }
-              console.warn(`[NextAuth] Database connection failed, retrying... (${retries} attempts left)`);
               await new Promise(resolve => setTimeout(resolve, 1000));
             }
           }
@@ -289,9 +246,7 @@ export const authOptions = {
                   folder: 'github-avatars'
                 });
                 avatar = uploadRes.url;
-                console.log("[NextAuth] Uploaded GitHub image to Cloudinary:", avatar);
               } catch (uploadError) {
-                console.error("[NextAuth] Failed to upload GitHub image to Cloudinary:", uploadError);
                 avatar = user.image || null;
               }
             }
@@ -306,9 +261,7 @@ export const authOptions = {
               },
               select: { id: true, name: true, image: true, roleId: true, email: true }
             });
-            console.log("[NextAuth] New GitHub user created:", dbUser.email);
           } else {
-            console.log("[NextAuth] Existing GitHub user signed in:", dbUser.email);
             if (dbUser.image !== user.image || dbUser.name !== user.name) {
               let avatar: string | null = user.image || dbUser.image;
               if (user.image && user.image.startsWith('https://avatars.githubusercontent.com') && user.image !== dbUser.image) {
@@ -318,9 +271,7 @@ export const authOptions = {
                     folder: 'github-avatars'
                   });
                   avatar = uploadRes.url;
-                  console.log("[NextAuth] Updated GitHub image in Cloudinary:", avatar);
                 } catch (uploadError) {
-                  console.error("[NextAuth] Failed to update GitHub image in Cloudinary:", uploadError);
                   avatar = user.image;
                 }
               }
@@ -334,32 +285,11 @@ export const authOptions = {
               });
             }
           }
-
-          const existingSession = await prisma.session.findFirst({
-            where: { userId: dbUser.id }
-          });
-
-          if (existingSession) {
-            await prisma.session.update({
-              where: { id: existingSession.id },
-              data: { lastAccess: new Date() }
-            });
-          } else {
-            await prisma.session.create({
-              data: {
-                userId: dbUser.id,
-                accessTime: new Date(),
-                lastAccess: new Date(),
-              }
-            });
-          }
           
           return true;
         } catch (e) {
-          console.error("[NextAuth] Database error during GitHub signIn:", e);
           
           if (e instanceof Error && e.message.includes("Can't reach database server")) {
-            console.warn("[NextAuth] Database server unreachable, allowing authentication without DB operations");
             return true;
           }
           
@@ -377,10 +307,8 @@ export const authOptions = {
             } catch (connectError) {
               retries--;
               if (retries === 0) {
-                console.error("[NextAuth] Failed to connect to database after 3 retries:", connectError);
                 return true;
               }
-              console.warn(`[NextAuth] Database connection failed, retrying... (${retries} attempts left)`);
               await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
             }
           }
@@ -426,7 +354,6 @@ export const authOptions = {
               select: { id: true, name: true, image: true, roleId: true, wallet: true }
             });
             
-            console.log("[NextAuth] New Cardano Wallet user created:", dbUser.wallet);
           } else {
             if (dbUser && !dbUser.image && dbUser.wallet) {
               const dataImage = generateWalletAvatar(dbUser.wallet);
@@ -442,34 +369,12 @@ export const authOptions = {
                 data: { image: uploadRes.url },
               });
             }
-            console.log("[NextAuth] Existing Cardano Wallet user signed in:", dbUser.wallet);
-          }
-
-          const existingSession = await prisma.session.findFirst({
-            where: { userId: dbUser.id }
-          });
-
-          if (existingSession) {
-            await prisma.session.update({
-              where: { id: existingSession.id },
-              data: { lastAccess: new Date() }
-            });
-          } else {
-            await prisma.session.create({
-              data: {
-                userId: dbUser.id,
-                accessTime: new Date(),
-                lastAccess: new Date(),
-              }
-            });
           }
           
           return true;
         } catch (e) {
-          console.error("[NextAuth] Database error during signIn:", e);
           
           if (e instanceof Error && e.message.includes("Can't reach database server")) {
-            console.warn("[NextAuth] Database server unreachable, allowing authentication without DB operations");
             return true; 
           }
           
@@ -478,48 +383,12 @@ export const authOptions = {
       }
       return true;
     },
-    async signOut({ token }: { token: Record<string, unknown> }) {
-      try {
-        let retries = 3;
-        while (retries > 0) {
-          try {
-            await prisma.$connect();
-            break;
-          } catch (connectError) {
-            retries--;
-            if (retries === 0) {
-              console.error("[NextAuth] Failed to connect to database during signOut after 3 retries:", connectError);
-              return;
-            }
-            console.warn(`[NextAuth] Database connection failed during signOut, retrying... (${retries} attempts left)`);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
-          }
-        }
-        
-        const address = (token as TokenWithAddress).address;
-        if (address) {
-          const user = await prisma.user.findUnique({
-            where: { wallet: address as string }
-          });
-          
-          if (user) {
-            await prisma.session.deleteMany({
-              where: { userId: user.id }
-            });
-            console.log("[NextAuth] Sessions deleted from database for user:", user.wallet);
-          }
-        }
-      } catch (error) {
-        console.error("[NextAuth] Error in signOut callback:", error);
-        
-        if (error instanceof Error && error.message.includes("Can't reach database server")) {
-          console.warn("[NextAuth] Database server unreachable during signOut, allowing signOut without DB operations");
-        }
-      }
+    async signOut() {
+      return true;
     },
   },
 }
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };
