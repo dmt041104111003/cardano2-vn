@@ -21,7 +21,6 @@ model User {
   media         Media[]        @relation("UserMedia")
   posts         Post[]         @relation("UserPosts")
   reactions     Reaction[]
-  sessions      Session[]
   notifications Notification[] @relation("UserNotifications")
   role          Role           @relation(fields: [roleId], references: [id])
 
@@ -154,13 +153,7 @@ model PostTag {
   @@id([postId, tagId])
 }
 
-model Session {
-  id         String    @id @default(cuid())
-  userId     String
-  accessTime DateTime?
-  lastAccess DateTime?
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+
 
 model Project {
   id          String        @id @default(uuid())

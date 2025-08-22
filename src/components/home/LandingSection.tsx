@@ -24,7 +24,7 @@ export default function LandingSection() {
         return null;
       }
       const sessionUser = session.user as { address?: string; email?: string };
-      const url = new URL('/api/auth/me', window.location.origin);
+      const url = new URL('/api/user', window.location.origin);
       if (sessionUser.address) url.searchParams.set('address', sessionUser.address);
       if (sessionUser.email) url.searchParams.set('email', sessionUser.email);
 
@@ -40,16 +40,24 @@ export default function LandingSection() {
   const { data: landingContents = [] } = useQuery({
     queryKey: ['landing-content'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/landing-content');
+      const response = await fetch('/api/admin/landing-content', {
+        credentials: 'include'
+      });
       if (!response.ok) {
         return [];
       }
-      return response.json();
-    }
+      const data = await response.json();
+      return data?.content || [];
+    },
+    enabled: !!session?.user
   });
 
   useEffect(() => {
-    setIsAdmin(userData?.user?.role === 'ADMIN');
+    console.log('LandingSection - userData:', userData);
+    console.log('LandingSection - user role:', userData?.role?.name);
+    const adminStatus = userData?.role?.name === 'ADMIN';
+    console.log('LandingSection - isAdmin:', adminStatus);
+    setIsAdmin(adminStatus);
   }, [userData]);
 
   const handleTabChange = (tab: "content" | "manage") => {

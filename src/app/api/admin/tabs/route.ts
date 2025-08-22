@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
+import { withAdmin } from "~/lib/api-wrapper";
 
-export async function GET() {
+export const GET = withAdmin(async () => {
   try {
     const tabs = await prisma.tab.findMany({
       where: { isActive: true },
@@ -22,26 +23,18 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
-  try {
-    const { name, order } = await request.json();
+export const POST = withAdmin(async (req) => {
+  const { name, order } = await req.json();
 
-    const tab = await prisma.tab.create({
-      data: {
-        name,
-        order: order || 0,
-        isActive: true
-      }
-    });
+  const tab = await prisma.tab.create({
+    data: {
+      name,
+      order: order || 0,
+      isActive: true
+    }
+  });
 
-    return NextResponse.json({ tab });
-  } catch (error) {
-    console.error('Error creating tab:', error);
-    return NextResponse.json(
-      { error: 'Failed to create tab' },
-      { status: 500 }
-    );
-  }
-} 
+  return NextResponse.json({ tab });
+}); 

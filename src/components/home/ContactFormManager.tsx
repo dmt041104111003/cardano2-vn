@@ -15,14 +15,14 @@ function ContactFormManager() {
       if (!session?.user) return null;
       
       const sessionUser = session.user as { address?: string; email?: string };
-      const url = new URL('/api/auth/me', window.location.origin);
+      const url = new URL('/api/user', window.location.origin);
       if (sessionUser.address) url.searchParams.set('address', sessionUser.address);
       if (sessionUser.email) url.searchParams.set('email', sessionUser.email);
 
       const response = await fetch(url.toString());
       if (response.ok) {
         const data = await response.json();
-        return data.user;
+        return data;
       }
       return null;
     },
@@ -32,7 +32,7 @@ function ContactFormManager() {
     refetchOnWindowFocus: false,
   });
 
-  const isAdmin = userData?.role === 'ADMIN';
+  const isAdmin = userData?.role?.name === 'ADMIN';
 
   if (isLoadingUser) {
     return (

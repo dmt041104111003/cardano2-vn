@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
+import { withAdmin } from "~/lib/api-wrapper";
 
-export async function GET() {
+export const GET = withAdmin(async () => {
   try {
     const members = await prisma.member.findMany({
       where: { isActive: true },
@@ -19,33 +20,25 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
-  try {
-    const { name, role, description, image, email, color, skills, order, tabId } = await request.json();
+export const POST = withAdmin(async (req) => {
+  const { name, role, description, image, email, color, skills, order, tabId } = await req.json();
 
-    const member = await prisma.member.create({
-      data: {
-        name,
-        role,
-        description,
-        image,
-        email,
-        color: color || "blue",
-        skills: skills || [],
-        order: order || 0,
-        tabId: tabId || null,
-        isActive: true
-      }
-    });
+  const member = await prisma.member.create({
+    data: {
+      name,
+      role,
+      description,
+      image,
+      email,
+      color: color || "blue",
+      skills: skills || [],
+      order: order || 0,
+      tabId: tabId || null,
+      isActive: true
+    }
+  });
 
-    return NextResponse.json({ member });
-  } catch (error) {
-    console.error('Error creating member:', error);
-    return NextResponse.json(
-      { error: 'Failed to create member' },
-      { status: 500 }
-    );
-  }
-} 
+  return NextResponse.json({ member });
+}); 
