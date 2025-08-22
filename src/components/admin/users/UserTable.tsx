@@ -74,7 +74,7 @@ export function UserTable({
               First Login
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Last Login
+              Updated
             </th>
             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Actions
@@ -149,10 +149,10 @@ export function UserTable({
                 )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {user.lastLogin ? (
-                  <div>{formatDateTime(user.lastLogin)}</div>
+                {user.updatedAt ? (
+                  <div>{formatDateTime(user.updatedAt)}</div>
                 ) : (
-                  <span className="text-gray-400">Never</span>
+                  <span className="text-gray-400">N/A</span>
                 )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

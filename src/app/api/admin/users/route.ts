@@ -21,6 +21,7 @@ export const GET = withAdmin(async () => {
         provider: user.provider,
         role: user.role.name,
         createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString(),
         avatar: user.image || null,
       };
     });

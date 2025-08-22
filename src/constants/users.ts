@@ -7,6 +7,7 @@ export interface User {
   role: 'USER' | 'ADMIN';
   status: 'active' | 'inactive';
   createdAt: string;
+  updatedAt?: string;
   lastLogin?: string;
   avatar?: string;
 }
