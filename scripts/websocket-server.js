@@ -7,7 +7,13 @@ const RoomManager = require('./utils/room-manager');
 
 class CommentWebSocketServer {
   constructor(port = 4001) {
-    this.wss = new WebSocketServer({ port });
+    const http = require('http');
+    this.httpServer = http.createServer((req, res) => {
+      this.handleHttpRequest(req, res);
+    });
+
+    this.wss = new WebSocketServer({ server: this.httpServer });
+    
     this.clients = new Map();
     this.postRooms = new Map();
     this.userRooms = new Map();
@@ -19,6 +25,79 @@ class CommentWebSocketServer {
     this.roomManager = new RoomManager(this);
     
     this.setupWebSocketServer();
+    this.startServer(port);
+  }
+
+  handleHttpRequest(req, res) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    if (req.method === 'OPTIONS') {
+      res.writeHead(200);
+      res.end();
+      return;
+    }
+
+    if (req.url === '/health' || req.url === '/api/health') {
+      try {
+        const healthData = {
+          status: 'healthy',
+          timestamp: new Date().toISOString(),
+          uptime: process.uptime(),
+          memory: process.memoryUsage(),
+          websocket: {
+            clients: this.clients.size,
+            postRooms: this.postRooms.size,
+            userRooms: this.userRooms.size
+          },
+          environment: process.env.NODE_ENV || 'development',
+          externalUrl: process.env.RENDER_EXTERNAL_URL || 'localhost'
+        };
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(healthData, null, 2));
+      } catch (error) {
+        console.error('Health check error:', error);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ 
+          status: 'error', 
+          message: 'Health check failed',
+          timestamp: new Date().toISOString()
+        }));
+      }
+    } else if (req.url === '/ping') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('pong');
+    } else {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ 
+        status: 'not_found', 
+        message: 'Endpoint not found',
+        available: ['/health', '/api/health', '/ping']
+      }));
+    }
+  }
+
+  startServer(port) {
+    this.httpServer.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+      console.log(`Health check URLs:`);
+      console.log(`   - http://localhost:${port}/health`);
+      console.log(`   - http://localhost:${port}/api/health`);
+      console.log(`   - http://localhost:${port}/ping`);
+      
+      if (process.env.RENDER_EXTERNAL_URL) {
+        console.log(`Production URLs:`);
+        console.log(`   - ${process.env.RENDER_EXTERNAL_URL}/health`);
+        console.log(`   - ${process.env.RENDER_EXTERNAL_URL}/api/health`);
+        console.log(`   - ${process.env.RENDER_EXTERNAL_URL}/ping`);
+      }
+    });
+
+    this.httpServer.on('error', (error) => {
+      console.error('Server error:', error);
+    });
   }
 
   setupWebSocketServer() {
@@ -194,9 +273,6 @@ console.log('Starting WebSocket server for realtime comments...');
 try {
   const port = process.env.WEBSOCKET_PORT;
   const wsServer = new CommentWebSocketServer(port);
-  
-//   console.log(`WebSocket server started successfully on port ${port}`);
-//   console.log('Server stats:', wsServer.getStats());
   
   process.on('SIGINT', () => {
     console.log('\nShutting down WebSocket server...');
