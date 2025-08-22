@@ -6,9 +6,42 @@ sidebar:
   label: Cài đặt cardano-node
 ---
 
+```json title="next.config.json"
+{
+  "title": "Name of Folder",
+  "description": "The description of root folder (optional)",
+  "root": true
+}
+```
+
+---
+
+title: My Page
+description: Best document ever
+icon: HomeIcon
+
+---
+
+## Learn More
+
+<Callout title='Fumadocs MDX'>
+
+    You can use the [`schema`](/docs/mdx/collections#schema-1) option to add frontmatter properties.
+
+</Callout>
+
+### Slugs
+
+The slugs of a page are generated from its file path.
+
+| path (relative to content folder) | slugs             |
+| --------------------------------- | ----------------- |
+| `./dir/page.mdx`                  | `['dir', 'page']` |
+| `./dir/index.mdx`                 | `['dir']`         |
+
 # Tổng quan
 
-Hướng dẫn này sẽ chỉ cho bạn cách biên dịch và cài đặt **`cardano-node`** và **`cardano-cli`** trực tiếp từ mã nguồn.  
+Hướng dẫn này sẽ chỉ cho bạn cách biên dịch và cài đặt **`cardano-node`** và **`cardano-cli`** trực tiếp từ mã nguồn.
 Nó sẽ cho phép bạn tương tác với blockchain **Cardano**, bao gồm (nhưng không giới hạn ở):
 
 - Gửi / nhận **giao dịch**
@@ -21,11 +54,18 @@ Nó sẽ cho phép bạn tương tác với blockchain **Cardano**, bao gồm (n
 :::note
 Nếu bạn muốn tránh việc tự biên dịch, có thể tải xuống bản build sẵn từ liên kết sau:
 
-Các thành phần có thể chạy trên **Windows, MacOS và Linux**.  
+Các thành phần có thể chạy trên **Windows, MacOS và Linux**.
 Tuy nhiên, **Linux** được khuyến nghị cho môi trường production nhờ hiệu suất tốt hơn.
 :::
 
----
+<Callout title='Before reading'>
+
+Nếu bạn muốn tránh việc tự biên dịch, có thể tải xuống bản build sẵn từ liên kết sau:
+
+Các thành phần có thể chạy trên **Windows, MacOS và Linux**.
+Tuy nhiên, **Linux** được khuyến nghị cho môi trường production nhờ hiệu suất tốt hơn.
+
+</Callout>
 
 ## Điều kiện tiên quyết
 
@@ -60,6 +100,14 @@ Nếu kết nối **mainnet**, cần nhiều RAM và dung lượng hơn đáng k
 sudo yum update -y
 sudo yum install git gcc gcc-c++ tmux gmp-devel make tar xz wget zlib-devel libtool autoconf jq -y
 sudo yum install systemd-devel ncurses-devel ncurses-compat-libs -y
+```
+
+```json title="meta.json"
+{
+  "title": "Name of Folder",
+  "description": "The description of root folder (optional)",
+  "root": true
+}
 ```
 
 **Debian / Ubuntu**:
