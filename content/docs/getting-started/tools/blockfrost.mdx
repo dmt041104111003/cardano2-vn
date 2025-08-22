@@ -1,0 +1,117 @@
+---
+id: blockfrost
+title: Bắt đầu với Blockfrost
+description: Hướng dẫn này hướng dẫn cách bắt đầu sử dụng Blockfrost để truy cập và xử lý thông tin trên blockchain Cardano.
+date: 2024-12-25
+author: C2VN
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+# Bắt đầu với Blockfrost
+
+Blockfrost cung cấp API để truy cập và xử lý thông tin được lưu trữ trên blockchain Cardano, hữu ích cho các tác vụ như giao dịch, tạo NFT, và quản lý hợp đồng thông minh. Mức cơ bản là miễn phí và cho phép 50.000 yêu cầu mỗi ngày.
+
+## Đăng nhập
+
+[Đăng nhập vào Blockfrost](https://blockfrost.io/auth/signin) với tài khoản GitHub của bạn, không cần đăng ký. Nhập tên dự án và chọn Cardano mainnet hoặc Cardano testnet, tùy thuộc vào nhu cầu của bạn.
+
+![Thêm dự án](/images/docs/blockfrost/1-add-project.png)
+
+## Lấy API của bạn
+
+Sau khi nhấp vào `Save Project`, bạn sẽ nhận được `API KEY`. Lưu khóa này, vì bạn sẽ cần nó cho mọi yêu cầu.
+
+![Lấy API key](/images/docs/blockfrost/2-get-api-key.png)
+
+## Yêu cầu epoch gần nhất
+
+Gửi yêu cầu đầu tiên của bạn để nhận dữ liệu về epoch mới nhất. Đừng quên thay `1234567890` bằng `API KEY` của bạn.
+
+<Callout type="warning" title="Chú ý">
+  Thay `1234567890` bằng `API KEY` thực tế của bạn để các yêu cầu hoạt động chính xác.
+</Callout>
+
+Nếu bạn thực hiện đúng, bạn sẽ nhận được phản hồi ở định dạng JSON, tương tự như sau:
+
+```json
+{
+  "epoch": 225,
+  "start_time": 1603403091,
+  "end_time": 1603835086,
+  "first_block_time": 1603403092,
+  "last_block_time": 1603835084,
+  "block_count": 21298,
+  "tx_count": 17856,
+  "output": "7849943934049314",
+  "fees": "4203312194",
+  "active_stake": "784953934049314"
+}
+```
+
+## Truy vấn dữ liệu của một nhóm cổ phần cụ thể
+
+Truy vấn dữ liệu của một nhóm cổ phần cụ thể bằng cách cung cấp Bech32 hoặc ID của nhóm (`pool_id`).
+
+<Callout type="warning" title="Chú ý">
+  Thay `1234567890` bằng `API KEY` thực tế của bạn để các yêu cầu hoạt động chính xác.
+</Callout>
+
+Bạn sẽ nhận được phản hồi ở định dạng JSON, tương tự như sau:
+
+```json
+{
+  "vrf_key": "57c4d222e0f2f8083d7b63c8f7886f16fb7046621442bbd857f404b6f433c5e6",
+  "blocks_minted": 1675,
+  "live_stake": "33978569808898",
+  "live_size": 0.0014709194212545152,
+  "live_saturation": 0.5169025966078663,
+  "live_delegators": 395,
+  "active_stake": "37990508551252",
+  "active_size": 0.0016498675360681707,
+  "declared_pledge": "250010000000",
+  "live_pledge": "765352096766",
+  "margin_cost": 0.015,
+  "fixed_cost": "340000000",
+  "reward_account": "stake1u97pa0j0wtj5r3l6462z0xmlf5tg0dxpmss3y20almfnj5gc4tmrw",
+  "owners": [
+    "stake1uywma333mgeccv3aa2gvrkhz4qtz0cq9sszrnws8pv78gqqq6a65g",
+    "stake1u9dqkqmdtdcav5qd933xwvwxgamrsdkr0zsn63ca0v4lz5cm7tvq0",
+    "stake1u97pa0j0wtj5r3l6462z0xmlf5tg0dxpmss3y20almfnj5gc4tmrw"
+  ],
+  "registration": [
+    "f6865b914988ed40998d2ff5453bd8af16976688065c9756d32c7a872064aaf8",
+    "0e08711da89ebbaefaf897f5633c7b7bc6c1c9037451431745fbaefbf1227ec7",
+    "9b85adfebc25f2cc7737039fb376043207e1ec7147b2800436138e7df58c70d4",
+    "1243db764e42a3ec89d815d96bcf7242bfd2837d54f3047f2b5abacd7e52345d"
+  ],
+  "retirement": []
+}
+```
+
+## Truy vấn thông tin của một nội dung cụ thể
+
+Truy vấn thông tin của một token gốc cụ thể trên Cardano bằng cách cung cấp chuỗi nối của `policy_id` và hex-encoded `asset_name`.
+
+<Callout type="warning" title="Chú ý">
+  Thay `1234567890` bằng `API KEY` thực tế của bạn để các yêu cầu hoạt động chính xác.
+</Callout>
+
+Bạn sẽ nhận được phản hồi JSON:
+
+```json
+{
+  "policy_id": "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a0",
+  "asset_name": "7370616365636f696e73",
+  "fingerprint": "asset1pmmzqf2akudknt05ealtvcvsy7n6wnc9dd03mf",
+  "quantity": "50000000",
+  "initial_mint_tx_hash": "3cce12c77b9d11d70575320c4f2834b26debb065308fbe43954018fbeb90010d",
+  "onchain_metadata": null,
+  "metadata": null
+}
+```
+
+## Tài liệu Blockfrost
+
+Blockfrost cung cấp một API mạnh mẽ cho phép bạn thực hiện nhiều tác vụ, từ truy vấn giao dịch đến quản lý hợp đồng thông minh. Truy cập [docs.blockfrost.io](https://docs.blockfrost.io) để xem tài liệu API hoàn chỉnh.
