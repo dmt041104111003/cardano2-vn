@@ -69,7 +69,7 @@ export default function Home() {
           onChange={(e) => setInput(e.target.value)}
         />
 
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center mt-4">
           <Button
             onClick={handleParse}
             className="inline-flex items-center gap-2 rounded-sm border border-white/30 bg-gray-800/50 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-200 hover:border-white/50 hover:bg-gray-700/50"
