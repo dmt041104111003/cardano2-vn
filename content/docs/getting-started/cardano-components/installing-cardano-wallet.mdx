@@ -1,0 +1,118 @@
+---
+id: installing-cardano-wallet
+title: Cài đặt cardano-wallet
+description: Hướng dẫn này chỉ dẫn cách biên dịch và cài đặt cardano-wallet từ mã nguồn cho các hệ điều hành chính.
+date: 2024-12-25
+author: C2VN
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Cài đặt cardano-wallet
+
+## Tổng quan
+
+Hướng dẫn này sẽ chỉ dẫn bạn cách biên dịch và cài đặt `cardano-wallet` vào hệ điều hành bạn chọn, trực tiếp từ mã nguồn. Thành phần này cung cấp [CLI (Giao diện dòng lệnh)](https://en.wikipedia.org/wiki/Command-line_interface) và [Web API](https://en.wikipedia.org/wiki/Web_API) để tạo nhiều ví Cardano, gửi giao dịch, nhận chi tiết lịch sử giao dịch, số dư ví và hơn thế nữa!
+
+<Callout type="note">
+  Nếu bạn muốn tránh tự biên dịch các tệp nhị phân, bạn có thể tải xuống các tệp nhị phân được tạo sẵn mới nhất của `cardano-wallet` từ các liên kết dưới đây:
+
+- [Linux](https://hydra.iohk.io/job/Cardano/cardano-wallet/cardano-wallet-linux64/latest)
+- [MacOS](https://hydra.iohk.io/job/Cardano/cardano-wallet/cardano-wallet-macos64/latest)
+- [Windows](https://hydra.iohk.io/job/Cardano/cardano-wallet/cardano-wallet-win64/latest)
+
+Hướng dẫn này giả định rằng bạn đã cài đặt `cardano-node` và `cardano-cli` trên hệ thống của mình. Nếu chưa, bạn có thể tham khảo hướng dẫn [Cài đặt cardano-node](/docs/getting-started/installing-cardano-node) để biết cách thực hiện.
+
+</Callout>
+
+<Callout type="warning" title="Quan trọng">
+  Bạn phải kết nối `cardano-node` với mạng `testnet` và đảm bảo rằng nó đã được đồng bộ hóa hoàn toàn. Nếu bạn không chắc chắn về cách thực hiện, hãy
+  đọc hướng dẫn [Chạy cardano-node](/docs/getting-started/running-cardano) trước khi tiếp tục.
+</Callout>
+
+### MacOS / Linux
+
+Phần này hướng dẫn bạn quá trình tải xuống, biên dịch và cài đặt `cardano-wallet` trên hệ điều hành **MacOS** hoặc **Linux**.
+
+#### Tải xuống & Biên dịch
+
+Cài đặt **Stack** nếu chưa có:
+
+```bash
+curl -sSL https://get.haskellstack.org/ | sh
+```
+
+Kiểm tra phiên bản đã cài đặt:
+
+```bash
+stack --version
+```
+
+Đầu ra dự kiến:
+
+```plaintext
+Version 2.7.3, Git revision 7927a3aec32e2b2e5e4fb5be76d0d50eddcc197f x86_64 hpack-0.34.4
+```
+
+Nếu bạn đã làm theo hướng dẫn [Cài đặt cardano-node](/docs/getting-started/installing-cardano-node), bạn sẽ có thư mục `$HOME/cardano-src`. Nếu không, tạo một thư mục làm việc để lưu trữ mã nguồn và xây dựng `cardano-wallet`:
+
+```bash
+mkdir -p $HOME/cardano-src
+cd $HOME/cardano-src
+```
+
+Tải xuống mã nguồn `cardano-wallet`:
+
+```bash
+git clone https://github.com/input-output-hk/cardano-wallet.git
+cd ./cardano-wallet/
+```
+
+Chuyển kho lưu trữ sang cam kết được gắn thẻ mới nhất:
+
+```bash
+TAG=$(git describe --tags --abbrev=0) && echo latest tag $TAG
+git checkout $TAG
+```
+
+<Callout type="important">
+  Bạn có thể kiểm tra phiên bản/thẻ mới nhất hiện có bằng cách truy cập trang [GitHub
+  Release](https://github.com/input-output-hk/cardano-wallet/releases) của `cardano-wallet`. Tại thời điểm viết bài, phiên bản hiện tại là
+  `v2021-11-11`. Bạn cũng có thể liệt kê tất cả các thẻ bằng lệnh `git tag -l`.
+</Callout>
+
+#### Xây dựng và cài đặt
+
+Biên dịch mã nguồn `cardano-wallet` để tạo các tệp nhị phân thực thi:
+
+```bash
+stack build --test --no-run-tests
+```
+
+Cài đặt tệp nhị phân `cardano-wallet` vào thư mục `$HOME/.local/bin`:
+
+```bash
+stack install
+```
+
+Kiểm tra phiên bản đã cài đặt:
+
+```bash
+cardano-wallet version
+```
+
+Đầu ra dự kiến:
+
+```plaintext
+v2021-11-11 (git revision: dac16ba7e3bf64bf5474497656932fd342c3b720)
+```
+
+Chúc mừng, bạn đã cài đặt thành công `cardano-wallet` trên hệ thống **Linux** hoặc **MacOS** của mình! 🎉🎉🎉
+
+### Windows
+
+<Callout type="important">
+  Hướng dẫn cài đặt trên **Windows** vẫn đang được thực hiện. Trong thời gian chờ đợi, chúng tôi khuyên bạn nên sử dụng [WSL (Windows Subsystem for
+  Linux)](https://docs.microsoft.com/en-us/windows/wsl/) để tạo môi trường Linux trên Windows. Sau khi thiết lập WSL, bạn có thể làm theo hướng dẫn
+  [MacOS / Linux](#macos--linux) để cài đặt và chạy `cardano-wallet`.
+</Callout>

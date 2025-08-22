@@ -1,100 +1,78 @@
 ---
-id: installing-cardano-node
-title: Cài đặt cardano-node và cardano-cli từ mã nguồn
-description: Hướng dẫn này chỉ ra cách xây dựng và cài đặt cardano-node và cardano-cli từ mã nguồn cho tất cả các hệ điều hành chính.
-sidebar:
-  label: Cài đặt cardano-node
+title: Cài đặt cardano-node
+description: Cài đặt cardano-node và cardano-cli từ mã nguồn
+date: 2024-12-25
+author: C2VN
 ---
+
+# Cài đặt cardano-node và cardano-cli từ mã nguồn
+
+## Cấu hình thư mục
+
+Để cấu hình thư mục gốc cho tài liệu này, bạn có thể sử dụng các cài đặt sau trong `next.config.json`:
 
 ```json title="next.config.json"
 {
-  "title": "Name of Folder",
-  "description": "The description of root folder (optional)",
+  "title": "Tên của Thư mục",
+  "description": "Mô tả của thư mục gốc (tùy chọn)",
   "root": true
 }
 ```
 
----
+<Callout title="Fumadocs MDX">Bạn có thể sử dụng tùy chọn [`schema`](/docs/mdx/collections#schema-1) để thêm các thuộc tính frontmatter.</Callout>
 
-title: My Page
-description: Best document ever
-icon: HomeIcon
+## Tổng quan
 
----
+Hướng dẫn này sẽ chỉ dẫn bạn cách biên dịch và cài đặt `cardano-node` và `cardano-cli` vào hệ điều hành bạn chọn trực tiếp từ mã nguồn. Nó sẽ cho phép bạn tương tác với chuỗi khối **Cardano**, bao gồm nhưng không giới hạn ở việc gửi/nhận **giao dịch**, tạo **NFT**, đăng giao dịch **siêu dữ liệu** lên blockchain, minting/burning **native tokens**, tạo **nhóm cổ phần**, thực thi **hợp đồng thông minh**, và hơn thế nữa!
 
-## Learn More
+<Callout type="note">
+  Nếu bạn muốn tránh tự biên dịch các tệp nhị phân, bạn có thể tải xuống các phiên bản mới nhất của `cardano-node` và `cardano-cli` từ các liên kết dưới đây:
 
-<Callout title='Fumadocs MDX'>
+- [**Latest release**](https://github.com/input-output-hk/cardano-node/releases/tag/9116257)
+- [**Linux**](https://github.com/input-output-hk/cardano-node/releases/tag/9116140)
+- [**MacOS**](https://github.com/input-output-hk/cardano-node/releases/tag/9116041)
+- [**Windows**](https://github.com/input-output-hk/cardano-node/releases/tag/9115926)
 
-    You can use the [`schema`](/docs/mdx/collections#schema-1) option to add frontmatter properties.
-
-</Callout>
-
-### Slugs
-
-The slugs of a page are generated from its file path.
-
-| path (relative to content folder) | slugs             |
-| --------------------------------- | ----------------- |
-| `./dir/page.mdx`                  | `['dir', 'page']` |
-| `./dir/index.mdx`                 | `['dir']`         |
-
-# Tổng quan
-
-Hướng dẫn này sẽ chỉ cho bạn cách biên dịch và cài đặt **`cardano-node`** và **`cardano-cli`** trực tiếp từ mã nguồn.
-Nó sẽ cho phép bạn tương tác với blockchain **Cardano**, bao gồm (nhưng không giới hạn ở):
-
-- Gửi / nhận **giao dịch**
-- Tạo **NFT**
-- Gửi giao dịch kèm **metadata**
-- Minting / burning **native tokens**
-- Tạo **pool** staking
-- Thực thi **smart contracts**
-
-:::note
-Nếu bạn muốn tránh việc tự biên dịch, có thể tải xuống bản build sẵn từ liên kết sau:
-
-Các thành phần có thể chạy trên **Windows, MacOS và Linux**.
-Tuy nhiên, **Linux** được khuyến nghị cho môi trường production nhờ hiệu suất tốt hơn.
-:::
-
-<Callout title='Before reading'>
-
-Nếu bạn muốn tránh việc tự biên dịch, có thể tải xuống bản build sẵn từ liên kết sau:
-
-Các thành phần có thể chạy trên **Windows, MacOS và Linux**.
-Tuy nhiên, **Linux** được khuyến nghị cho môi trường production nhờ hiệu suất tốt hơn.
+Các thành phần này có thể được xây dựng và chạy trên **Windows** và **MacOS**, nhưng chúng tôi khuyên các nhà điều hành nhóm cổ phần nên sử dụng **Linux** trong môi trường sản xuất để tận dụng lợi thế về hiệu suất.
 
 </Callout>
 
 ## Điều kiện tiên quyết
 
-Bạn sẽ cần:
+Để thiết lập các thành phần, bạn sẽ cần:
 
-- **Windows**, **MacOS**, hoặc **Linux**
-- CPU Intel/AMD **2 cores+ @ 1.6 GHz+** (2 GHz+ khuyên dùng cho pool/relay)
-- RAM tối thiểu **12GB**
-- Ổ đĩa trống tối thiểu **30GB**
+- Hệ điều hành **Windows**, **MacOS**, hoặc **Linux**
+- Bộ xử lý Intel hoặc AMD x86 với **hai lõi trở lên, tốc độ 1,6 GHz hoặc nhanh hơn** (2 GHz hoặc nhanh hơn cho nhóm cổ phần hoặc relay)
+- **12GB** RAM và ít nhất **30GB** dung lượng đĩa trống
 
-:::note
-Nếu kết nối **mainnet**, cần nhiều RAM và dung lượng hơn đáng kể.
-:::
+<Callout type="note">Nếu bạn dự định kết nối với mainnet, yêu cầu về RAM và dung lượng lưu trữ sẽ tăng vượt quá giới hạn cơ bản nêu trên.</Callout>
 
----
-
-## Chọn nền tảng
+## Chọn nền tảng của bạn
 
 - [Linux](#linux)
 - [MacOS](#macos)
 - [Windows](#windows)
 
----
-
 ## Linux
 
-### Cài đặt dependencies hệ điều hành
+Phần này hướng dẫn bạn cách tải xuống, biên dịch và cài đặt `cardano-node` và `cardano-cli` trên hệ điều hành **Linux-based**.
 
-**RedHat / Fedora / CentOS**:
+### Cài đặt các phụ thuộc hệ điều hành
+
+Để tải xuống mã nguồn và xây dựng nó, bạn cần các gói và công cụ sau trên hệ thống Linux của mình:
+
+- Hệ thống quản lý phiên bản `git`
+- Trình biên dịch C `gcc`
+- Hỗ trợ C++ cho `gcc`
+- Thư viện phát triển cho thư viện độ chính xác tùy ý `gmp`
+- Thư viện phát triển cho thư viện nén `zlib`
+- Thư viện phát triển cho `systemd`
+- Thư viện phát triển cho `ncurses`
+- Thư viện tương thích `ncurses`
+- Công cụ xây dựng Haskell `cabal`
+- Trình biên dịch Haskell GHC (phiên bản `8.10.7` hoặc cao hơn)
+
+Đối với Redhat, Fedora và CentOS:
 
 ```bash
 sudo yum update -y
@@ -102,60 +80,109 @@ sudo yum install git gcc gcc-c++ tmux gmp-devel make tar xz wget zlib-devel libt
 sudo yum install systemd-devel ncurses-devel ncurses-compat-libs -y
 ```
 
-```json title="meta.json"
-{
-  "title": "Name of Folder",
-  "description": "The description of root folder (optional)",
-  "root": true
-}
-```
-
-**Debian / Ubuntu**:
+Đối với Debian/Ubuntu, sử dụng lệnh sau thay thế:
 
 ```bash
 sudo apt-get update -y && sudo apt-get upgrade -y
 sudo apt-get install automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf -y
 ```
 
----
+Nếu bạn sử dụng một bản phân phối Linux khác, bạn cần sử dụng trình quản lý gói phù hợp với nền tảng của mình thay vì `yum` hoặc `apt-get`, và tên các gói cần cài đặt có thể khác nhau.
 
 ### Cài đặt GHC và Cabal
 
-Cách nhanh nhất: [ghcup](https://www.haskell.org/ghcup).
+Cách nhanh nhất để cài đặt **GHC** (Glasgow Haskell Compiler) và **Cabal** (Kiến trúc chung cho các ứng dụng và thư viện xây dựng) là sử dụng [ghcup](https://www.haskell.org/ghcup).
+
+Sử dụng lệnh sau để cài đặt `ghcup`:
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
 ```
 
-- PATH → chọn `P`
-- Cài HLS? → `N`
-- Cài stack? → `N`
+Hãy làm theo hướng dẫn và cung cấp thông tin đầu vào cần thiết cho trình cài đặt:
 
-Sau khi xong:
+- `Do you want ghcup to automatically add the required PATH variable to "/home/ubuntu/.bashrc"?` - Nhấn `P` hoặc `Enter`
+- `Do you want to install haskell-language-server (HLS)?` - Nhấn `N` hoặc `Enter`
+- `Do you want to install stack?` - Nhấn `N` hoặc `Enter`
+- `Press ENTER to proceed or ctrl-c to abort.` - Nhấn `Enter`
+
+Sau khi hoàn tất, bạn sẽ có `ghc` và `cabal` được cài đặt trên hệ điều hành của mình.
+
+<Callout type="note">
+  `ghcup` sẽ cố gắng phát hiện shell của bạn và yêu cầu bạn thêm nó vào các biến môi trường. Vui lòng khởi động lại shell/terminal của bạn sau khi cài
+  đặt `ghcup`.
+</Callout>
+
+Xác minh rằng `ghcup` đã được cài đặt đúng bằng cách nhập:
+
+```bash
+ghcup --version
+```
+
+Bạn sẽ thấy đầu ra tương tự như sau:
+
+```
+The GHCup Haskell installer, version v0.1.17.4
+```
+
+`ghcup` sẽ cài đặt phiên bản ổn định mới nhất của `ghc`. Tuy nhiên, tại thời điểm viết bài, [Input-Output](https://iohk.io) khuyên dùng `ghc 8.10.7`. Vì vậy, chúng ta sẽ sử dụng `ghcup` để cài đặt và chuyển sang phiên bản yêu cầu:
 
 ```bash
 ghcup install ghc 8.10.7
 ghcup set ghc 8.10.7
+```
 
+Tương tự, `ghcup` sẽ cài đặt phiên bản ổn định mới nhất của `cabal`, nhưng [Input-Output](https://iohk.io) khuyên dùng `cabal 3.6.2.0`. Cài đặt và chuyển sang phiên bản yêu cầu:
+
+```bash
 ghcup install cabal 3.6.2.0
 ghcup set cabal 3.6.2.0
 ```
 
-Kiểm tra:
+Xác minh các phiên bản đã cài đặt của `ghc` và `cabal`:
+
+Kiểm tra phiên bản `ghc`:
 
 ```bash
 ghc --version
+```
+
+Đầu ra dự kiến:
+
+```
+The Glorious Glasgow Haskell Compilation System, version 8.10.7
+```
+
+Kiểm tra phiên bản `cabal`:
+
+```bash
 cabal --version
 ```
 
----
+Đầu ra dự kiến:
 
-### Tải & build libsodium
+```
+cabal-install version 3.6.2.0
+compiled using version 3.6.2.0 of the Cabal library
+```
+
+<Callout type="important">
+  Vui lòng xác nhận rằng các phiên bản đã cài đặt khớp với các phiên bản được đề xuất ở trên. Nếu không, hãy kiểm tra lại các bước trước đó để tìm
+  lỗi.
+</Callout>
+
+### Tải xuống & Biên dịch
+
+Tạo một thư mục làm việc để lưu trữ mã nguồn và các bản dựng:
 
 ```bash
 mkdir -p $HOME/cardano-src
 cd $HOME/cardano-src
+```
 
+Tải xuống, biên dịch và cài đặt `libsodium`:
+
+```bash
 git clone https://github.com/input-output-hk/libsodium
 cd libsodium
 git checkout 66f017f1
@@ -165,29 +192,74 @@ make
 sudo make install
 ```
 
-Thêm vào `~/.bashrc` hoặc `~/.zshrc`:
+Thêm các biến môi trường sau vào hồ sơ shell của bạn (ví dụ: `$HOME/.zshrc` hoặc `$HOME/.bashrc`, tùy thuộc vào shell bạn sử dụng):
 
 ```bash
 export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"
 ```
 
----
+Tải lại hồ sơ shell để áp dụng các biến mới:
 
-### Tải & build cardano-node
+```bash
+source $HOME/.bashrc
+# hoặc
+source $HOME/.zshrc
+```
+
+Quay lại thư mục gốc của thư mục làm việc:
 
 ```bash
 cd $HOME/cardano-src
+```
+
+Tải xuống kho lưu trữ `cardano-node`:
+
+```bash
 git clone https://github.com/input-output-hk/cardano-node.git
 cd cardano-node
 git fetch --all --recurse-submodules --tags
-git checkout $(curl -s https://api.github.com/repos/input-output-hk/cardano-node/releases/latest | jq -r .tag_name)
+```
 
+Chuyển sang cam kết được gắn thẻ mới nhất:
+
+```bash
+git checkout $(curl -s https://api.github.com/repos/input-output-hk/cardano-node/releases/latest | jq -r .tag_name)
+```
+
+<Callout type="important">
+  Nếu nâng cấp một nút hiện có, hãy đảm bảo đọc [ghi chú phát hành trên GitHub](https://github.com/input-output-hk/cardano-node/releases) để biết bất
+  kỳ thay đổi nào.
+</Callout>
+
+### Cấu hình tùy chọn xây dựng
+
+Sử dụng phiên bản `ghc` đã cài đặt trước đó để tránh xung đột với phiên bản hệ thống:
+
+```bash
 cabal configure --with-compiler=ghc-8.10.7
+```
+
+Đối với các nền tảng không phải x86/x64 (ví dụ: ARM), cài đặt và cấu hình LLVM:
+
+```bash
+sudo apt install llvm-9
+sudo apt install clang-9 libnuma-dev
+sudo ln -s /usr/bin/llvm-config-9 /usr/bin/llvm-config
+sudo ln -s /usr/bin/opt-9 /usr/bin/opt
+sudo ln -s /usr/bin/llc-9 /usr/bin/llc
+sudo ln -s /usr/bin/clang-9 /usr/bin/clang
+```
+
+### Xây dựng và cài đặt nút
+
+Biên dịch `cardano-node` và `cardano-cli` dựa trên Haskell:
+
+```bash
 cabal build cardano-node cardano-cli
 ```
 
-Copy binary:
+Sao chép các tệp nhị phân vào thư mục `$HOME/.local/bin`:
 
 ```bash
 mkdir -p $HOME/.local/bin
@@ -195,58 +267,150 @@ cp -p "$(./scripts/bin-path.sh cardano-node)" $HOME/.local/bin/
 cp -p "$(./scripts/bin-path.sh cardano-cli)" $HOME/.local/bin/
 ```
 
-Cập nhật PATH:
+Thêm dòng sau vào hồ sơ shell để shell/terminal nhận diện `cardano-node` và `cardano-cli` là các lệnh toàn cục:
 
 ```bash
 export PATH="$HOME/.local/bin/:$PATH"
 ```
 
-Kiểm tra:
+Tải lại hồ sơ shell:
+
+```bash
+source $HOME/.zshrc
+# hoặc
+source $HOME/.bashrc
+```
+
+Xác minh các phiên bản đã cài đặt:
 
 ```bash
 cardano-cli --version
 cardano-node --version
 ```
 
-✅ Hoàn tất cài đặt trên Linux!
+Chúc mừng, bạn đã cài đặt thành công các thành phần Cardano trên hệ thống Linux của mình! 🎉🎉🎉
 
----
+Tiếp theo, tìm hiểu cách [chạy cardano-node](/docs/getting-started/running-cardano).
 
 ## MacOS
 
-### Cài dependencies
+Phần này hướng dẫn bạn cách tải xuống, biên dịch và cài đặt `cardano-node` và `cardano-cli` trên hệ điều hành **dựa trên MacOS**.
+
+### Cài đặt các phụ thuộc hệ điều hành
+
+Bạn cần các gói và công cụ sau trên hệ thống MacOS của mình:
+
+- [Xcode](https://developer.apple.com/xcode) - IDE và SDK/Công cụ của Apple
+- [Xcode Command Line Tools](https://developer.apple.com/xcode/features/), cài đặt qua:
+  ```bash
+  xcode-select --install
+  ```
+- [Homebrew](https://brew.sh) - Trình quản lý gói cho MacOS (hoặc Linux)
+
+### Cài đặt các gói Homebrew
+
+Cài đặt các thư viện cần thiết qua Homebrew:
 
 ```bash
-xcode-select --install
-brew install jq libtool autoconf automake pkg-config
-brew install llvm   # cho chip M1
+brew install jq
+brew install libtool
+brew install autoconf
+brew install automake
+brew install pkg-config
 ```
 
-### Cài GHC và Cabal qua ghcup
+Đối với hệ thống M1, cài đặt LLVM:
+
+```bash
+brew install llvm
+```
+
+### Cài đặt GHC và Cabal
+
+Cài đặt **GHC** và **Cabal** bằng [ghcup](https://www.haskell.org/ghcup):
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+```
+
+Làm theo hướng dẫn của trình cài đặt:
+
+- `Do you want ghcup to automatically add the required PATH variable to "/home/ubuntu/.bashrc"?` - Nhấn `P` hoặc `Enter`
+- `Do you want to install haskell-language-server (HLS)?` - Nhấn `N` hoặc `Enter`
+- `Do you want to install stack?` - Nhấn `N` hoặc `Enter`
+- `Press ENTER to proceed or ctrl-c to abort.` - Nhấn `Enter`
+
+<Callout type="note">`ghcup` sẽ yêu cầu bạn thêm nó vào các biến môi trường. Khởi động lại shell/terminal của bạn sau khi cài đặt.</Callout>
+
+Xác minh cài đặt `ghcup`:
+
+```bash
+ghcup --version
+```
+
+Đầu ra dự kiến:
+
+```
+The GHCup Haskell installer, version v0.1.17.4
+```
+
+Cài đặt và thiết lập phiên bản `ghc` được đề xuất (8.10.7):
+
+```bash
 ghcup install ghc 8.10.7
 ghcup set ghc 8.10.7
+```
+
+Cài đặt và thiết lập phiên bản `cabal` được đề xuất (3.6.2.0):
+
+```bash
 ghcup install cabal 3.6.2.0
 ghcup set cabal 3.6.2.0
 ```
 
-Kiểm tra:
+Xác minh các phiên bản đã cài đặt:
+
+Kiểm tra `ghc`:
 
 ```bash
 ghc --version
+```
+
+Đầu ra dự kiến:
+
+```
+The Glorious Glasgow Haskell Compilation System, version 8.10.7
+```
+
+Kiểm tra `cabal`:
+
+```bash
 cabal --version
 ```
 
----
+Đầu ra dự kiến:
 
-### Build libsodium
+```
+cabal-install version 3.6.2.0
+compiled using version 3.6.2.0 of the Cabal library
+```
+
+<Callout type="important">
+  Đảm bảo các phiên bản đã cài đặt khớp với các phiên bản được đề xuất. Nếu không, hãy kiểm tra lại các bước trước đó.
+</Callout>
+
+### Tải xuống & Biên dịch
+
+Tạo thư mục làm việc:
 
 ```bash
 mkdir -p $HOME/cardano-src
 cd $HOME/cardano-src
+```
 
+Tải xuống, biên dịch và cài đặt `libsodium`:
+
+```bash
 git clone https://github.com/input-output-hk/libsodium
 cd libsodium
 git checkout 66f017f1
@@ -256,12 +420,118 @@ make
 sudo make install
 ```
 
----
+Thêm các biến môi trường vào hồ sơ shell (ví dụ: `$HOME/.zshrc` hoặc `$HOME/.bashrc`):
+
+```bash
+export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"
+```
+
+Đối với hệ thống M1 với LLVM, thêm:
+
+```bash
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+```
+
+<Callout type="note">
+  Đường dẫn cài đặt `llvm` có thể khác nhau. Kiểm tra đầu ra sau khi cài đặt LLVM để xác nhận đường dẫn. Cài đặt lại LLVM nếu cần để lấy lại thông tin
+  này.
+</Callout>
+
+Tải lại hồ sơ shell:
+
+```bash
+source $HOME/.zshrc
+# hoặc
+source $HOME/.bashrc
+```
+
+Quay lại thư mục làm việc:
+
+```bash
+cd $HOME/cardano-src
+```
+
+Tải xuống kho lưu trữ `cardano-node`:
+
+```bash
+git clone https://github.com/input-output-hk/cardano-node.git
+cd cardano-node
+git fetch --all --recurse-submodules --tags
+```
+
+Chuyển sang cam kết được gắn thẻ mới nhất:
+
+```bash
+git checkout $(curl -s https://api.github.com/repos/input-output-hk/cardano-node/releases/latest | jq -r .tag_name)
+```
+
+<Callout type="important">
+  Nếu nâng cấp một nút hiện có, hãy kiểm tra [ghi chú phát hành trên GitHub](https://github.com/input-output-hk/cardano-node/releases) để biết các
+  thay đổi.
+</Callout>
+
+#### Cấu hình tùy chọn xây dựng
+
+Sử dụng phiên bản `ghc` đã cài đặt:
+
+```bash
+cabal configure --with-compiler=ghc-8.10.7
+```
+
+Đối với hệ thống M1, cấu hình các tùy chọn cabal:
+
+```bash
+echo "package trace-dispatcher" >> cabal.project.local
+echo "  ghc-options: -Wwarn" >> cabal.project.local
+echo "" >> cabal.project.local
+```
+
+### Xây dựng và cài đặt nút
+
+Biên dịch các tệp nhị phân:
+
+```bash
+cabal build all
+```
+
+Cài đặt các tệp nhị phân vào `$HOME/.local/bin`:
+
+```bash
+mkdir -p $HOME/.local/bin
+cp -p "$(./scripts/bin-path.sh cardano-node)" $HOME/.local/bin/
+cp -p "$(./scripts/bin-path.sh cardano-cli)" $HOME/.local/bin/
+```
+
+Thêm dòng sau vào hồ sơ shell để các lệnh trở thành toàn cục:
+
+```bash
+export PATH="$HOME/.local/bin/:$PATH"
+```
+
+Tải lại hồ sơ shell:
+
+```bash
+source $HOME/.zshrc
+# hoặc
+source $HOME/.bashrc
+```
+
+Xác minh các phiên bản đã cài đặt:
+
+```bash
+cardano-cli --version
+cardano-node --version
+```
+
+Chúc mừng, bạn đã cài đặt thành công các thành phần Cardano trên hệ thống MacOS của mình! 🎉🎉🎉
+
+Tiếp theo, tìm hiểu cách [chạy cardano-node](/docs/getting-started/running-cardano).
 
 ## Windows
 
-:::important
-Hướng dẫn cài đặt Windows đang được cập nhật.  
-Trong thời gian này, nên dùng [WSL (Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/)  
-và làm theo hướng dẫn [Linux](#linux).
-:::
+<Callout type="important">
+  Hướng dẫn cài đặt Windows vẫn đang được thực hiện. Chúng tôi khuyên bạn nên sử dụng [WSL (Windows Subsystem for
+  Linux)](https://docs.microsoft.com/en-us/windows/wsl/) để tạo môi trường Linux trên Windows. Sau khi thiết lập WSL, hãy làm theo hướng dẫn
+  [Linux](#linux) để cài đặt và chạy `cardano-node`.
+</Callout>
