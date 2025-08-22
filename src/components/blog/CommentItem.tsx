@@ -120,9 +120,19 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
 
   const renderCommentContent = (content: string) => {
     const shouldTruncate = content.length > MAX_COMMENT_LENGTH;
+    const isEdited = comment.updatedAt && comment.updatedAt !== comment.createdAt;
     
     if (!shouldTruncate) {
-      return <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">{content}</p>;
+      return (
+        <div>
+          <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">{content}</p>
+          {isEdited && (
+            <span className="text-xs text-gray-500 dark:text-gray-400 italic mt-1 block">
+              (edited)
+            </span>
+          )}
+        </div>
+      );
     }
 
     return (
@@ -130,12 +140,19 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
         <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">
           {expandedComment ? content : `${content.substring(0, MAX_COMMENT_LENGTH)}...`}
         </p>
-        <button
-          onClick={toggleCommentExpansion}
-          className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium mt-1"
-        >
-          {expandedComment ? "Show less" : "Show more"}
-        </button>
+        <div className="flex items-center gap-2 mt-1">
+          <button
+            onClick={toggleCommentExpansion}
+            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+          >
+            {expandedComment ? "Show less" : "Show more"}
+          </button>
+          {isEdited && (
+            <span className="text-xs text-gray-500 dark:text-gray-400 italic">
+              (edited)
+            </span>
+          )}
+        </div>
       </div>
     );
   };

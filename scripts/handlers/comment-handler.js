@@ -300,7 +300,10 @@ class CommentHandler {
 
       const updatedComment = await prisma.comment.update({
         where: { id: realCommentId },
-        data: { content: message.content },
+        data: { 
+          content: message.content,
+          updatedAt: new Date()
+        },
         include: {
           user: true,
         },
@@ -313,12 +316,14 @@ class CommentHandler {
         postId: updatedComment.postId,
         parentCommentId: updatedComment.parentCommentId,
         createdAt: updatedComment.createdAt.toISOString(),
+        updatedAt: updatedComment.updatedAt.toISOString(),
         user: updatedComment.user ? {
           wallet: updatedComment.user.wallet,
           image: updatedComment.user.image,
           name: updatedComment.user.name,
         } : null,
         isTemp: false,
+        isEdited: true,
       };
 
       this.server.broadcastToPostRoom(message.postId, {
