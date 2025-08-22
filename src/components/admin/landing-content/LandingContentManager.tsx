@@ -26,11 +26,14 @@ export default function LandingContentManager() {
   const { data: landingContents = [] } = useQuery({
     queryKey: ['landing-content'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/landing-content');
+      const response = await fetch('/api/admin/landing-content', {
+        credentials: 'include'
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch landing content');
       }
-      return response.json();
+      const data = await response.json();
+      return data?.content || [];
     }
   });
 
@@ -68,6 +71,7 @@ export default function LandingContentManager() {
       const response = await fetch('/api/admin/landing-content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {

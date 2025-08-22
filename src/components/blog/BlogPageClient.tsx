@@ -43,10 +43,11 @@ export default function BlogPageClient() {
     queryFn: async () => {
       const res = await fetch('/api/admin/tags');
       if (!res.ok) throw new Error('Failed to fetch tags');
-      return res.json();
+      const data = await res.json();
+      return data?.tags || [];
     }
   });
-  const allTags: BlogTag[] = tagsData?.tags || [];
+  const allTags: BlogTag[] = tagsData || [];
 
   const filteredPosts = posts.filter(post => {
     const matchTitle = post.title.toLowerCase().includes(search.toLowerCase());

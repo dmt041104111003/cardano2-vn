@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
+import { withAdmin } from "~/lib/api-wrapper";
 
 export async function GET(
   request: NextRequest,
@@ -27,53 +28,43 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const { name, role, description, image, email, color, skills, order, tabId } = await request.json();
-
-    const member = await prisma.member.update({
-      where: { id: params.id },
-      data: {
-        name,
-        role,
-        description,
-        image,
-        email,
-        color,
-        skills,
-        order,
-        tabId: tabId || null
-      }
-    });
-
-    return NextResponse.json({ member });
-  } catch (error) {
-    console.error('Error updating member:', error);
-    return NextResponse.json(
-      { error: 'Failed to update member' },
-      { status: 500 }
-    );
+export const PUT = withAdmin(async (req) => {
+  const id = req.nextUrl.pathname.split('/').pop();
+  if (!id) {
+    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
   }
-}
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    await prisma.member.delete({
-      where: { id: params.id }
-    });
+  const { name, role, description, image, email, color, skills, order, tabId, isActive } = await req.json();
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting member:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete member' },
-      { status: 500 }
-    );
+  const member = await prisma.member.update({
+    where: { id },
+    data: {
+      name,
+      role,
+      description,
+      image,
+      email,
+      color,
+      skills,
+      order,
+      tabId,
+      isActive
+    }
+  });
+
+  return NextResponse.json({ member });
+});
+
+export const DELETE = withAdmin(async (req) => {
+  const id = req.nextUrl.pathname.split('/').pop();
+  if (!id) {
+    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
   }
-} 
+
+  await prisma.member.update({
+    where: { id },
+    data: { isActive: false }
+  });
+
+  return NextResponse.json({ success: true });
+});

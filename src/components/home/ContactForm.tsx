@@ -11,11 +11,14 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, capt
   const { data: eventLocations } = useQuery({
     queryKey: ['contact-form-event-locations'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/event-locations');
+      const response = await fetch('/api/admin/event-locations', {
+        credentials: 'include'
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch event locations');
       }
-      return response.json();
+      const data = await response.json();
+      return data?.locations || [];
     },
     staleTime: 5 * 60 * 1000, 
     gcTime: 10 * 60 * 1000,
@@ -25,11 +28,14 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, capt
   const { data: courses } = useQuery({
     queryKey: ['contact-form-courses'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/courses');
+      const response = await fetch('/api/admin/courses', {
+        credentials: 'include'
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch courses');
       }
-      return response.json();
+      const data = await response.json();
+      return data?.courses || [];
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000, 

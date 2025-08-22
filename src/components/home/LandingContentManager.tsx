@@ -15,7 +15,7 @@ export default function LandingContentManagerWrapper() {
         return null;
       }
       const sessionUser = session.user as { address?: string; email?: string };
-      const url = new URL('/api/auth/me', window.location.origin);
+      const url = new URL('/api/user', window.location.origin);
       if (sessionUser.address) url.searchParams.set('address', sessionUser.address);
       if (sessionUser.email) url.searchParams.set('email', sessionUser.email);
 
@@ -28,7 +28,7 @@ export default function LandingContentManagerWrapper() {
     enabled: !!session?.user,
   });
 
-  const isAdmin = userData?.user?.role === 'ADMIN';
+  const isAdmin = userData?.role?.name === 'ADMIN';
 
   if (!isAdmin) {
     return null;

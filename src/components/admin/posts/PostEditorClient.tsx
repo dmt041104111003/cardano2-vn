@@ -54,7 +54,7 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       try {
         const res = await fetch('/api/admin/tags', { credentials: 'include' });
         const data = await res.json();
-        if (Array.isArray(data.tags)) setTags(data.tags);
+        if (Array.isArray(data?.tags)) setTags(data.tags);
       } catch {}
       setLoadingTags(false);
     };

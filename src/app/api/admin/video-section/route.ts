@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
+import { withAdmin } from "~/lib/api-wrapper";
 
-export async function GET() {
+export const GET = withAdmin(async () => {
   try {
-    const videos = await prisma.VideoSection.findMany({
+    const videos = await prisma.videoSection.findMany({
       orderBy: {
         createdAt: "desc",
       },
@@ -14,9 +15,9 @@ export async function GET() {
     console.error("GET /api/videos error:", error);
     return NextResponse.json({ error: "Failed to fetch videos" }, { status: 500 });
   }
-}
+});
 
-export async function POST(req: Request) {
+export const POST = withAdmin(async (req) => {
   const body = await req.json();
   const { videoUrl, title, channelName } = body;
 
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid YouTube URL" }, { status: 400 });
   }
 
-  const existing = await prisma.VideoSection.findFirst({
+  const existing = await prisma.videoSection.findFirst({
     where: { videoUrl },
   });
 
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
 
   const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
 
-  const video = await prisma.VideoSection.create({
+  const video = await prisma.videoSection.create({
     data: {
       videoId,
       channelName,
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
   });
 
   return NextResponse.json(video);
-}
+});
 
 function extractYouTubeVideoId(url: string): string | null {
   const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/;
