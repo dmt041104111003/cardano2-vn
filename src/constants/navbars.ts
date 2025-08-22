@@ -29,4 +29,11 @@ export const navbars = [
     title: "Lms",
     href: "/lms",
   },
+
+  {
+    id: 5,
+    target: "_blank",
+    title: "Tool",
+    href: "/tool",
+  },
 ];
