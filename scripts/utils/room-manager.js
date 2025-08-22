@@ -30,10 +30,11 @@ class RoomManager {
   }
 
   broadcastToPostRoom(postId, message, excludeClientId) {
-    const room = this.server.postRooms.get(postId);
+    let room = this.server.postRooms.get(postId);
     if (!room) {
-      console.log(`No room found for postId: ${postId}`);
-      return;
+      console.log(`No room found for postId: ${postId}, creating temporary room for broadcast`);
+      this.server.postRooms.set(postId, new Set());
+      room = this.server.postRooms.get(postId);
     }
 
     console.log(`Broadcasting to ${room.size} clients in room ${postId}, excluding: ${excludeClientId}`);
