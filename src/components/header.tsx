@@ -13,7 +13,6 @@ import { useUser } from "~/hooks/useUser";
 import { WalletAvatar } from "~/components/WalletAvatar";
 import NotificationBell from "~/components/ui/notification-bell";
 
-
 function UserAvatar({ session }: { session: any }) {
   const [imageError, setImageError] = useState(false);
 
@@ -65,6 +64,7 @@ export default function Header() {
   const isActiveNav = (href: string) => {
     if (href === "/") return pathname === "/";
     if (href === "/docs") return pathname.startsWith("/docs");
+    if (href === "/tool") return pathname.startsWith("/tool");
     if (href === "/blog") return pathname.startsWith("/blog");
     if (href === "/project") return pathname.startsWith("/project");
     if (href === "/about") return pathname.startsWith("/about");
@@ -128,9 +128,7 @@ export default function Header() {
               </Link>
             )}
 
-            {session && (
-              <NotificationBell />
-            )}
+            {session && <NotificationBell />}
 
             {session && (
               <div className="flex items-center gap-2">
@@ -237,9 +235,7 @@ export default function Header() {
                   </div>
                 )}
 
-                {session && (
-                  <NotificationBell />
-                )}
+                {session && <NotificationBell />}
 
                 {session && (
                   <div className="flex items-center justify-between">
