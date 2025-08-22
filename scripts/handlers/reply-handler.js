@@ -82,7 +82,6 @@ class ReplyHandler {
         parentComment: parentComment ? {
           id: parentComment.id,
           userId: parentComment.userId,
-          updatedAt: parentComment.updatedAt?.toISOString(),
           user: parentComment.user ? {
             wallet: parentComment.user.wallet,
             image: parentComment.user.image,
@@ -147,7 +146,6 @@ class ReplyHandler {
           postId: savedReply.postId,
           parentCommentId: savedReply.parentCommentId,
           createdAt: savedReply.createdAt.toISOString(),
-          updatedAt: savedReply.updatedAt?.toISOString(),
           user: savedReply.user ? {
             wallet: savedReply.user.wallet,
             image: savedReply.user.image,
@@ -156,7 +154,6 @@ class ReplyHandler {
           parentComment: savedReply.parent ? {
             id: savedReply.parent.id,
             userId: savedReply.parent.userId,
-            updatedAt: savedReply.parent.updatedAt?.toISOString(),
             user: savedReply.parent.user ? {
               wallet: savedReply.parent.user.wallet,
               image: savedReply.parent.user.image,

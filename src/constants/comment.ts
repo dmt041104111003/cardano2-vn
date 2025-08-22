@@ -3,12 +3,10 @@ export interface Comment {
   id: string;
   content: string;
   createdAt: string;
-  updatedAt?: string; 
   userId: string;
   user?: {
     wallet?: string;
     image?: string;
-    name?: string;
   } | null;
   parentCommentId?: string | null;
   replies?: Comment[];
@@ -20,7 +18,6 @@ export interface Comment {
   isPostAuthor?: boolean;
   postId?: string;
   isTemp?: boolean;
-  isEdited?: boolean;
 }
 
 export interface CommentInputProps {

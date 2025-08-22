@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '~/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '~/app/api/auth/[...nextauth]/route';
+import cloudinary from '~/lib/cloudinary';
 import { createUniqueSlug } from '~/lib/slug';
 
 function getYoutubeIdFromUrl(url: string) {
@@ -10,60 +11,101 @@ function getYoutubeIdFromUrl(url: string) {
   return match ? match[1] : '';
 }
 
-export async function GET(request: NextRequest, context: { params: Promise<Record<string, string>> }) {
-  const params = await context.params;
+export async function GET(request: NextRequest) {
+  const isPublic = request.nextUrl?.searchParams?.get('public') === '1';
+  const titleQuery = request.nextUrl?.searchParams?.get('title') || '';
   try {
-    const post = await prisma.post.findUnique({
-      where: { slug: params.slug },
+    if (isPublic) {
+      let where = {};
+      if (titleQuery) {
+        where = {
+          title: {
+            contains: titleQuery,
+            mode: 'insensitive',
+          },
+        };
+      }
+      const posts = await prisma.post.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          createdAt: true,
+          status: true,
+          author: { select: { name: true } },
+          media: { select: { url: true, type: true, id: true } },
+          tags: { select: { tag: { select: { id: true, name: true } } } },
+        },
+      });
+      const mapped = posts.map(p => ({
+        ...p,
+        slug: p.slug || p.id,
+        author: p.author?.name || 'Admin',
+        media: Array.isArray(p.media)
+          ? p.media.map((m: { url: string; type: string; id: string }) =>
+              m.type === 'YOUTUBE'
+                ? { ...m, id: m.id && m.id.length === 11 ? m.id : getYoutubeIdFromUrl(m.url) }
+                : m
+            )
+          : [],
+        tags: p.tags?.map((t: { tag: { id: string; name: string } }) => t.tag) || [],
+      }));
+      return NextResponse.json({ posts: mapped });
+    }
+    const posts = await prisma.post.findMany({
+      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         title: true,
         slug: true,
-        content: true,
+        status: true,
+        shares: true,
         createdAt: true,
         updatedAt: true,
-        status: true,
-        githubRepo: true,
-        author: { select: { id: true, name: true, wallet: true } }, 
-        media: { select: { url: true, type: true, id: true } },
+        comments_rel: { select: { id: true, userId: true } }, 
+        reactions: { select: { type: true, userId: true } }, 
+        author: { select: { name: true } },
         tags: { select: { tag: { select: { id: true, name: true } } } },
-        shares: true,
+        media: { select: { url: true, type: true, id: true } },
       },
     });
-    const comments = await prisma.comment.findMany({
-      where: { postId: post?.id || '' },
-      select: {
-        id: true,
-        content: true,
-        createdAt: true,
-        userId: true,
-        user: { select: { wallet: true, image: true, name: true } },
-        parentCommentId: true,
-      },
-      orderBy: { createdAt: 'asc' },
+    const mapped = posts.map(post => {
+      const reactionCount: Record<string, number> = {};
+      for (const r of post.reactions) {
+        reactionCount[r.type] = (reactionCount[r.type] || 0) + 1;
+      }
+      return {
+        id: post.id,
+        title: post.title,
+        slug: post.slug || post.id,
+        status: post.status,
+        shares: post.shares,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+        comments: post.comments_rel.length,
+        comments_rel: post.comments_rel, 
+        reactions: post.reactions,
+        media: Array.isArray(post.media)
+          ? post.media.map((m: { url: string; type: string; id: string }) =>
+              m.type === 'YOUTUBE'
+                ? { ...m, id: m.id && m.id.length === 11 ? m.id : getYoutubeIdFromUrl(m.url) }
+                : m
+            )
+          : [],
+        author: post.author?.name || 'Admin',
+        tags: post.tags?.map(t => t.tag) || [],
+        ...reactionCount,
+      };
     });
-    if (!post) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    
-    const processedComments = comments.map(comment => ({
-      ...comment,
-      isEdited: false 
-    }));
-    
-    const tags = post.tags?.map((t: { tag: { id: string; name: string } }) => t.tag) || [];
-    let media = Array.isArray(post.media) ? post.media : [];
-    media = media.map((m) =>
-      m.type === 'YOUTUBE'
-        ? { ...m, id: m.id && m.id.length === 11 ? m.id : getYoutubeIdFromUrl(m.url) }
-        : m
-    );
-    return NextResponse.json({ post: { ...post, author: post.author?.name || 'Admin', authorId: post.author?.id || '', authorWallet: post.author?.wallet || '', tags, media, comments: processedComments } });
+    return NextResponse.json({ posts: mapped });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-export async function DELETE(request: NextRequest, context: { params: Promise<Record<string, string>> }) {
-  const params = await context.params;
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || typeof session !== 'object' || !('user' in session) || typeof session.user !== 'object' || !session.user) {
@@ -88,155 +130,96 @@ export async function DELETE(request: NextRequest, context: { params: Promise<Re
     if (!currentUser || !currentUser.role || String(currentUser.role.name).toUpperCase() !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
-
-    await prisma.post.delete({
-      where: { slug: params.slug },
-    });
-    return NextResponse.json({ message: 'Post deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting post:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
-
-export async function PATCH(request: NextRequest, context: { params: Promise<Record<string, string>> }) {
-  const params = await context.params;
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session || typeof session !== 'object' || !('user' in session) || typeof session.user !== 'object' || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
     
-    const sessionUser = session.user as { address?: string; email?: string };
-    let currentUser = null;
-    
-    if (sessionUser.address) {
-      currentUser = await prisma.user.findUnique({
-        where: { wallet: sessionUser.address },
-        include: { role: true },
-      });
-    } else if (sessionUser.email) {
-      currentUser = await prisma.user.findUnique({
-        where: { email: sessionUser.email },
-        include: { role: true },
-      });
-    }
-    
-    if (!currentUser || !currentUser.role || String(currentUser.role.name).toUpperCase() !== 'ADMIN') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
     const body = await request.json();
-    if (!body.title || !body.content || !body.status || !body.tags || !body.media) {
+    const { title, content, status, tags, media, githubRepo, createdAt, updatedAt } = body;
+    if (!title || !content || !status) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
-
-    console.log('PATCH params:', params);
-    console.log('PATCH body:', body);
-    const isUUID = (str: string) => /^[0-9a-fA-F-]{36}$/.test(str);
-
-    const existingPost = await prisma.post.findUnique({
-      where: { slug: params.slug },
-      select: { id: true }
-    });
-
-    if (!existingPost) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    const exist = await prisma.post.findFirst({ where: { title: { equals: title, mode: 'insensitive' } } });
+    if (exist) {
+      return NextResponse.json({ error: 'Title already exists' }, { status: 409 });
     }
 
-    const postId = existingPost.id;
+    const existingSlugs = await prisma.post.findMany({
+      select: { slug: true }
+    });
+    const slug = createUniqueSlug(title, existingSlugs.map(p => p.slug || ''));
 
     let tagIds: string[] = [];
-    if (body.tags && body.tags.length > 0) {
-      if (isUUID(body.tags[0])) {
-        tagIds = body.tags;
-      } else {
-        const tags = await prisma.tag.findMany({
-          where: { name: { in: body.tags } },
-          select: { id: true }
-        });
-        tagIds = tags.map(t => t.id);
+    if (Array.isArray(tags) && tags.length > 0) {
+      const foundTags = await prisma.tag.findMany({ where: { name: { in: tags } } });
+      tagIds = foundTags.map(t => t.id);
+    }
+    const post = await prisma.post.create({
+      data: {
+      title,
+      slug,
+      content,
+        status: status.toUpperCase(),
+      authorId: currentUser.id,
+      githubRepo: githubRepo || null,
+      createdAt: createdAt ? new Date(createdAt) : undefined,
+      updatedAt: updatedAt ? new Date(updatedAt) : undefined,
+      },
+      include: {
+        tags: { include: { tag: true } },
+        media: true,
+      },
+    });
+
+    if (Array.isArray(media) && media.length > 0) {
+      for (const mediaItem of media) {
+        if (mediaItem.url && mediaItem.type) {
+          let mediaData: any = {
+            url: mediaItem.url,
+            type: mediaItem.type.toUpperCase(),
+            postId: post.id,
+            uploadedBy: currentUser.id,
+          };
+
+          if (mediaItem.type.toUpperCase() === 'YOUTUBE' && mediaItem.id) {
+            mediaData.mediaId = mediaItem.id;
+          }
+
+          if (mediaItem.type.toUpperCase() === 'IMAGE' && /^data:image\//.test(mediaItem.url)) {
+            try {
+              const uploadRes = await cloudinary.uploader.upload(mediaItem.url, { resource_type: 'image' });
+              mediaData.url = uploadRes.url;
+            } catch (e) {
+              console.error('Cloudinary upload failed:', e);
+              continue; 
+            }
+          }
+
+          await prisma.media.create({
+            data: mediaData,
+          });
+    }
       }
     }
-    console.log('PATCH tagIds:', tagIds);
-    await prisma.postTag.deleteMany({
-      where: { postId: postId }
-    });
+
     if (tagIds.length > 0) {
       await prisma.postTag.createMany({
-        data: tagIds.map((tagId: string) => ({
-          postId: postId,
+        data: tagIds.map(tagId => ({
+          postId: post.id,
           tagId,
         })),
         skipDuplicates: true,
       });
     }
 
-    try {
-      await prisma.media.deleteMany({ where: { postId: postId } });
-      let mappedMedia = [];
-      if (Array.isArray(body.media) && body.media.length > 0) {
-        mappedMedia = body.media.map((m: { id: string; url: string; type: string }) => {
-          let mediaId = m.id;
-          let type = m.type;
-          if (type === 'YOUTUBE' || type === 'youtube') type = 'YOUTUBE';
-          else if (type === 'IMAGE' || type === 'image') type = 'IMAGE';
-          else if (type === 'VIDEO' || type === 'video') type = 'VIDEO';
-          else type = 'IMAGE';
-          if (type === 'YOUTUBE') {
-            mediaId = getYoutubeIdFromUrl(m.url);
-          }
-          return {
-            url: m.url,
-            type,
-            postId: postId,
-            mediaId,
-          };
-        });
-        console.log('PATCH mappedMedia:', mappedMedia);
-        for (const media of mappedMedia) {
-          try {
-            await prisma.media.create({ data: media });
-          } catch (err) {
-            console.error('Error creating media:', media, err);
-          }
-        }
-      }
+    const completePost = await prisma.post.findUnique({
+      where: { id: post.id },
+      include: {
+        tags: { include: { tag: true } },
+        media: true,
+      },
+    });
 
-      let newSlug = params.slug;
-      if (body.title) {
-        const existingSlugs = await prisma.post.findMany({
-          where: { 
-            slug: { not: params.slug }
-          },
-          select: { slug: true }
-        });
-        
-        const slugList = existingSlugs.map(p => p.slug);
-        newSlug = await createUniqueSlug(body.title, slugList);
-      }
-
-      const updated = await prisma.post.update({
-        where: { id: postId },
-        data: {
-          title: body.title,
-          content: body.content,
-          status: body.status,
-          slug: newSlug,
-        },
-        include: {
-          tags: { include: { tag: true } },
-          media: true,
-        },
-      });
-      console.log('PATCH updated post:', updated);
-      return NextResponse.json({ post: updated });
-    } catch (error) {
-      console.error('Error updating post:', error);
-      return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
-    }
+    return NextResponse.json({ post: completePost });
   } catch (error) {
-    console.error('Error in PATCH:', error);
+    console.error('Error creating post:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-} 
+}
