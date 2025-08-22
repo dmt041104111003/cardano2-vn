@@ -151,17 +151,44 @@ export async function POST(request: NextRequest) {
       const foundTags = await prisma.tag.findMany({ where: { name: { in: tags } } });
       tagIds = foundTags.map(t => t.id);
     }
-    const post = await prisma.post.create({
-      data: {
+
+    enum PostStatus {
+      DRAFT = 'DRAFT',
+      PUBLISHED = 'PUBLISHED',
+      ARCHIVED = 'ARCHIVED',
+    }
+    enum MediaType {
+      IMAGE = 'IMAGE',
+      YOUTUBE = 'YOUTUBE',
+      VIDEO = 'VIDEO',
+    }
+    type PostCreateInput = {
+      title: string;
+      slug: string;
+      content: string;
+      excerpt?: string;
+      status: PostStatus;
+      authorId: string;
+      githubRepo?: string | null;
+      createdAt?: Date;
+      updatedAt?: Date;
+      media?: { create: Array<{ url: string; type: MediaType }> };
+      tags?: { create: Array<{ tagId: string }> };
+    };
+
+    const postData: PostCreateInput = {
       title,
       slug,
       content,
-        status: status.toUpperCase(),
+      status: status.toUpperCase() as PostStatus,
       authorId: currentUser.id,
       githubRepo: githubRepo || null,
       createdAt: createdAt ? new Date(createdAt) : undefined,
       updatedAt: updatedAt ? new Date(updatedAt) : undefined,
-      },
+    };
+
+    const post = await prisma.post.create({
+      data: postData,
       include: {
         tags: { include: { tag: true } },
         media: true,
@@ -188,7 +215,7 @@ export async function POST(request: NextRequest) {
               mediaData.url = uploadRes.url;
             } catch (e) {
               console.error('Cloudinary upload failed:', e);
-              continue; 
+              continue; // Skip this media item if upload fails
             }
           }
 
