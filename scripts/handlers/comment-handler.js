@@ -127,6 +127,7 @@ class CommentHandler {
           postId: savedComment.postId,
           parentCommentId: savedComment.parentCommentId,
           createdAt: savedComment.createdAt.toISOString(),
+          updatedAt: savedComment.updatedAt?.toISOString(),
           user: savedComment.user ? {
             wallet: savedComment.user.wallet,
             image: savedComment.user.image,
