@@ -13,7 +13,8 @@ export default function EventLocationManager() {
       if (!response.ok) {
         throw new Error('Failed to fetch event locations');
       }
-      return response.json();
+      const data = await response.json();
+      return data?.locations || [];
     },
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,

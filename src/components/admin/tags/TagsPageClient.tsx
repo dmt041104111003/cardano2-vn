@@ -32,10 +32,11 @@ export function TagsPageClient() {
     queryFn: async () => {
       const res = await fetch('/api/admin/tags', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch tags');
-      return res.json();
+      const data = await res.json();
+      return data?.tags || [];
     }
   });
-  const tags: Tag[] = queryData?.tags || [];
+  const tags: Tag[] = queryData || [];
 
   const createTagMutation = useMutation({
     mutationFn: async (name: string) => {

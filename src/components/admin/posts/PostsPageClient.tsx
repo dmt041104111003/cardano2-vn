@@ -53,10 +53,11 @@ export function PostsPageClient() {
     queryFn: async () => {
       const res = await fetch('/api/admin/tags', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch tags');
-      return res.json();
+      const data = await res.json();
+      return data?.tags || [];
     }
   });
-  const tags = tagsData?.tags || [];
+  const tags = tagsData || [];
 
   const {
     data: mediaData,
@@ -66,7 +67,8 @@ export function PostsPageClient() {
     queryFn: async () => {
       const res = await fetch('/api/admin/media', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch media');
-      return res.json();
+      const data = await res.json();
+      return data?.media || [];
     }
   });
   const mediaStats = mediaData?.stats || {

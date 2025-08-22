@@ -1,15 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "~/app/api/auth/[...nextauth]/route";
+import { withAdmin } from "~/lib/api-wrapper";
 
-export async function GET() {
+export const GET = withAdmin(async () => {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const technologies = await prisma.technology.findMany({
       orderBy: {
         createdAt: 'desc',
@@ -18,35 +12,25 @@ export async function GET() {
 
     return NextResponse.json({ technologies });
   } catch (error) {
-    console.error("Error fetching technologies:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error('Error fetching technologies:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});
 
-export async function POST(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+export const POST = withAdmin(async (req) => {
+  const body = await req.json();
+  const { title, name, description, href, image, githubRepo } = body;
 
-    const body = await request.json();
-    const { title, name, description, href, image, githubRepo } = body;
+  const technology = await prisma.technology.create({
+    data: {
+      title,
+      name,
+      description,
+      href,
+      image,
+      githubRepo: githubRepo || null,
+    },
+  });
 
-    const technology = await prisma.technology.create({
-      data: {
-        title,
-        name,
-        description,
-        href,
-        image,
-        githubRepo: githubRepo || null,
-      },
-    });
-
-    return NextResponse.json({ technology });
-  } catch (error) {
-    console.error("Error creating technology:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-} 
+  return NextResponse.json({ technology });
+}); 

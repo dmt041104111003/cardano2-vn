@@ -31,7 +31,7 @@ export default function ContactFormSection() {
       }
       
       const sessionUser = session.user as { address?: string; email?: string };
-      const url = new URL('/api/auth/me', window.location.origin);
+      const url = new URL('/api/user', window.location.origin);
       if (sessionUser.address) url.searchParams.set('address', sessionUser.address);
       if (sessionUser.email) url.searchParams.set('email', sessionUser.email);
 
@@ -40,7 +40,9 @@ export default function ContactFormSection() {
                  if (response.ok) {
            const data = await response.json();
            console.log('API response data:', data);
-           setIsAdmin(data.user?.role === 'ADMIN');
+           console.log('ContactFormSection - data:', data);
+           console.log('ContactFormSection - role:', data?.role?.name);
+           setIsAdmin(data?.role?.name === 'ADMIN');
          }
       } catch (error) {
         console.error('Error checking admin status:', error);
@@ -80,7 +82,7 @@ export default function ContactFormSection() {
           return;
         }
         
-        const url = new URL('/api/auth/me', window.location.origin);
+        const url = new URL('/api/user', window.location.origin);
         if (address) url.searchParams.set('address', address);
         if (email) url.searchParams.set('email', email);
         
@@ -125,9 +127,12 @@ export default function ContactFormSection() {
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useQuery({
     queryKey: ['contact-courses'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/courses');
+      const response = await fetch('/api/admin/courses', {
+        credentials: 'include'
+      });
       if (!response.ok) throw new Error('Failed to fetch courses');
-      return response.json();
+      const data = await response.json();
+      return data?.courses || [];
     },
     staleTime: 5 * 60 * 1000, 
     gcTime: 10 * 60 * 1000, 

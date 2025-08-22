@@ -1,78 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '~/app/api/auth/[...nextauth]/route';
-import { prisma } from '~/lib/prisma';
-import { uploadImageFromFile, uploadImageFromUrl } from '~/lib/uploadImage';
+import { withAuth } from '~/lib/api-wrapper';
+import cloudinary from '~/lib/cloudinary';
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (req) => {
+  const formData = await req.formData();
+  const file = formData.get('file') as File;
+  
+  if (!file) {
+    return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+  }
+
   try {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          resource_type: 'auto',
+          folder: 'uploads',
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(buffer);
+    });
 
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const sessionUser = session.user as { address?: string; email?: string };
-    let user = null;
-
-    if (sessionUser.address) {
-      user = await prisma.user.findUnique({
-        where: { wallet: sessionUser.address },
-        include: { role: true }
-      });
-    } else if (sessionUser.email) {
-      user = await prisma.user.findUnique({
-        where: { email: sessionUser.email },
-        include: { role: true }
-      });
-    }
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    if (user.role.name !== 'ADMIN') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
- 
-    const formData = await request.formData();
-    const file = formData.get('file');
-    const url = formData.get('url');
-
-    let imageUrl = '';
-    let publicId = '';
-
-
-    if (file && typeof file === 'object' && 'arrayBuffer' in file) {
-      const res = await uploadImageFromFile(file);
-      imageUrl = res.url;
-      publicId = res.publicId;
-    } else if (url && typeof url === 'string') {
-      if (/^data:image\//.test(url) || /^https?:\/\//.test(url)) {
-        const res = await uploadImageFromUrl(url);
-        imageUrl = res.url;
-        publicId = res.publicId;
-      } else {
-        return NextResponse.json({ error: 'Invalid image input' }, { status: 400 });
-      }
-    } else {
-      return NextResponse.json({ error: 'No image provided' }, { status: 400 });
-    }
-
-   
     return NextResponse.json({
-      message: 'Image uploaded to Cloudinary',
-      media: {
-        url: imageUrl,
-        public_id: publicId,
-        type: 'IMAGE',
-      },
+      url: (result as any).secure_url,
+      public_id: (result as any).public_id,
     });
   } catch (error) {
-    console.error('Upload error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
   }
-}
+});

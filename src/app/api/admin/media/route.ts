@@ -1,34 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '~/app/api/auth/[...nextauth]/route';
 import { prisma } from '~/lib/prisma';
+import { withAdmin } from '~/lib/api-wrapper';
 
-export async function GET() {
+export const GET = withAdmin(async () => {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    const sessionUser = session.user as { address?: string; email?: string };
-    let user = null;
-    
-    if (sessionUser.address) {
-      user = await prisma.user.findUnique({
-        where: { wallet: sessionUser.address },
-        include: { role: true }
-      });
-    } else if (sessionUser.email) {
-      user = await prisma.user.findUnique({
-        where: { email: sessionUser.email },
-        include: { role: true }
-      });
-    }
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    if (user.role.name !== 'ADMIN') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
     const media = await prisma.media.findMany({
       orderBy: { uploadedAt: 'desc' },
       include: {
@@ -40,6 +15,7 @@ export async function GET() {
         }
       }
     });
+    
     // Nhóm theo url
     const grouped = new Map();
     for (const item of media) {
@@ -58,8 +34,9 @@ export async function GET() {
         g.ids.push(item.id);
       }
     }
+    
     const transformedMedia = Array.from(grouped.values()).map(item => ({
-      id: item.id, // id đầu tiên
+      id: item.id,
       filename: item.url.split('/').pop() || 'unknown',
       originalName: item.url.split('/').pop() || 'unknown',
       mimeType: item.type === 'IMAGE' ? 'image/jpeg' : item.type === 'VIDEO' ? 'video/mp4' : 'application/youtube',
@@ -72,6 +49,7 @@ export async function GET() {
       ids: item.ids,
       type: item.type
     }));
+    
     // Thống kê
     const total = transformedMedia.length;
     const images = transformedMedia.filter(m => m.type === 'IMAGE').length;
@@ -79,6 +57,7 @@ export async function GET() {
     const documents = transformedMedia.filter(m => m.type === 'YOUTUBE').length;
     const used = transformedMedia.reduce((acc, m) => acc + (m.usageCount > 0 ? 1 : 0), 0);
     const unused = total - used;
+    
     return NextResponse.json({
       media: transformedMedia,
       stats: {
@@ -92,84 +71,56 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Error fetching media:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});
 
-export async function POST(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    // Check if user is admin - Support all 3 providers
-    const sessionUser = session.user as { address?: string; email?: string };
-    let user = null;
-    
-    if (sessionUser.address) {
-      user = await prisma.user.findUnique({
-        where: { wallet: sessionUser.address },
-        include: { role: true }
-      });
-    } else if (sessionUser.email) {
-      user = await prisma.user.findUnique({
-        where: { email: sessionUser.email },
-        include: { role: true }
-      });
-    }
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    if (user.role.name !== 'ADMIN') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-    const body = await request.json();
-    const { url, type } = body;
-    if (!url || !type) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-    // Validate YouTube URL
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/watch\/)([a-zA-Z0-9_-]{11})/;
-    if (type === 'YOUTUBE' && !youtubeRegex.test(url)) {
-      return NextResponse.json({ error: 'Invalid YouTube URL' }, { status: 400 });
-    }
-    const exist = await prisma.media.findFirst({ where: { url, type } });
-    if (exist) {
-      return NextResponse.json({
-        message: 'Media already exists',
-        media: {
-          id: exist.id,
-          url: exist.url,
-          type: exist.type,
-        },
-        reused: true
-      });
-    }
-    // Save to database
-    const media = await prisma.media.create({
-      data: {
-        url: url,
-        type: type,
-        uploadedBy: user.id,
-      },
-    });
-    return NextResponse.json({
-      message: 'Media added successfully',
-      media: {
-        id: media.id,
-        url: media.url,
-        type: media.type,
-      },
-      reused: false
-    });
-  } catch (error) {
-    console.error('Error adding media:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+export const POST = withAdmin(async (req, user) => {
+  if (!user) {
+    return NextResponse.json({ error: 'User not found' }, { status: 404 });
   }
-} 
+  const body = await req.json();
+  const { url, type } = body;
+  
+  if (!url || !type) {
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  }
+  
+  // Validate YouTube URL
+  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/watch\/)([a-zA-Z0-9_-]{11})/;
+  if (type === 'YOUTUBE' && !youtubeRegex.test(url)) {
+    return NextResponse.json({ error: 'Invalid YouTube URL' }, { status: 400 });
+  }
+  
+  const exist = await prisma.media.findFirst({ where: { url, type } });
+  if (exist) {
+    return NextResponse.json({
+      message: 'Media already exists',
+      media: {
+        id: exist.id,
+        url: exist.url,
+        type: exist.type,
+      },
+      reused: true
+    });
+  }
+  
+  // Save to database
+  const media = await prisma.media.create({
+    data: {
+      url: url,
+      type: type,
+      uploadedBy: user.id,
+    },
+  });
+  
+  return NextResponse.json({
+    message: 'Media added successfully',
+    media: {
+      id: media.id,
+      url: media.url,
+      type: media.type,
+    },
+    reused: false
+  });
+}); 
