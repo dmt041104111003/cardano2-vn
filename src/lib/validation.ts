@@ -33,6 +33,19 @@ export const postSchema = z.object({
   tags: z.array(z.string()).optional()
 });
 
+export const CreatePostSchema = z.object({
+  title: z.string().min(1).max(200),
+  slug: z.string().min(1).max(200),
+  content: z.string().min(1),
+  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
+  tags: z.array(z.string()).optional(),
+  media: z.array(z.object({
+    url: z.string().url(),
+    type: z.enum(['IMAGE', 'YOUTUBE', 'VIDEO'])
+  })).optional(),
+  githubRepo: z.string().url().optional()
+});
+
 export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
   try {
     return schema.parse(data);
