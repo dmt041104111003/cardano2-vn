@@ -124,20 +124,21 @@ export const authOptions = {
           });
 
           if (!dbUser) {
-            let userRole = roleCache.get("ADMIN");
-            if (!userRole) {
-              userRole = await prisma.role.findFirst({
-                where: { name: "ADMIN" },
-                select: { id: true }
-              });
-              if (userRole) {
-                roleCache.set("ADMIN", userRole);
-              }
-            }
-            
-            if (!userRole) {
-              throw new Error("Role ADMIN not exist");
-            }
+		let userRole = roleCache.get("USER");
+		if (!userRole) {
+		  userRole = await prisma.role.findFirst({
+		    where: { name: "USER" },
+		    select: { id: true }
+		  });
+		  if (userRole) {
+ 		   roleCache.set("USER", userRole);
+ 		 }
+		}
+
+		if (!userRole) {
+ 		 throw new Error("Role USER not exist");
+		}
+
 
             let avatar: string | null = user.image || null;
             if (avatar && avatar.startsWith('https://lh3.googleusercontent.com')) {
@@ -222,20 +223,21 @@ export const authOptions = {
           });
 
           if (!dbUser) {
-            let userRole = roleCache.get("ADMIN");
-            if (!userRole) {
-              userRole = await prisma.role.findFirst({
-                where: { name: "ADMIN" },
-                select: { id: true }
-              });
-              if (userRole) {
-                roleCache.set("ADMIN", userRole);
-              }
-            }
-            
-            if (!userRole) {
-              throw new Error("Role ADMIN not exist");
-            }
+		let userRole = roleCache.get("USER");
+		if (!userRole) {
+		  userRole = await prisma.role.findFirst({
+		    where: { name: "USER" },
+		    select: { id: true }
+		  });
+		  if (userRole) {
+ 		   roleCache.set("USER", userRole);
+ 		 }
+		}
+
+		if (!userRole) {
+		  throw new Error("Role USER not exist");
+		}
+
 
             let avatar: string | null = user.image || null;
             if (avatar && avatar.startsWith('https://avatars.githubusercontent.com')) {
@@ -318,20 +320,21 @@ export const authOptions = {
           });
 
           if (!dbUser) {
-            let userRole = roleCache.get("ADMIN");
-            if (!userRole) {
-              userRole = await prisma.role.findFirst({
-                where: { name: "ADMIN" },
-                select: { id: true }
-              });
-              if (userRole) {
-                roleCache.set("ADMIN", userRole);
-              }
-            }
-            
-            if (!userRole) {
-              throw new Error("Role ADMIN not exist");
-            }
+		let userRole = roleCache.get("USER");
+		if (!userRole) {
+		  userRole = await prisma.role.findFirst({
+		    where: { name: "USER" },
+		    select: { id: true }
+		  });
+ 		 if (userRole) {
+		    roleCache.set("USER", userRole);
+		  }
+		}
+
+		if (!userRole) {
+		  throw new Error("Role USER not exist");
+		}
+
 
             let avatar: string | null = user.image || null;
             if (!avatar && user.address) {
