@@ -1,90 +1,36 @@
 import { z } from 'zod';
 
-export const CreateUserSchema = z.object({
-  address: z.string().min(1, 'Address is required'),
-  name: z.string().optional(),
+export const paginationSchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(10),
+  cursor: z.string().optional(),
+  sortBy: z.string().optional(),
+  sortOrder: z.enum(['asc', 'desc']).default('desc')
 });
 
-export const UpdateUserSchema = z.object({
-  address: z.string().min(1, 'Address is required'),
-  name: z.string().optional(),
-  promote: z.boolean().optional(),
+export const userQuerySchema = z.object({
+  address: z.string().optional(),
+  email: z.string().email().optional()
+}).refine(data => data.address || data.email, {
+  message: "Either address or email is required"
 });
 
-export const CreatePostSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
-  slug: z.string().min(1, 'Slug is required').max(100, 'Slug too long')
-    .regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
-  content: z.string().min(1, 'Content is required'),
-  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).optional().default('DRAFT'),
-  tags: z.array(z.string()).optional(),
-  media: z.array(z.object({
-    url: z.string().url('Invalid URL'),
-    type: z.enum(['IMAGE', 'VIDEO', 'YOUTUBE']).optional().default('IMAGE')
-  })).optional(),
-  githubRepo: z.string().url('Invalid GitHub URL').optional(),
+export const courseSchema = z.object({
+  name: z.string().min(1).max(100),
+  image: z.string().url().optional(),
+  title: z.string().min(1).max(200).optional(),
+  description: z.string().max(1000).optional()
 });
 
-export const UpdatePostSchema = CreatePostSchema.partial();
-
-export const CreateProjectSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
-  description: z.string().min(1, 'Description is required'),
-  image: z.string().url('Invalid image URL').optional(),
-  link: z.string().url('Invalid link URL').optional(),
-  year: z.number().int().min(2020, 'Year must be 2020 or later'),
-  quarterly: z.number().int().min(1).max(4, 'Quarter must be 1-4'),
+export const eventLocationSchema = z.object({
+  name: z.string().min(1).max(100)
 });
 
-export const UpdateProjectSchema = CreateProjectSchema.partial();
-
-export const CreateTechnologySchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
-  description: z.string().min(1, 'Description is required'),
-  image: z.string().url('Invalid image URL').optional(),
-  link: z.string().url('Invalid link URL').optional(),
-});
-
-export const UpdateTechnologySchema = CreateTechnologySchema.partial();
-
-export const CreateLandingContentSchema = z.object({
-  section: z.string().min(1, 'Section is required'),
-  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
-  subtitle: z.string().optional(),
-  description: z.string().optional(),
-  mainText: z.string().optional(),
-  subText: z.string().optional(),
-  media1Url: z.string().url('Invalid URL').optional(),
-  media2Url: z.string().url('Invalid URL').optional(),
-  media3Url: z.string().url('Invalid URL').optional(),
-  media4Url: z.string().url('Invalid URL').optional(),
-});
-
-export const UpdateLandingContentSchema = CreateLandingContentSchema.partial();
-
-export const CreateCourseSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
-  description: z.string().min(1, 'Description is required'),
-  image: z.string().url('Invalid image URL').optional(),
-  link: z.string().url('Invalid link URL').optional(),
-});
-
-export const UpdateCourseSchema = CreateCourseSchema.partial();
-
-export const CreateEventLocationSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
-});
-
-export const UpdateEventLocationSchema = CreateEventLocationSchema.partial();
-
-export const PaginationSchema = z.object({
-  page: z.string().transform(val => Math.max(1, parseInt(val) || 1)),
-  limit: z.string().transform(val => Math.min(100, Math.max(1, parseInt(val) || 10))),
-});
-
-export const SearchSchema = z.object({
-  q: z.string().min(1, 'Search query is required').max(100, 'Search query too long'),
-  type: z.enum(['posts', 'projects', 'technologies']).optional(),
+export const postSchema = z.object({
+  title: z.string().min(1).max(200),
+  content: z.string().min(1),
+  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
+  tags: z.array(z.string()).optional()
 });
 
 export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
@@ -92,9 +38,61 @@ export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
     return schema.parse(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const messages = error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`);
-      throw new Error(`Validation failed: ${messages.join(', ')}`);
+      throw new Error(`Validation failed: ${error.issues.map(issue => issue.message).join(', ')}`);
     }
     throw error;
   }
+}
+
+export function validateQueryParams<T>(schema: z.ZodSchema<T>, searchParams: URLSearchParams): T {
+  const params = Object.fromEntries(searchParams.entries());
+  return validateRequest(schema, params);
+}
+
+export function sanitizeString(input: string): string {
+  return input
+    .trim()
+    .replace(/[<>]/g, '')
+    .substring(0, 1000);
+}
+
+export function sanitizeEmail(email: string): string {
+  return email.toLowerCase().trim();
+}
+
+export function sanitizeWalletAddress(address: string): string {
+  return address.toLowerCase().trim();
+}
+
+export function validateRateLimitHeaders(headers: Headers): boolean {
+  const userAgent = headers.get('user-agent');
+  const ip = headers.get('x-forwarded-for') || headers.get('x-real-ip');
+  
+  if (!userAgent || !ip) {
+    return false;
+  }
+  
+  const botPatterns = [
+    /bot/i, /crawler/i, /spider/i, /scraper/i,
+    /curl/i, /wget/i, /python/i, /java/i
+  ];
+  
+  return !botPatterns.some(pattern => pattern.test(userAgent));
+}
+
+export const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, Idempotency-Key',
+  'Access-Control-Max-Age': '86400',
+};
+
+export function handleCORS(req: Request): Response | null {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders
+    });
+  }
+  return null;
 }

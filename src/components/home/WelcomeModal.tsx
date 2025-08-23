@@ -34,10 +34,30 @@ export default function WelcomeModal({ isOpen, onClose, origin }: WelcomeModalPr
   const { showSuccess, showError } = useToastContext();
 
   useEffect(() => {
-    if (session?.user) {
+    const checkAdminStatus = async () => {
+      if (!session?.user) {
+        setIsAdmin(false);
+        return;
+      }
+      
       const sessionUser = session.user as { address?: string; email?: string };
-      setIsAdmin(true);
-    }
+      const url = new URL('/api/user', window.location.origin);
+      if (sessionUser.address) url.searchParams.set('address', sessionUser.address);
+      if (sessionUser.email) url.searchParams.set('email', sessionUser.email);
+
+      try {
+        const response = await fetch(url.toString());
+        if (response.ok) {
+          const data = await response.json();
+          setIsAdmin(data?.data?.role?.name === 'ADMIN');
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
   }, [session]);
 
   const { data: welcomeData } = useQuery({
@@ -52,16 +72,17 @@ export default function WelcomeModal({ isOpen, onClose, origin }: WelcomeModalPr
   });
 
   useEffect(() => {
-    if (welcomeData) {
+    if (welcomeData?.data) {
+      const data = welcomeData.data;
       setFormData({
-        title: welcomeData.title || "",
-        description: welcomeData.description || "",
-        imageUrl: welcomeData.imageUrl || "",
-        buttonLink: welcomeData.buttonLink || "",
-        startDate: welcomeData.startDate || "",
-        endDate: welcomeData.endDate || ""
+        title: data.title || "",
+        description: data.description || "",
+        imageUrl: data.imageUrl || "",
+        buttonLink: data.buttonLink || "",
+        startDate: data.startDate || "",
+        endDate: data.endDate || ""
       });
-      setPreviewImage(welcomeData.imageUrl || "");
+      setPreviewImage(data.imageUrl || "");
     }
   }, [welcomeData]);
 
@@ -119,11 +140,12 @@ export default function WelcomeModal({ isOpen, onClose, origin }: WelcomeModalPr
   const shouldDisplayModal = () => {
     if (isAdmin) return true;
 
-    if (!welcomeData) return false;
+    if (!welcomeData?.data) return false;
     
+    const data = welcomeData.data;
     const now = new Date();
-    const startDate = welcomeData.startDate ? new Date(welcomeData.startDate) : null;
-    const endDate = welcomeData.endDate ? new Date(welcomeData.endDate) : null;
+    const startDate = data.startDate ? new Date(data.startDate) : null;
+    const endDate = data.endDate ? new Date(data.endDate) : null;
     
     if (startDate && now < startDate) return false;
     if (endDate && now > endDate) return false;
