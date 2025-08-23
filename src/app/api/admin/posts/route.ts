@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '~/lib/prisma';
 import { withAdmin } from '~/lib/api-wrapper';
+import { createSuccessResponse, createErrorResponse } from '~/lib/api-response';
+import { validateRequest, CreatePostSchema } from '~/lib/validation';
 
 function getYoutubeIdFromUrl(url: string) {
   if (!url) return '';
@@ -9,65 +11,61 @@ function getYoutubeIdFromUrl(url: string) {
 }
 
 export async function GET(request: NextRequest) {
-  const isPublic = request.nextUrl?.searchParams?.get('public') === '1';
-  const titleQuery = request.nextUrl?.searchParams?.get('title') || '';
+  const { searchParams } = request.nextUrl;
+  const isPublic = searchParams.get('public') === '1';
+  const titleQuery = searchParams.get('title') || '';
+  const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '10')));
+  const offset = (page - 1) * limit;
+  const sortBy = searchParams.get('sortBy') || 'createdAt';
+  const sortOrder = searchParams.get('sortOrder') || 'desc';
+  const status = searchParams.get('status');
+  const authorId = searchParams.get('authorId');
+
   try {
+    let where: any = {};
+    if (titleQuery) {
+      where.title = {
+        contains: titleQuery,
+        mode: 'insensitive',
+      };
+    }
+    
     if (isPublic) {
-      let where = {};
-      if (titleQuery) {
-        where = {
-          title: {
-            contains: titleQuery,
-            mode: 'insensitive',
-          },
-        };
-      }
-      const posts = await prisma.post.findMany({
+      where.status = 'PUBLISHED';
+    }
+    
+    if (status) {
+      where.status = status as any;
+    }
+    
+    if (authorId) {
+      where.authorId = authorId;
+    }
+    const [posts, total] = await Promise.all([
+      prisma.post.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        skip: offset,
+        take: limit,
+        orderBy: { [sortBy]: sortOrder },
         select: {
           id: true,
           title: true,
           slug: true,
-          createdAt: true,
           status: true,
+          shares: true,
+          createdAt: true,
+          updatedAt: true,
+          comments_rel: { select: { id: true, userId: true } },
+          reactions: { select: { type: true, userId: true } },
           author: { select: { name: true } },
-          media: { select: { url: true, type: true, id: true } },
           tags: { select: { tag: { select: { id: true, name: true } } } },
+          media: { select: { url: true, type: true, id: true } },
         },
-      });
-      const mapped = posts.map(p => ({
-        ...p,
-        slug: p.slug || p.id,
-        author: p.author?.name || 'Admin',
-        media: Array.isArray(p.media)
-          ? p.media.map((m: { url: string; type: string; id: string }) =>
-              m.type === 'YOUTUBE'
-                ? { ...m, id: m.id && m.id.length === 11 ? m.id : getYoutubeIdFromUrl(m.url) }
-                : m
-            )
-          : [],
-        tags: p.tags?.map((t: { tag: { id: string; name: string } }) => t.tag) || [],
-      }));
-      return NextResponse.json({ posts: mapped });
-    }
-    const posts = await prisma.post.findMany({
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        status: true,
-        shares: true,
-        createdAt: true,
-        updatedAt: true,
-        comments_rel: { select: { id: true, userId: true } }, // thêm userId
-        reactions: { select: { type: true, userId: true } }, // thêm userId
-        author: { select: { name: true } },
-        tags: { select: { tag: { select: { id: true, name: true } } } },
-        media: { select: { url: true, type: true, id: true } },
-      },
-    });
+      }),
+      prisma.post.count({ where })
+    ]);
+
     const mapped = posts.map(post => {
       const reactionCount: Record<string, number> = {};
       for (const r of post.reactions) {
@@ -96,54 +94,78 @@ export async function GET(request: NextRequest) {
         ...reactionCount,
       };
     });
-    return NextResponse.json({ posts: mapped });
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const totalPages = Math.ceil(total / limit);
+    const pagination = {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNext: page < totalPages,
+      hasPrev: page > 1
+    };
+
+    return NextResponse.json({
+      success: true,
+      data: mapped,
+      pagination,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return NextResponse.json(
+      createErrorResponse('Internal server error', 'INTERNAL_ERROR'),
+      { status: 500 }
+    );
   }
 }
 
 export const POST = withAdmin(async (req, user) => {
   if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    return NextResponse.json(createErrorResponse('User not found', 'USER_NOT_FOUND'), { status: 404 });
   }
 
-  const { title, slug, content, status, tags, media, githubRepo } = await req.json();
+  try {
+    const body = await req.json();
+    const { title, slug, content, status, tags, media, githubRepo } = validateRequest(CreatePostSchema, body);
 
-  if (!title || !slug || !content) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-  }
+    const existingPost = await prisma.post.findFirst({
+      where: { slug }
+    });
 
-  const existingPost = await prisma.post.findFirst({
-    where: { slug }
-  });
+    if (existingPost) {
+      return NextResponse.json(createErrorResponse('Post with this slug already exists', 'SLUG_EXISTS'), { status: 409 });
+    }
 
-  if (existingPost) {
-    return NextResponse.json({ error: 'Post with this slug already exists' }, { status: 409 });
-  }
-
-  const post = await prisma.post.create({
-    data: {
-      title,
-      slug,
-      content,
-      status: status.toUpperCase(),
-      authorId: user.id,
-      githubRepo: githubRepo || null,
-      tags: {
-        create: tags?.map((tagId: string) => ({ tagId })) || []
+    const post = await prisma.post.create({
+      data: {
+        title,
+        slug,
+        content,
+        status: status.toUpperCase() as any,
+        authorId: user.id,
+        githubRepo: githubRepo || null,
+        tags: {
+          create: tags?.map((tagId: string) => ({ tagId })) || []
+        },
+        media: {
+          create: media?.map((item: { url: string; type: string }) => ({
+            url: item.url,
+            type: item.type.toUpperCase() as any
+          })) || []
+        }
       },
-      media: {
-        create: media?.map((item: { url: string; type: string }) => ({
-          url: item.url,
-          type: item.type.toUpperCase()
-        })) || []
-      }
-    },
-    include: {
-      tags: { include: { tag: true } },
-      media: true,
-    },
-  });
+      include: {
+        tags: { include: { tag: true } },
+        media: true,
+      },
+    });
 
-  return NextResponse.json({ post });
+    return NextResponse.json(createSuccessResponse(post));
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('Validation failed')) {
+      return NextResponse.json(createErrorResponse(error.message, 'VALIDATION_ERROR'), { status: 400 });
+    }
+    console.error('Error creating post:', error);
+    return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
+  }
 });

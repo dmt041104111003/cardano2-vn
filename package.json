@@ -88,7 +88,8 @@
     "sonner": "^2.0.6",
     "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "^4.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
