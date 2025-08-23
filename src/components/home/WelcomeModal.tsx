@@ -96,7 +96,8 @@ export default function WelcomeModal({ isOpen, onClose, origin }: WelcomeModalPr
         body: JSON.stringify(data),
       });
       if (!response.ok) {
-        throw new Error('Failed to save welcome modal');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save welcome modal');
       }
       return response.json();
     },
@@ -104,8 +105,9 @@ export default function WelcomeModal({ isOpen, onClose, origin }: WelcomeModalPr
       queryClient.invalidateQueries({ queryKey: ['welcome-modal'] });
       showSuccess('Welcome modal updated successfully');
     },
-    onError: (error) => {
-      showError('Failed to update welcome modal');
+    onError: (error: Error) => {
+      console.error('Welcome modal save error:', error);
+      showError('Failed to update welcome modal', error.message);
     },
   });
 
@@ -121,6 +123,16 @@ export default function WelcomeModal({ isOpen, onClose, origin }: WelcomeModalPr
   };
 
   const handleSave = () => {
+    if (!formData.title || !formData.title.trim()) {
+      showError('Title is required');
+      return;
+    }
+    
+    if (!formData.description || !formData.description.trim()) {
+      showError('Description is required');
+      return;
+    }
+    
     saveMutation.mutate(formData);
   };
 

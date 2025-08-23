@@ -61,59 +61,85 @@ export const PUT = withAdmin(async (req, user) => {
     return NextResponse.json(createErrorResponse('User not found', 'USER_NOT_FOUND'), { status: 404 });
   }
 
-  const slug = req.nextUrl.pathname.split('/').pop();
-  if (!slug) {
-    return NextResponse.json(createErrorResponse('Missing slug', 'MISSING_SLUG'), { status: 400 });
-  }
+  try {
+    const slug = req.nextUrl.pathname.split('/').pop();
+    if (!slug) {
+      return NextResponse.json(createErrorResponse('Missing slug', 'MISSING_SLUG'), { status: 400 });
+    }
 
-  const body = await req.json();
-  const { title, content, status, tags, media, githubRepo } = body;
+    const body = await req.json();
+    console.log('Update post body:', JSON.stringify(body, null, 2));
+    
+    const { title, content, status, tags, media, githubRepo } = body;
 
-  if (!title || !content) {
-    return NextResponse.json(createErrorResponse('Missing required fields', 'MISSING_FIELDS'), { status: 400 });
-  }
+    if (!title || !content) {
+      return NextResponse.json(createErrorResponse('Missing required fields', 'MISSING_FIELDS'), { status: 400 });
+    }
 
-  const existingPost = await prisma.post.findFirst({
-    where: { slug }
-  });
+    const existingPost = await prisma.post.findFirst({
+      where: { slug }
+    });
 
-  if (!existingPost) {
-    return NextResponse.json(createErrorResponse('Post not found', 'POST_NOT_FOUND'), { status: 404 });
-  }
+    if (!existingPost) {
+      return NextResponse.json(createErrorResponse('Post not found', 'POST_NOT_FOUND'), { status: 404 });
+    }
 
-  // Delete existing tags and media
-  await prisma.postTag.deleteMany({
-    where: { postId: existingPost.id }
-  });
+    // Delete existing tags and media
+    await prisma.postTag.deleteMany({
+      where: { postId: existingPost.id }
+    });
 
-  await prisma.media.deleteMany({
-    where: { postId: existingPost.id }
-  });
+    await prisma.media.deleteMany({
+      where: { postId: existingPost.id }
+    });
 
-  const updatedPost = await prisma.post.update({
-    where: { id: existingPost.id },
-    data: {
-      title,
-      content,
-      status: status.toUpperCase(),
-      githubRepo: githubRepo || null,
-      tags: {
-        create: tags?.map((tagId: string) => ({ tagId })) || []
-      },
-      media: {
-        create: media?.map((item: { url: string; type: string }) => ({
-          url: item.url,
-          type: item.type.toUpperCase()
-        })) || []
+    const tagConnections = [];
+    if (tags && Array.isArray(tags)) {
+      for (const tagName of tags) {
+        if (typeof tagName === 'string' && tagName.trim()) {
+          let tag = await prisma.tag.findFirst({
+            where: { name: tagName.trim() }
+          });
+
+          if (!tag) {
+            tag = await prisma.tag.create({
+              data: { name: tagName.trim() }
+            });
+          }
+
+          tagConnections.push({ tagId: tag.id });
+        }
       }
-    },
-    include: {
-      tags: { include: { tag: true } },
-      media: true,
-    },
-  });
+    }
 
-  return NextResponse.json(createSuccessResponse(updatedPost));
+    const updatedPost = await prisma.post.update({
+      where: { id: existingPost.id },
+      data: {
+        title,
+        content,
+        status: status.toUpperCase(),
+        githubRepo: githubRepo || null,
+        tags: {
+          create: tagConnections
+        },
+        media: {
+          create: media?.map((item: { url: string; type: string }) => ({
+            url: item.url,
+            type: item.type.toUpperCase()
+          })) || []
+        }
+      },
+      include: {
+        tags: { include: { tag: true } },
+        media: true,
+      },
+    });
+
+    return NextResponse.json(createSuccessResponse(updatedPost));
+  } catch (error) {
+    console.error('Error updating post:', error);
+    return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
+  }
 });
 
 export const DELETE = withAdmin(async (req) => {

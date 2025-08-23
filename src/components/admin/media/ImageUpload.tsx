@@ -35,15 +35,19 @@ export function ImageUpload({ onUploadSuccess }: ImageUploadProps) {
         body: formData,
       });
       const result = await response.json();
-      if (response.ok && result.media?.url) {
-        setPreview(result.media.url);
-        setUploadedUrl(result.media.url);
-        setCloudinaryPublicId(result.media.public_id || null);
+      console.log('ImageUpload response:', result);
+      
+      if (response.ok && result.data?.media?.url) {
+        setPreview(result.data.media.url);
+        setUploadedUrl(result.data.media.url);
+        setCloudinaryPublicId(result.data.media.public_id || null);
         if (fileInputRef.current) fileInputRef.current.value = '';
       } else {
+        console.error('Upload failed:', result);
         showError('Upload failed', result.error || 'Failed to upload image.');
       }
-    } catch {
+    } catch (error) {
+      console.error('Upload error:', error);
       showError('Upload error', 'An error occurred while uploading the image.');
     } finally {
       setIsUploading(false);

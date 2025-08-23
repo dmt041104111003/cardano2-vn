@@ -23,42 +23,50 @@ export async function GET(
 }
 
 export const PUT = withAdmin(async (req) => {
-  const id = req.nextUrl.pathname.split('/').pop();
-  if (!id) {
-    return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
-  }
-
-  const body = await req.json();
-  const { title, name, description, href, image, githubRepo } = body;
-
-  if (!name) {
-    return NextResponse.json(createErrorResponse('Name is required', 'MISSING_NAME'), { status: 400 });
-  }
-
-  const existingTechnology = await prisma.technology.findFirst({
-    where: {
-      name,
-      id: { not: id }
+  try {
+    const id = req.nextUrl.pathname.split('/').pop();
+    if (!id) {
+      return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
     }
-  });
 
-  if (existingTechnology) {
-    return NextResponse.json(createErrorResponse('Technology name already exists', 'TECHNOLOGY_NAME_ALREADY_EXISTS'), { status: 400 });
-  }
+    const body = await req.json();
+    console.log('Updating technology:', { id, data: JSON.stringify(body, null, 2) });
+    
+    const { title, name, description, href, image, githubRepo } = body;
 
-  const updatedTechnology = await prisma.technology.update({
-    where: { id },
-    data: {
-      title,
-      name,
-      description,
-      href,
-      image,
-      githubRepo: githubRepo || null
+    if (!title || !name || !description || !href) {
+      return NextResponse.json(createErrorResponse('Missing required fields', 'MISSING_FIELDS'), { status: 400 });
     }
-  });
 
-  return NextResponse.json(createSuccessResponse(updatedTechnology));
+    const existingTechnology = await prisma.technology.findFirst({
+      where: {
+        name,
+        id: { not: id }
+      }
+    });
+
+    if (existingTechnology) {
+      return NextResponse.json(createErrorResponse('Technology name already exists', 'TECHNOLOGY_NAME_ALREADY_EXISTS'), { status: 400 });
+    }
+
+    const updatedTechnology = await prisma.technology.update({
+      where: { id },
+      data: {
+        title,
+        name,
+        description,
+        href,
+        image,
+        githubRepo: githubRepo || null
+      }
+    });
+
+    console.log('Technology updated successfully:', updatedTechnology.id);
+    return NextResponse.json(createSuccessResponse(updatedTechnology));
+  } catch (error) {
+    console.error('Error updating technology:', error);
+    return NextResponse.json(createErrorResponse('Failed to update technology', 'UPDATE_FAILED'), { status: 500 });
+  }
 });
 
 export const DELETE = withAdmin(async (req) => {

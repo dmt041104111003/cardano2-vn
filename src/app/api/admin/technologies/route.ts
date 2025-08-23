@@ -19,19 +19,31 @@ export const GET = withAdmin(async () => {
 });
 
 export const POST = withAdmin(async (req) => {
-  const body = await req.json();
-  const { title, name, description, href, image, githubRepo } = body;
+  try {
+    const body = await req.json();
+    console.log('Creating technology with data:', JSON.stringify(body, null, 2));
+    
+    const { title, name, description, href, image, githubRepo } = body;
 
-  const technology = await prisma.technology.create({
-    data: {
-      title,
-      name,
-      description,
-      href,
-      image,
-      githubRepo: githubRepo || null,
-    },
-  });
+    if (!title || !name || !description || !href) {
+      return NextResponse.json(createErrorResponse('Missing required fields', 'MISSING_FIELDS'), { status: 400 });
+    }
 
-  return NextResponse.json(createSuccessResponse(technology));
+    const technology = await prisma.technology.create({
+      data: {
+        title,
+        name,
+        description,
+        href,
+        image,
+        githubRepo: githubRepo || null,
+      },
+    });
+
+    console.log('Technology created successfully:', technology.id);
+    return NextResponse.json(createSuccessResponse(technology));
+  } catch (error) {
+    console.error('Error creating technology:', error);
+    return NextResponse.json(createErrorResponse('Failed to create technology', 'CREATE_FAILED'), { status: 500 });
+  }
 }); 

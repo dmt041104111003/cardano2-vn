@@ -38,12 +38,13 @@ export const CreatePostSchema = z.object({
   slug: z.string().min(1).max(200),
   content: z.string().min(1),
   status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
-  tags: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional().default([]),
   media: z.array(z.object({
-    url: z.string().url(),
-    type: z.enum(['IMAGE', 'YOUTUBE', 'VIDEO'])
-  })).optional(),
-  githubRepo: z.string().url().optional()
+    url: z.string(),
+    type: z.enum(['IMAGE', 'YOUTUBE', 'VIDEO', 'image', 'youtube', 'video']),
+    id: z.string().optional()
+  })).optional().default([]),
+  githubRepo: z.union([z.string().url(), z.literal('')]).optional()
 });
 
 export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
@@ -51,7 +52,11 @@ export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
     return schema.parse(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(`Validation failed: ${error.issues.map(issue => issue.message).join(', ')}`);
+      console.error('Validation errors:', error.issues);
+      const errorMessages = error.issues.map(issue => 
+        `${issue.path.join('.')}: ${issue.message}`
+      ).join(', ');
+      throw new Error(`Validation failed: ${errorMessages}`);
     }
     throw error;
   }

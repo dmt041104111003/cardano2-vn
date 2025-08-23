@@ -131,6 +131,25 @@ export const POST = withAdmin(async (req, user) => {
       return NextResponse.json(createErrorResponse('Post with this slug already exists', 'SLUG_EXISTS'), { status: 409 });
     }
 
+    const tagConnections = [];
+    if (tags && Array.isArray(tags)) {
+      for (const tagName of tags) {
+        if (typeof tagName === 'string' && tagName.trim()) {
+          let tag = await prisma.tag.findFirst({
+            where: { name: tagName.trim() }
+          });
+
+          if (!tag) {
+            tag = await prisma.tag.create({
+              data: { name: tagName.trim() }
+            });
+          }
+
+          tagConnections.push({ tagId: tag.id });
+        }
+      }
+    }
+
     const post = await prisma.post.create({
       data: {
         title,
@@ -140,7 +159,7 @@ export const POST = withAdmin(async (req, user) => {
         authorId: user.id,
         githubRepo: githubRepo || null,
         tags: {
-          create: tags?.map((tagId: string) => ({ tagId })) || []
+          create: tagConnections
         },
         media: {
           create: media?.map((item: { url: string; type: string }) => ({

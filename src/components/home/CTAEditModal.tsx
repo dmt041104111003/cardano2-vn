@@ -1,11 +1,11 @@
 "use client";
 
-import { Fragment, useCallback, useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { UploadCloud } from "lucide-react";
-import { useDropzone } from "react-dropzone";
 import { useSession } from "next-auth/react";
-import { toast } from "sonner";
+import { useToastContext } from "~/components/toast-provider";
+import MediaInput from "~/components/ui/media-input";
+import { MediaInputMedia } from "~/constants/media";
 
 interface Event {
   id: number;
@@ -25,48 +25,42 @@ interface EditModalProps {
 
 export default function EditModal({ isOpen, onClose, event, index, onSave }: EditModalProps) {
   const { data: session } = useSession();
+  const { showSuccess, showError } = useToastContext();
   const [title, setTitle] = useState(event.title);
   const [location, setLocation] = useState(event.location);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [selectedMedia, setSelectedMedia] = useState<MediaInputMedia | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setTitle(event.title);
     setLocation(event.location);
-    setImageFile(null);
+    setSelectedMedia(null);
   }, [event]);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles[0]) {
-      setImageFile(acceptedFiles[0]);
-    }
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { "image/*": [] },
-    maxFiles: 1,
-  });
+  const handleMediaAdd = (media: MediaInputMedia) => {
+    setSelectedMedia(media);
+  };
 
   const handleSave = async () => {
     if (!session?.user) {
-      toast.error("Please log in to save changes");
+      showError("Please log in to save changes");
       return;
     }
 
     if (!event?.id) {
-      toast.error("Missing event ID");
+      showError("Missing event ID");
       return;
     }
 
     setIsSaving(true);
 
     const formData = new FormData();
-    if (imageFile) {
-      formData.append("file", imageFile);
-    }
     formData.append("title", title);
     formData.append("location", location);
+    
+    if (selectedMedia) {
+      formData.append("imageUrl", selectedMedia.url);
+    }
 
     try {
       const res = await fetch(`/api/admin/event-images/${event.id}`, {
@@ -79,17 +73,17 @@ export default function EditModal({ isOpen, onClose, event, index, onSave }: Edi
         const updatedEvent: Partial<Event> = {
           title,
           location,
-          imageUrl: data.image?.imageUrl || event.imageUrl,
+          imageUrl: selectedMedia?.url || event.imageUrl,
         };
         onSave(index, updatedEvent);
         onClose();
-        toast.success("Event updated successfully!");
+        showSuccess("Event updated successfully!");
       } else {
         const errorData = await res.json();
-        toast.error(errorData.error || "Failed to update event");
+        showError(errorData.error || "Failed to update event");
       }
     } catch {
-      toast.error("Failed to update event");
+      showError("Failed to update event");
     } finally {
       setIsSaving(false);
     }
@@ -127,45 +121,44 @@ export default function EditModal({ isOpen, onClose, event, index, onSave }: Edi
                 </Dialog.Title>
                 <div className="mt-4 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium dark:text-white text-gray-700">Title</label>
+                    <label htmlFor="event-title" className="block text-sm font-medium dark:text-white text-gray-700">Title</label>
                     <input
+                      id="event-title"
                       type="text"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       className="mt-1 w-full text-black dark:text-white dark:bg-gray-700  rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
                       disabled={isSaving}
+                      placeholder="Enter event title"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium  dark:text-white text-gray-700">Location</label>
+                    <label htmlFor="event-location" className="block text-sm font-medium  dark:text-white text-gray-700">Location</label>
                     <input
+                      id="event-location"
                       type="text"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       className="mt-1 w-full text-black dark:bg-gray-700 dark:text-white rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
                       disabled={isSaving}
+                      placeholder="Enter event location"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Image</label>
-                    <div
-                      {...getRootProps()}
-                      className={`mt-1 flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg transition ${
-                        isDragActive ? "border-blue-400 bg-blue-50" : "border-blue-300 bg-white dark:bg-gray-700"
-                      } ${isSaving ? "opacity-50 pointer-events-none" : ""}`}
-                    >
-                      <input {...getInputProps()} disabled={isSaving} />
-                      <UploadCloud className="h-12 w-12 text-blue-500 mb-2 dark:text-blue-400" />
-                      <p className="text-sm font-medium text-blue-500 dark:text-blue-400">
-                        {isDragActive
-                          ? "Drop the file here"
-                          : imageFile
-                            ? imageFile.name
-                            : event.imageUrl
-                              ? "Image uploaded, upload new to replace"
-                              : "Drag & drop or click to upload"}
-                      </p>
-                    </div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">Image</label>
+                    <MediaInput 
+                      onMediaAdd={handleMediaAdd}
+                      mediaType="image"
+                    />
+                    {selectedMedia && (
+                      <div className="mt-2">
+                        <img 
+                          src={selectedMedia.url} 
+                          alt="Selected media" 
+                          className="w-32 h-32 object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="mt-6 flex justify-end gap-2">

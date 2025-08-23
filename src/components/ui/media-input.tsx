@@ -9,6 +9,14 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [imageUrl, setImageUrl] = useState('');
 
+  const clearMedia = () => {
+    setCurrentMedia(null);
+    setImageUrl('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -20,14 +28,16 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
         body: formData,
       });
       const result = await response.json();
-      if (response.ok && result.media?.url) {
-        const media: MediaInputMedia = { type: 'image', url: result.media.url, id: result.media.url };
+      if (response.ok && result.data?.media?.url) {
+        const media: MediaInputMedia = { 
+          type: 'image', 
+          url: result.data.media.url, 
+          id: result.data.media.url 
+        };
         setCurrentMedia(media);
         if (onMediaAdd) {
           onMediaAdd(media);
         }
-        setCurrentMedia(null);
-        setImageUrl('');
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -49,11 +59,14 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
         body: JSON.stringify({ url, type: 'IMAGE' }),
       });
       const result = await response.json();
-      if (response.ok && result.media?.url) {
-        const media: MediaInputMedia = { type: 'image', url: result.media.url, id: result.media.url };
+      if (response.ok && result.data?.media?.url) {
+        const media: MediaInputMedia = { 
+          type: 'image', 
+          url: result.data.media.url, 
+          id: result.data.media.url 
+        };
         setCurrentMedia(media);
         if (onMediaAdd) onMediaAdd(media);
-        setCurrentMedia(null);
         setImageUrl('');
       } else {
         alert(result.error || 'Failed to add image URL');
@@ -111,12 +124,13 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="Paste image URL here..."
                 value={imageUrl}
-                onChange={e => handleImageUrl(e.target.value)}
+                onChange={e => setImageUrl(e.target.value)}
+                onBlur={() => handleImageUrl(imageUrl)}
               />
             </div>
           )}
           {currentMedia?.type === 'image' && currentMedia.url && (
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center gap-2">
               <img
                 src={currentMedia.url}
                 alt="Preview"
@@ -130,6 +144,13 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
               <div className="hidden max-w-full max-h-48 rounded-lg shadow-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                 <span className="text-gray-400 dark:text-gray-500">Image not available</span>
               </div>
+              <button
+                type="button"
+                onClick={clearMedia}
+                className="px-3 py-1 text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+              >
+                Remove Image
+              </button>
             </div>
           )}
         </>
@@ -140,22 +161,51 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
             type="text"
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             placeholder="Paste YouTube video link here..."
-            onChange={e => onMediaAdd && onMediaAdd({ type: 'youtube', url: e.target.value, id: e.target.value } as MediaInputMedia)}
+            onChange={e => {
+              const url = e.target.value;
+              if (url && onMediaAdd) {
+                const youtubeId = getYoutubeIdFromUrl(url);
+                if (youtubeId) {
+                  const media: MediaInputMedia = {
+                    type: 'youtube',
+                    url: url,
+                    id: youtubeId
+                  };
+                  setCurrentMedia(media);
+                  onMediaAdd(media);
+                }
+              }
+            }}
           />
-          {currentMedia?.type === 'youtube' && (
-            <div className="youtube-video">
-              <iframe
-                src={`https://www.youtube.com/embed/${currentMedia.id}`}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-48 rounded-lg"
-              />
+          {currentMedia?.type === 'youtube' && currentMedia.id && (
+            <div className="flex flex-col items-center gap-2">
+              <div className="youtube-video">
+                <iframe
+                  src={`https://www.youtube.com/embed/${currentMedia.id}`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-48 rounded-lg"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={clearMedia}
+                className="px-3 py-1 text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+              >
+                Remove Video
+              </button>
             </div>
           )}
         </div>
       )}
     </div>
   );
+}
+
+function getYoutubeIdFromUrl(url: string): string {
+  if (!url) return '';
+  const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/#\s]{11})/);
+  return match ? match[1] : '';
 } 
