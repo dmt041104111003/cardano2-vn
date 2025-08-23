@@ -8,7 +8,7 @@ export default function AboutSection() {
   const { data: queryData, isLoading } = useQuery({
     queryKey: ['about-content'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/about');
+      const response = await fetch('/api/admin/about', { credentials: 'include' });
       if (!response.ok) {
         throw new Error('Failed to fetch about content');
       }
@@ -16,7 +16,7 @@ export default function AboutSection() {
     }
   });
 
-  const aboutContent: AboutContent | null = queryData?.aboutContent || null;
+  const aboutContent: AboutContent | null = queryData?.data || null;
 
   if (isLoading) {
     return (

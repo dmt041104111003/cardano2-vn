@@ -22,13 +22,13 @@ export default function ProtocolSection() {
     queryFn: async () => {
       const res = await fetch("/api/admin/posts");
       const data = await res.json();
-      return data?.posts || [];
+      return data?.data || [];
     },
   });
 
-  const posts = postsData?.filter((p: any) => p.status === "PUBLISHED") || [];
+  const posts = Array.isArray(postsData) ? postsData.filter((p: any) => p.status === "PUBLISHED") : [];
   
-  const postsWithEngagement = posts.map((post: any) => {
+  const postsWithEngagement = Array.isArray(posts) ? posts.map((post: any) => {
     const totalReactions = (post.LIKE || 0) + (post.HEART || 0) + (post.HAHA || 0) + 
                           (post.SAD || 0) + (post.ANGRY || 0) + (post.WOW || 0) + (post.SHARE || 0);
     const totalComments = post.comments || 0;
@@ -40,15 +40,15 @@ export default function ProtocolSection() {
       totalReactions,
       totalComments
     };
-  });
+  }) : [];
   
-  const latestBlogs = postsWithEngagement.sort((a: any, b: any) => 
+  const latestBlogs = Array.isArray(postsWithEngagement) ? postsWithEngagement.sort((a: any, b: any) => 
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  ).slice(0, 3);
+  ).slice(0, 3) : [];
   
-  const popularBlogs = postsWithEngagement.sort((a: any, b: any) => 
+  const popularBlogs = Array.isArray(postsWithEngagement) ? postsWithEngagement.sort((a: any, b: any) => 
     b.totalEngagement - a.totalEngagement
-  ).slice(0, 3);
+  ).slice(0, 3) : [];
 
   const currentBlogs = activeTab === "latest" ? latestBlogs : popularBlogs;
   const displayBlogs = [...currentBlogs];

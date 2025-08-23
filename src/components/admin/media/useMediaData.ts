@@ -26,8 +26,8 @@ export function useMediaData() {
     }
   });
 
-  const media = queryData?.media || [];
-  const stats = queryData?.stats || {
+  const media = queryData?.data?.media || [];
+  const stats = queryData?.data?.stats || {
     total: 0,
     images: 0,
     documents: 0,

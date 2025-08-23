@@ -6,15 +6,18 @@ import CourseForm from './CourseForm';
 import CourseTableSection from './CourseTableSection';
 
 export default function CourseManager() {
-  const { data: courses, isLoading } = useQuery({
+  const { data: courses, isLoading, error } = useQuery({
     queryKey: ['admin-courses'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/courses');
+      const response = await fetch('/api/admin/courses', { credentials: 'include' });
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Access denied. Admin privileges required.');
+        }
         throw new Error('Failed to fetch courses');
       }
       const data = await response.json();
-      return data?.courses || [];
+      return data?.data || [];
     },
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,

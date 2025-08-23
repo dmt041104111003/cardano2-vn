@@ -55,7 +55,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
     },
     enabled: !!slug
   });
-  const post: BlogPostDetail | null = postData?.post || null;
+  const post: BlogPostDetail | null = postData?.data || null;
 
   const {
     data: reactionsData,

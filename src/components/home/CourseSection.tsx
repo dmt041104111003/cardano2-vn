@@ -18,9 +18,9 @@ export default function CourseSection() {
   const { data: coursesData, isLoading } = useQuery({
     queryKey: ["courses"],
     queryFn: async () => {
-      const res = await fetch("/api/admin/courses");
+      const res = await fetch("/api/admin/courses", { credentials: 'include' });
       const data = await res.json();
-      return data?.courses || [];
+      return data?.data || [];
     },
   });
 

@@ -24,7 +24,7 @@ export function useMembersWithTabs() {
   } = useQuery({
     queryKey: ['admin-members'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/members');
+      const res = await fetch('/api/admin/members', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch members');
       return res.json();
     }
@@ -37,14 +37,14 @@ export function useMembersWithTabs() {
   } = useQuery({
     queryKey: ['admin-tabs'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/tabs');
+      const res = await fetch('/api/admin/tabs', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch tabs');
       return res.json();
     }
   });
 
-  const members: Member[] = membersData?.members || [];
-  const tabs: Tab[] = tabsData?.tabs || [];
+  const members: Member[] = membersData?.data || [];
+  const tabs: Tab[] = tabsData?.data || [];
 
   const handleCreateMember = () => {
     setEditingMember(null);

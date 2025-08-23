@@ -26,9 +26,8 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
     }
   });
 
-  const technologies: Technology[] = queryData?.technologies || [];
+  const technologies: Technology[] = queryData?.data || [];
 
-  // Filter technologies based on search term
   const filteredTechnologies = technologies.filter(technology => {
     const matchesSearch = technology.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          technology.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,19 +35,16 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
     return matchesSearch;
   });
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredTechnologies.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedTechnologies = filteredTechnologies.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
 
 
-  // Reset to first page when search changes
   if (searchTerm && currentPage > 1) {
     setCurrentPage(1);
   }
 
-  // If embedded, render only the content without layout
   if (isEmbedded) {
     return (
       <div className="mb-16 grid grid-cols-1 gap-6">
@@ -95,13 +91,10 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
     );
   }
 
-  // Full page layout
   return (
     <main className="relative pt-20 bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900">
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        {/* <Title title="Our Technology" description="Discover how Andamio's innovative tools are shaping the future of decentralized work." /> */}
         <div className="pb-20">
-          {/* <AboutSection /> */}
           
           {filteredTechnologies.length === 0 ? (
             <NotFoundInline 
@@ -115,7 +108,6 @@ export default function TechnologyPageClient({ isEmbedded = false, searchTerm = 
                 <TechnologyItem key={technology.id} technology={technology} />
               ))}
 
-              {/* Pagination */}
               {totalPages > 1 && (
                 <div className="mt-8">
                   <Pagination

@@ -41,8 +41,8 @@ export default function CTASection() {
 
   useEffect(() => {
     console.log('CTASection - userData:', userData);
-    console.log('CTASection - user role:', userData?.role?.name);
-    const adminStatus = userData?.role?.name === "ADMIN";
+    console.log('CTASection - user role:', userData?.data?.role?.name);
+    const adminStatus = userData?.data?.role?.name === "ADMIN";
     console.log('CTASection - isAdmin:', adminStatus);
     setIsAdmin(adminStatus);
   }, [userData]);
@@ -63,7 +63,7 @@ export default function CTASection() {
         });
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
-        setEvents(data?.images || []);
+        setEvents(data?.data || []);
       } catch (err: any) {
         setErrorEvents(err.message || "Unknown error");
       } finally {
@@ -99,7 +99,7 @@ export default function CTASection() {
           const res = await fetch("/api/admin/event-images");
           if (!res.ok) throw new Error("Failed to fetch events");
           const data = await res.json();
-          setEvents(data?.images || []);
+          setEvents(data?.data || []);
         } finally {
           setLoadingEvents(false);
         }

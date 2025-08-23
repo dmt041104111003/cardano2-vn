@@ -37,13 +37,13 @@ export default function ContactFormSection() {
 
       try {
         const response = await fetch(url.toString());
-                 if (response.ok) {
-           const data = await response.json();
-           console.log('API response data:', data);
-           console.log('ContactFormSection - data:', data);
-           console.log('ContactFormSection - role:', data?.role?.name);
-           setIsAdmin(data?.role?.name === 'ADMIN');
-         }
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API response data:', data);
+          console.log('ContactFormSection - data:', data);
+          console.log('ContactFormSection - role:', data?.data?.role?.name);
+          setIsAdmin(data?.data?.role?.name === 'ADMIN');
+        }
       } catch (error) {
         console.error('Error checking admin status:', error);
         setIsAdmin(false);
@@ -94,13 +94,13 @@ export default function ContactFormSection() {
         if (response.ok) {
           const userData = await response.json();
 
-          if (userData && userData.user && (userData.user.email || userData.user.address)) {
-            console.log('User data found:', userData.user);
+          if (userData && userData.data && (userData.data.email || userData.data.address)) {
+            console.log('User data found:', userData.data);
             setFormData(prev => {
               const newData = {
                 ...prev,
-                "your-email": userData.user.email || "",
-                "address-wallet": userData.user.address || ""
+                "your-email": userData.data.email || "",
+                "address-wallet": userData.data.address || ""
               };
               console.log('Form data before update:', prev);
               console.log('Form data after update:', newData);
@@ -109,7 +109,7 @@ export default function ContactFormSection() {
           } else {
             console.log('No user data found or user not logged in');
             console.log('userData:', userData);
-            console.log('userData.user:', userData?.user);
+            console.log('userData.data:', userData?.data);
           }
         } else {
           console.log('API response not ok:', response.status);
@@ -132,7 +132,7 @@ export default function ContactFormSection() {
       });
       if (!response.ok) throw new Error('Failed to fetch courses');
       const data = await response.json();
-      return data?.courses || [];
+      return data?.data || [];
     },
     staleTime: 5 * 60 * 1000, 
     gcTime: 10 * 60 * 1000, 
@@ -150,6 +150,10 @@ export default function ContactFormSection() {
   }, [courses, selectedCourse, formData["your-course"]]);
 
   const memoizedContactFormManager = useMemo(() => {
+    if (!isAdmin) {
+      return null;
+    }
+    
     if (coursesError) {
       return (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -161,7 +165,7 @@ export default function ContactFormSection() {
     }
     
     return <ContactFormManager />;
-  }, [coursesError]);
+  }, [coursesError, isAdmin]);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -293,7 +297,7 @@ export default function ContactFormSection() {
     >
       <div className="relative mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <div className={`grid items-center gap-12 ${activeTab === "manage" ? "lg:grid-cols-1" : "lg:grid-cols-2"}`}>
-          {activeTab !== "manage" && (
+          {activeTab === "form" && (
             <div className="relative flex flex-col h-full justify-center">
               <div className="relative w-full h-[600px] lg:h-[600px]">
                 <ContactFormImage imageUrl={selectedCourseImage} />
@@ -324,8 +328,8 @@ export default function ContactFormSection() {
                 onCaptchaChange={setCaptchaValid}
                 onCourseChange={handleCourseChange}
               />
-            ) : (
-              <div style={{ display: activeTab === "manage" ? "block" : "none" }}>
+            ) : activeTab === "manage" ? (
+              <div>
                 {coursesLoading ? (
                   <ContactFormSkeleton />
                 ) : coursesError ? (
@@ -338,7 +342,7 @@ export default function ContactFormSection() {
                   memoizedContactFormManager
                 )}
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

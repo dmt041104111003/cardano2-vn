@@ -1,13 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withAuth } from '~/lib/api-wrapper';
 import cloudinary from '~/lib/cloudinary';
+import { createErrorResponse } from '~/lib/api-response';
+import { createSuccessResponse } from '~/lib/api-response';
 
 export const POST = withAuth(async (req) => {
   const formData = await req.formData();
   const file = formData.get('file') as File;
   
   if (!file) {
-    return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('No file provided', 'NO_FILE_PROVIDED'), { status: 400 });
   }
 
   try {
@@ -27,11 +29,11 @@ export const POST = withAuth(async (req) => {
       ).end(buffer);
     });
 
-    return NextResponse.json({
+    return NextResponse.json(createSuccessResponse({
       url: (result as any).secure_url,
       public_id: (result as any).public_id,
-    });
+    }));
   } catch (error) {
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    return NextResponse.json(createErrorResponse('Upload failed', 'UPLOAD_FAILED'), { status: 500 });
   }
 });

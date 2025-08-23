@@ -216,7 +216,7 @@ export default function MemberPageClient() {
   const { data: queryData, isLoading } = useQuery({
     queryKey: ["members"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/members");
+      const response = await fetch("/api/admin/members", { credentials: 'include' });
       if (!response.ok) {
         throw new Error("Failed to fetch members");
       }
@@ -227,7 +227,7 @@ export default function MemberPageClient() {
   const { data: tabsData } = useQuery({
     queryKey: ["tabs"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/tabs");
+      const response = await fetch("/api/admin/tabs", { credentials: 'include' });
       if (!response.ok) {
         throw new Error("Failed to fetch tabs");
       }
@@ -235,8 +235,8 @@ export default function MemberPageClient() {
     },
   });
 
-  const members: MemberType[] = queryData?.members || [];
-  const tabs: TabType[] = tabsData?.tabs || [];
+  const members: MemberType[] = queryData?.data || [];
+  const tabs: TabType[] = tabsData?.data || [];
 
   // const membersByTab = members.reduce((acc, member) => {
   //   const tabId = member.tab?.id || 'no-tab';

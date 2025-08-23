@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
+import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 
 export const GET = withAdmin(async () => {
   try {
@@ -10,10 +11,10 @@ export const GET = withAdmin(async () => {
       },
     });
 
-    return NextResponse.json({ technologies });
+    return NextResponse.json(createSuccessResponse(technologies));
   } catch (error) {
     console.error('Error fetching technologies:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 });
 
@@ -32,5 +33,5 @@ export const POST = withAdmin(async (req) => {
     },
   });
 
-  return NextResponse.json({ technology });
+  return NextResponse.json(createSuccessResponse(technology));
 }); 

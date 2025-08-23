@@ -47,15 +47,15 @@ export default function LandingSection() {
         return [];
       }
       const data = await response.json();
-      return data?.content || [];
+      return data?.data || [];
     },
     enabled: !!session?.user
   });
 
   useEffect(() => {
     console.log('LandingSection - userData:', userData);
-    console.log('LandingSection - user role:', userData?.role?.name);
-    const adminStatus = userData?.role?.name === 'ADMIN';
+    console.log('LandingSection - user role:', userData?.data?.role?.name);
+    const adminStatus = userData?.data?.role?.name === 'ADMIN';
     console.log('LandingSection - isAdmin:', adminStatus);
     setIsAdmin(adminStatus);
   }, [userData]);

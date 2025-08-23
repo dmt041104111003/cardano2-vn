@@ -1,5 +1,6 @@
 import {  NextResponse } from 'next/server';
 import { prisma } from '~/lib/prisma';
+import { createSuccessResponse, createErrorResponse } from '~/lib/api-response';
 
 export async function GET() {
   try {
@@ -9,8 +10,9 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json({ technologies });
+    return NextResponse.json(createSuccessResponse(technologies));
   } catch (error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error fetching technologies:', error);
+    return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 } 

@@ -33,7 +33,7 @@ export default function LandingContentManager() {
         throw new Error('Failed to fetch landing content');
       }
       const data = await response.json();
-      return data?.content || [];
+      return data?.data || [];
     }
   });
 

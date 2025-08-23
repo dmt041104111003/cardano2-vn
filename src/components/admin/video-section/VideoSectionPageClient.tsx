@@ -19,11 +19,12 @@ import { useNotifications } from "~/hooks/useNotifications";
 const ITEMS_PER_PAGE = 10;
 
 async function fetchVideos(): Promise<VideoItem[]> {
-  const res = await fetch("/api/video-section");
+  const res = await fetch("/api/admin/video-section");
   if (!res.ok) {
     throw new Error("Failed to fetch videos");
   }
-  return res.json();
+  const data = await res.json();
+  return data?.data || [];
 }
 
 export function VideoSectionPageClient() {
@@ -144,11 +145,13 @@ export function VideoSectionPageClient() {
           }
         });
         
-        videos.forEach(video => {
-          if (video.id !== videoId && video.isFeatured && !newState[video.id]) {
-            newState[video.id] = { isFeatured: false };
-          }
-        });
+        if (Array.isArray(videos)) {
+          videos.forEach(video => {
+            if (video.id !== videoId && video.isFeatured && !newState[video.id]) {
+              newState[video.id] = { isFeatured: false };
+            }
+          });
+        }
       }
       
       newState[videoId] = { ...newState[videoId], [field]: value };
@@ -183,7 +186,7 @@ export function VideoSectionPageClient() {
     setIsValidUrl(null);
   };
 
-  const filteredVideos = videos.filter(video => {
+  const filteredVideos = Array.isArray(videos) ? videos.filter(video => {
     const matchesSearch = (video.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (video.channelName?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     
@@ -197,7 +200,7 @@ export function VideoSectionPageClient() {
     }
     
     return matchesSearch && matchesFilter;
-  });
+  }) : [];
 
   const totalPages = Math.ceil(filteredVideos.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;

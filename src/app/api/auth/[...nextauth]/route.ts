@@ -67,8 +67,7 @@ export const authOptions = {
         (session.user as Record<string, unknown> & { address?: string }).address = (token as TokenWithAddress).address;
         if (token.provider === "google" || token.provider === "github") {
           (session.user as Record<string, unknown> & { email?: string }).email = token.email as string;
-          
-          // Get user data from database for Google/GitHub users
+
           try {
             const dbUser = await prisma.user.findUnique({
               where: { email: token.email as string },
@@ -309,7 +308,7 @@ export const authOptions = {
               if (retries === 0) {
                 return true;
               }
-              await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+              await new Promise(resolve => setTimeout(resolve, 1000));
             }
           }
           

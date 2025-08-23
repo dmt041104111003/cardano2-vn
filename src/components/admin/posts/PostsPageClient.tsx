@@ -43,7 +43,7 @@ export function PostsPageClient() {
       return res.json();
     }
   });
-  const posts: Post[] = queryData?.posts || [];
+  const posts: Post[] = queryData?.data || [];
 
   const {
     data: tagsData,
@@ -54,7 +54,7 @@ export function PostsPageClient() {
       const res = await fetch('/api/admin/tags', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch tags');
       const data = await res.json();
-      return data?.tags || [];
+      return data?.data || [];
     }
   });
   const tags = tagsData || [];
@@ -68,10 +68,11 @@ export function PostsPageClient() {
       const res = await fetch('/api/admin/media', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch media');
       const data = await res.json();
-      return data?.media || [];
+      console.log('Media API response:', data);
+      return data;
     }
   });
-  const mediaStats = mediaData?.stats || {
+  const mediaStats = mediaData?.data?.stats || {
     total: 0,
     images: 0,
     documents: 0,
@@ -81,7 +82,9 @@ export function PostsPageClient() {
   
   useEffect(() => {
     console.log('Posts data:', posts);
-    console.log('Posts statuses:', posts.map(p => ({ id: p.id, status: p.status, title: p.title })));
+    if (Array.isArray(posts)) {
+      console.log('Posts statuses:', posts.map(p => ({ id: p.id, status: p.status, title: p.title })));
+    }
   }, [posts]);
   
   useEffect(() => {
@@ -93,9 +96,9 @@ export function PostsPageClient() {
   const [filterType, setFilterType] = useState<'all' | 'published' | 'draft' | 'archived'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
-  const postsOfYear = useMemo(() => posts.filter(p => new Date(p.createdAt).getFullYear() === selectedYear), [posts, selectedYear]);
+  const postsOfYear = useMemo(() => Array.isArray(posts) ? posts.filter(p => new Date(p.createdAt).getFullYear() === selectedYear) : [], [posts, selectedYear]);
 
-  const filteredPosts = posts.filter(post => {
+  const filteredPosts = Array.isArray(posts) ? posts.filter(post => {
     const matchesSearch = (post.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
                          (post.content?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
                          (post.author?.toLowerCase() || '').includes(searchTerm.toLowerCase());
@@ -116,7 +119,7 @@ export function PostsPageClient() {
     }
     
     return matchesSearch && matchesFilter;
-  });
+  }) : [];
 
   const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -125,7 +128,7 @@ export function PostsPageClient() {
   const handleEdit = async (post: Post) => {
     const res = await fetch(`/api/admin/posts/${post.slug || post.id}`);
     const data = await res.json();
-    setEditingPost(data.post);
+    setEditingPost(data.data);
     setActiveTab('posts');
     setActiveSubTab('create');
   };
@@ -225,10 +228,10 @@ export function PostsPageClient() {
     { value: 'archived', label: 'Archived' },
   ];
 
-  const statusCounts = posts.reduce((acc, post) => {
+  const statusCounts = Array.isArray(posts) ? posts.reduce((acc, post) => {
     acc[post.status] = (acc[post.status] || 0) + 1;
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as Record<string, number>) : {};
   const allStatuses = Object.keys(statusCounts);
   const statusColors: Record<string, 'default' | 'blue' | 'green' | 'red'> = {
     published: 'blue',
@@ -355,7 +358,7 @@ export function PostsPageClient() {
             }`}
           >
             <BarChart3 className="h-4 w-4" />
-            <span>Posts ({posts.length})</span>
+            <span>Posts ({Array.isArray(posts) ? posts.length : 0})</span>
           </button>
           <button
             onClick={() => setActiveTab('tags')}
@@ -366,7 +369,7 @@ export function PostsPageClient() {
             }`}
           >
             <TagIcon className="h-4 w-4" />
-            <span>Tags ({tags.length})</span>
+            <span>Tags ({Array.isArray(tags) ? tags.length : 0})</span>
           </button>
           <button
             onClick={() => setActiveTab('media')}

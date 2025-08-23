@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
+import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 
 export async function GET() {
   try {
@@ -11,10 +12,11 @@ export async function GET() {
       ]
     });
 
-    return NextResponse.json({ projects });
+    return NextResponse.json(createSuccessResponse(projects));
   } catch (error) {
+    console.error('Error fetching projects:', error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      createErrorResponse("Internal server error", "INTERNAL_ERROR"),
       { status: 500 }
     );
   }

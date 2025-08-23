@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
+import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 
 export const GET = withAdmin(async () => {
   try {
@@ -15,11 +16,11 @@ export const GET = withAdmin(async () => {
       }
     });
 
-    return NextResponse.json({ tabs });
+    return NextResponse.json(createSuccessResponse(tabs));
   } catch (error) {
     console.error('Error fetching tabs:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch tabs' },
+      createErrorResponse('Failed to fetch tabs', 'INTERNAL_ERROR'),
       { status: 500 }
     );
   }
@@ -36,5 +37,5 @@ export const POST = withAdmin(async (req) => {
     }
   });
 
-  return NextResponse.json({ tab });
+  return NextResponse.json(createSuccessResponse(tab));
 }); 

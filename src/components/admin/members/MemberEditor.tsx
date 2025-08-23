@@ -154,7 +154,7 @@ export default function MemberEditor({ member, onSave, onCancel, isLoading }: Me
     }
   });
 
-  const tabs: Tab[] = tabsData?.tabs || [];
+  const tabs: Tab[] = tabsData?.data || [];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

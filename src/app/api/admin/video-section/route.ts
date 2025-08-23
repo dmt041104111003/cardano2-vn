@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
+import { createErrorResponse } from "~/lib/api-response";
+import { createSuccessResponse } from "~/lib/api-response";
 
 export const GET = withAdmin(async () => {
   try {
@@ -10,10 +12,10 @@ export const GET = withAdmin(async () => {
       },
     });
 
-    return NextResponse.json(videos);
+    return NextResponse.json(createSuccessResponse(videos));
   } catch (error) {
     console.error("GET /api/videos error:", error);
-    return NextResponse.json({ error: "Failed to fetch videos" }, { status: 500 });
+    return NextResponse.json(createErrorResponse('Failed to fetch videos', 'FAILED_TO_FETCH_VIDEOS'), { status: 500 });
   }
 });
 
@@ -22,16 +24,16 @@ export const POST = withAdmin(async (req) => {
   const { videoUrl, title, channelName } = body;
 
   if (!videoUrl) {
-    return NextResponse.json({ error: "Missing videoUrl" }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing videoUrl', 'MISSING_VIDEO_URL'), { status: 400 });
   }
 
   if (!title || !channelName) {
-    return NextResponse.json({ error: "Missing title or channelName" }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing title or channelName', 'MISSING_TITLE_OR_CHANNEL_NAME'), { status: 400 });
   }
 
   const videoId = extractYouTubeVideoId(videoUrl);
   if (!videoId) {
-    return NextResponse.json({ error: "Invalid YouTube URL" }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Invalid YouTube URL', 'INVALID_YOUTUBE_URL'), { status: 400 });
   }
 
   const existing = await prisma.videoSection.findFirst({
@@ -39,7 +41,7 @@ export const POST = withAdmin(async (req) => {
   });
 
   if (existing) {
-    return NextResponse.json({ error: "Video already exists" }, { status: 409 });
+    return NextResponse.json(createErrorResponse('Video already exists', 'VIDEO_ALREADY_EXISTS'), { status: 409 });
   }
 
   const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
@@ -57,7 +59,7 @@ export const POST = withAdmin(async (req) => {
     },
   });
 
-  return NextResponse.json(video);
+  return NextResponse.json(createSuccessResponse(video) );
 });
 
 function extractYouTubeVideoId(url: string): string | null {

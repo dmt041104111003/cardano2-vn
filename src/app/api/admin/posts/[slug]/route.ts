@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '~/lib/prisma';
 import { withAdmin } from '~/lib/api-wrapper';
+import { createSuccessResponse, createErrorResponse } from '~/lib/api-response';
 
 function getYoutubeIdFromUrl(url: string) {
   if (!url) return '';
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
       },
       orderBy: { createdAt: 'asc' },
     });
-    if (!post) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    if (!post) return NextResponse.json(createErrorResponse('Post not found', 'POST_NOT_FOUND'), { status: 404 });
     const tags = post.tags?.map((t: { tag: { id: string; name: string } }) => t.tag) || [];
     let media = Array.isArray(post.media) ? post.media : [];
     media = media.map((m) =>
@@ -48,27 +49,28 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
         ? { ...m, id: m.id && m.id.length === 11 ? m.id : getYoutubeIdFromUrl(m.url) }
         : m
     );
-    return NextResponse.json({ post: { ...post, author: post.author?.name || 'Admin', authorId: post.author?.id || '', authorWallet: post.author?.wallet || '', tags, media, comments } });
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(createSuccessResponse({ ...post, author: post.author?.name || 'Admin', authorId: post.author?.id || '', authorWallet: post.author?.wallet || '', tags, media, comments }));
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 }
 
 export const PUT = withAdmin(async (req, user) => {
   if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    return NextResponse.json(createErrorResponse('User not found', 'USER_NOT_FOUND'), { status: 404 });
   }
 
   const slug = req.nextUrl.pathname.split('/').pop();
   if (!slug) {
-    return NextResponse.json({ error: 'Missing slug' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing slug', 'MISSING_SLUG'), { status: 400 });
   }
 
   const body = await req.json();
   const { title, content, status, tags, media, githubRepo } = body;
 
   if (!title || !content) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing required fields', 'MISSING_FIELDS'), { status: 400 });
   }
 
   const existingPost = await prisma.post.findFirst({
@@ -76,7 +78,7 @@ export const PUT = withAdmin(async (req, user) => {
   });
 
   if (!existingPost) {
-    return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    return NextResponse.json(createErrorResponse('Post not found', 'POST_NOT_FOUND'), { status: 404 });
   }
 
   // Delete existing tags and media
@@ -111,13 +113,13 @@ export const PUT = withAdmin(async (req, user) => {
     },
   });
 
-  return NextResponse.json({ post: updatedPost });
+  return NextResponse.json(createSuccessResponse(updatedPost));
 });
 
 export const DELETE = withAdmin(async (req) => {
   const slug = req.nextUrl.pathname.split('/').pop();
   if (!slug) {
-    return NextResponse.json({ error: 'Missing slug' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing slug', 'MISSING_SLUG'), { status: 400 });
   }
 
   const post = await prisma.post.findFirst({
@@ -125,12 +127,12 @@ export const DELETE = withAdmin(async (req) => {
   });
 
   if (!post) {
-    return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    return NextResponse.json(createErrorResponse('Post not found', 'POST_NOT_FOUND'), { status: 404 });
   }
 
   await prisma.post.delete({
     where: { id: post.id }
   });
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json(createSuccessResponse({ message: 'Post deleted successfully' }));
 }); 

@@ -104,12 +104,7 @@ export async function GET(request: NextRequest) {
       hasPrev: page > 1
     };
 
-    return NextResponse.json({
-      success: true,
-      data: mapped,
-      pagination,
-      timestamp: new Date().toISOString()
-    });
+    return NextResponse.json(createSuccessResponse(mapped, pagination));
   } catch (error) {
     console.error('Error fetching posts:', error);
     return NextResponse.json(

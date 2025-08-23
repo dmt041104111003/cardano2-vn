@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
+import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 
 export async function GET(
   request: NextRequest,
@@ -13,16 +14,16 @@ export async function GET(
 
     if (!member) {
       return NextResponse.json(
-        { error: 'Member not found' },
+        createErrorResponse('Member not found', 'MEMBER_NOT_FOUND'),
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ member });
+    return NextResponse.json(createSuccessResponse(member));
   } catch (error) {
     console.error('Error fetching member:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch member' },
+      createErrorResponse('Failed to fetch member', 'INTERNAL_ERROR'),
       { status: 500 }
     );
   }
@@ -31,7 +32,7 @@ export async function GET(
 export const PUT = withAdmin(async (req) => {
   const id = req.nextUrl.pathname.split('/').pop();
   if (!id) {
-    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
   }
 
   const { name, role, description, image, email, color, skills, order, tabId, isActive } = await req.json();
@@ -52,13 +53,13 @@ export const PUT = withAdmin(async (req) => {
     }
   });
 
-  return NextResponse.json({ member });
+  return NextResponse.json(createSuccessResponse(member));
 });
 
 export const DELETE = withAdmin(async (req) => {
   const id = req.nextUrl.pathname.split('/').pop();
   if (!id) {
-    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
   }
 
   await prisma.member.update({
@@ -66,5 +67,5 @@ export const DELETE = withAdmin(async (req) => {
     data: { isActive: false }
   });
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json(createSuccessResponse({ success: true }));
 });

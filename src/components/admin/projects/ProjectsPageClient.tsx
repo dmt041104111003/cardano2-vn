@@ -32,13 +32,13 @@ export default function ProjectsPageClient() {
   } = useQuery({
     queryKey: ['admin-projects'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/projects');
+      const res = await fetch('/api/admin/projects', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch projects');
       return res.json();
     }
   });
 
-  const projects: Project[] = queryData?.projects || [];
+  const projects: Project[] = queryData?.data || [];
 
   const handleCreateProject = () => {
     setEditingProject(null);

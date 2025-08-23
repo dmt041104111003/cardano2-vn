@@ -38,7 +38,7 @@ function ProjectPageContent() {
     },
   });
   
-  const projects = data?.projects || [];
+  const projects = data?.data || [];
   const years = Array.from(new Set(projects.map((p: any) => p.year))).sort((a: unknown, b: unknown) => (a as number) - (b as number)) as number[];
   
   useEffect(() => {
@@ -46,8 +46,6 @@ function ProjectPageContent() {
       setYear(years[0]);
     }
   }, [years, year]);
-
-  // Read typeFilter from URL query parameter
   useEffect(() => {
     const urlTypeFilter = searchParams.get('typeFilter');
     if (urlTypeFilter && (urlTypeFilter === 'catalyst' || urlTypeFilter === 'project')) {

@@ -16,10 +16,12 @@ export function PostStats({ posts, year: yearProp }: PostStatsProps) {
 
   const postsByMonth: Record<number, Post[]> = {};
   months.forEach(m => { postsByMonth[m] = []; });
-  posts.forEach(p => {
-    const d = new Date(p.createdAt);
-    if (d.getFullYear() === year) postsByMonth[d.getMonth()].push(p);
-  });
+  if (Array.isArray(posts)) {
+    posts.forEach(p => {
+      const d = new Date(p.createdAt);
+      if (d.getFullYear() === year) postsByMonth[d.getMonth()].push(p);
+    });
+  }
 
   let chartData = months.map(m => {
     const monthPosts = postsByMonth[m];
