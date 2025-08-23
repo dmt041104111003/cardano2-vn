@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
+import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 
 export const GET = withAdmin(async () => {
   try {
@@ -9,11 +10,11 @@ export const GET = withAdmin(async () => {
       orderBy: { createdAt: 'desc' }
     });
 
-    return NextResponse.json(welcomeModal || null);
+    return NextResponse.json(createSuccessResponse(welcomeModal || null));
   } catch (error) {
     console.error('Error fetching welcome modal:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch welcome modal' },
+      createErrorResponse('Failed to fetch welcome modal', 'INTERNAL_ERROR'),
       { status: 500 }
     );
   }
@@ -43,7 +44,7 @@ export const POST = withAdmin(async (req) => {
       }
     });
 
-    return NextResponse.json(welcomeModal);
+    return NextResponse.json(createSuccessResponse(welcomeModal));
   } else {
     const welcomeModal = await prisma.welcomeModal.create({
       data: {
@@ -57,6 +58,6 @@ export const POST = withAdmin(async (req) => {
       }
     });
 
-    return NextResponse.json(welcomeModal);
+    return NextResponse.json(createSuccessResponse(welcomeModal));
   }
 });

@@ -23,7 +23,8 @@ async function fetchVideos(): Promise<Video[]> {
   if (!res.ok) {
     throw new Error("Failed to fetch videos");
   }
-  return res.json();
+  const data = await res.json();
+  return data?.data || [];
 }
 
 export default function VideoSection() {
@@ -52,11 +53,11 @@ export default function VideoSection() {
     setCurrentVideo(video);
   };
 
-  const sortedVideos = videos.sort((a, b) => {
+  const sortedVideos = Array.isArray(videos) ? videos.sort((a, b) => {
     if (a.isFeatured && !b.isFeatured) return -1;
     if (!a.isFeatured && b.isFeatured) return 1;
     return 0;
-  });
+  }) : [];
 
   const displayedVideos = showAllVideos ? sortedVideos : sortedVideos.slice(0, 2);
 

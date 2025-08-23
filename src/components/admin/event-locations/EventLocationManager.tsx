@@ -6,15 +6,18 @@ import EventLocationForm from './EventLocationForm';
 import EventLocationTableSection from './EventLocationTableSection';
 
 export default function EventLocationManager() {
-  const { data: eventLocations, isLoading } = useQuery({
+  const { data: eventLocations, isLoading, error } = useQuery({
     queryKey: ['admin-event-locations'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/event-locations');
+      const response = await fetch('/api/admin/event-locations', { credentials: 'include' });
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Access denied. Admin privileges required.');
+        }
         throw new Error('Failed to fetch event locations');
       }
       const data = await response.json();
-      return data?.locations || [];
+      return data?.data || [];
     },
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,

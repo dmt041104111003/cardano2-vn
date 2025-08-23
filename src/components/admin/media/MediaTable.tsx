@@ -79,7 +79,7 @@ export function MediaTable({ media, onDelete }: MediaTableProps) {
     try {
       const res = await fetch(`/api/admin/posts?title=${encodeURIComponent(title)}&public=1`);
       const data = await res.json();
-      const post = data.posts?.[0];
+      const post = data.data?.[0];
       if (post && post.id) {
         router.push(`/blog/${post.id}`);
       } else {

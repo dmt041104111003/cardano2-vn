@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
+import { createErrorResponse } from "~/lib/api-response";
+import { createSuccessResponse } from "~/lib/api-response";
 
 export async function GET() {
   try {
@@ -9,9 +11,9 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(videos);
+    return NextResponse.json(createSuccessResponse(videos));
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch videos" }, { status: 500 });
+    return NextResponse.json(createErrorResponse('Failed to fetch videos', 'FAILED_TO_FETCH_VIDEOS'), { status: 500 });
   }
 }
 

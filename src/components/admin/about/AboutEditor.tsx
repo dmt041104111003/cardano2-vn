@@ -43,15 +43,15 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
   const { data: aboutData, isLoading: loadingAbout } = useQuery({
     queryKey: ['admin-about'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/about');
+      const res = await fetch('/api/admin/about', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch about data');
       return res.json();
     }
   });
 
   useEffect(() => {
-    if (aboutData?.aboutContent) {
-      setFormData(aboutData.aboutContent);
+    if (aboutData?.data) {
+      setFormData(aboutData.data);
     }
   }, [aboutData]);
 

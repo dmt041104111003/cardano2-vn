@@ -33,7 +33,7 @@ export function TagsPageClient() {
       const res = await fetch('/api/admin/tags', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch tags');
       const data = await res.json();
-      return data?.tags || [];
+      return data?.data || [];
     }
   });
   const tags: Tag[] = queryData || [];

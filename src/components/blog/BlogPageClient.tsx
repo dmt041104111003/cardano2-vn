@@ -34,7 +34,7 @@ export default function BlogPageClient() {
       return res.json();
     }
   });
-  const posts: BlogPost[] = postsData?.posts || [];
+  const posts: BlogPost[] = postsData?.data || [];
 
   const {
     data: tagsData,
@@ -49,13 +49,13 @@ export default function BlogPageClient() {
   });
   const allTags: BlogTag[] = tagsData || [];
 
-  const filteredPosts = posts.filter(post => {
+  const filteredPosts = Array.isArray(posts) ? posts.filter(post => {
     const matchTitle = post.title.toLowerCase().includes(search.toLowerCase());
     const matchTags = selectedTags.length > 0 ? (Array.isArray(post.tags) && selectedTags.every(tagId => post.tags?.some(tag => tag.id === tagId))) : true;
     return matchTitle && matchTags;
-  });
+  }) : [];
 
-  const publishedPosts = filteredPosts.filter(post => post.status === 'PUBLISHED');
+  const publishedPosts = Array.isArray(filteredPosts) ? filteredPosts.filter(post => post.status === 'PUBLISHED') : [];
   const totalPages = Math.ceil(publishedPosts.length / pageSize);
   const paginatedPosts = publishedPosts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 

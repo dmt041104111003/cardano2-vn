@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withOptionalAuth } from "~/lib/api-wrapper";
 import { prisma } from "~/lib/prisma";
+import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 
 export const GET = withOptionalAuth(async (req: NextRequest, user) => {
   const { searchParams } = req.nextUrl;
@@ -8,7 +9,7 @@ export const GET = withOptionalAuth(async (req: NextRequest, user) => {
   const email = searchParams.get("email");
 
   if (!address && !email) {
-    return NextResponse.json({ error: "Address or email required" }, { status: 400 });
+    return NextResponse.json(createErrorResponse("Address or email required", "MISSING_PARAMS"), { status: 400 });
   }
 
   try {
@@ -27,11 +28,12 @@ export const GET = withOptionalAuth(async (req: NextRequest, user) => {
     }
 
     if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(createErrorResponse("User not found", "USER_NOT_FOUND"), { status: 404 });
     }
 
-    return NextResponse.json(dbUser);
+    return NextResponse.json(createSuccessResponse(dbUser));
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error('Error fetching user:', error);
+    return NextResponse.json(createErrorResponse("Internal server error", "INTERNAL_ERROR"), { status: 500 });
   }
 });

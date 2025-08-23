@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
+import { createErrorResponse, createSuccessResponse } from "~/lib/api-response";
 
 export async function GET(
-  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -12,27 +12,27 @@ export async function GET(
     });
 
     if (!technology) {
-      return NextResponse.json({ error: 'Technology not found' }, { status: 404 });
+      return NextResponse.json(createErrorResponse('Technology not found', 'TECHNOLOGY_NOT_FOUND'), { status: 404 });
     }
 
-    return NextResponse.json(technology);
+    return NextResponse.json(createSuccessResponse(technology));
   } catch (error) {
     console.error('Error fetching technology:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 }
 
 export const PUT = withAdmin(async (req) => {
   const id = req.nextUrl.pathname.split('/').pop();
   if (!id) {
-    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
   }
 
   const body = await req.json();
   const { title, name, description, href, image, githubRepo } = body;
 
   if (!name) {
-    return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Name is required', 'MISSING_NAME'), { status: 400 });
   }
 
   const existingTechnology = await prisma.technology.findFirst({
@@ -43,7 +43,7 @@ export const PUT = withAdmin(async (req) => {
   });
 
   if (existingTechnology) {
-    return NextResponse.json({ error: 'Technology name already exists' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Technology name already exists', 'TECHNOLOGY_NAME_ALREADY_EXISTS'), { status: 400 });
   }
 
   const updatedTechnology = await prisma.technology.update({
@@ -58,18 +58,18 @@ export const PUT = withAdmin(async (req) => {
     }
   });
 
-  return NextResponse.json(updatedTechnology);
+  return NextResponse.json(createSuccessResponse(updatedTechnology));
 });
 
 export const DELETE = withAdmin(async (req) => {
   const id = req.nextUrl.pathname.split('/').pop();
   if (!id) {
-    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
   }
 
   await prisma.technology.delete({
     where: { id }
   });
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json(createSuccessResponse({ success: true }));
 }); 

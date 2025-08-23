@@ -1,18 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '~/lib/prisma';
 import { withAdmin } from '~/lib/api-wrapper';
+import { createSuccessResponse, createErrorResponse } from '~/lib/api-response';
 
 export const PUT = withAdmin(async (req) => {
   const id = req.nextUrl.pathname.split('/').pop();
   if (!id) {
-    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
   }
 
   const body = await req.json();
   const { name, image, title, description } = body;
 
   if (!name) {
-    return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Name is required', 'MISSING_NAME'), { status: 400 });
   }
 
   const existingCourse = await prisma.course.findFirst({
@@ -23,7 +24,7 @@ export const PUT = withAdmin(async (req) => {
   });
 
   if (existingCourse) {
-    return NextResponse.json({ error: 'Course name already exists' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Course name already exists', 'COURSE_NAME_ALREADY_EXISTS'), { status: 400 });
   }
 
   const updatedCourse = await prisma.course.update({
@@ -36,18 +37,18 @@ export const PUT = withAdmin(async (req) => {
     }
   });
 
-  return NextResponse.json(updatedCourse);
+  return NextResponse.json(createSuccessResponse(updatedCourse));
 });
 
 export const DELETE = withAdmin(async (req) => {
   const id = req.nextUrl.pathname.split('/').pop();
   if (!id) {
-    return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
+    return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
   }
 
   await prisma.course.delete({
     where: { id }
   });
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json(createSuccessResponse({ success: true }));
 }); 

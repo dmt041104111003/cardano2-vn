@@ -33,8 +33,8 @@ export default function Navigation({
         })
         .then(data => {
           console.log("API response:", data);
-          if (data.projects && Array.isArray(data.projects)) {
-            const funds = Array.from(new Set(data.projects.map((p: any) => p.fund).filter(Boolean))) as string[];
+          if (data.data && Array.isArray(data.data)) {
+            const funds = Array.from(new Set(data.data.map((p: any) => p.fund).filter(Boolean))) as string[];
             console.log("Funds from API:", funds);
             setCatalystFunds(funds);
           } else {
@@ -58,8 +58,8 @@ export default function Navigation({
         })
         .then(data => {
           console.log("Technologies API response:", data);
-          if (data.technologies && Array.isArray(data.technologies)) {
-            const funds = Array.from(new Set(data.technologies.map((t: any) => t.name).filter(Boolean))) as string[];
+          if (data.data && Array.isArray(data.data)) {
+            const funds = Array.from(new Set(data.data.map((t: any) => t.name).filter(Boolean))) as string[];
             console.log("Technology names from API:", funds);
             setCatalystFunds(funds);
           } else {

@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
+import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 
 export const GET = withAdmin(async () => {
   try {
@@ -12,10 +13,10 @@ export const GET = withAdmin(async () => {
       ]
     });
 
-    return NextResponse.json({ projects });
+    return NextResponse.json(createSuccessResponse(projects));
   } catch (error) {
     console.error('Error fetching projects:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 });
 
@@ -23,10 +24,9 @@ export const POST = withAdmin(async (req) => {
   const body = await req.json();
   const { title, description, href, status, year, quarterly, fund } = body;
 
-  // Validate required fields
   if (!title || !description || !status || !year || !quarterly) {
     return NextResponse.json(
-      { error: "Missing required fields" },
+      createErrorResponse("Missing required fields", "MISSING_FIELDS"),
       { status: 400 }
     );
   }
@@ -43,5 +43,5 @@ export const POST = withAdmin(async (req) => {
     },
   });
 
-  return NextResponse.json({ project }, { status: 201 });
+  return NextResponse.json(createSuccessResponse(project), { status: 201 });
 }); 

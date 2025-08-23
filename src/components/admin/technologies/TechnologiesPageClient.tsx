@@ -37,13 +37,13 @@ export default function TechnologiesPageClient() {
   } = useQuery({
     queryKey: ['admin-technologies'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/technologies');
+      const res = await fetch('/api/admin/technologies', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch technologies');
       return res.json();
     }
   });
 
-  const technologies: Technology[] = queryData?.technologies || [];
+  const technologies: Technology[] = queryData?.data || [];
 
   const {
     data: projectsData,
@@ -51,13 +51,13 @@ export default function TechnologiesPageClient() {
   } = useQuery({
     queryKey: ['admin-projects'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/projects');
+      const res = await fetch('/api/admin/projects', { credentials: 'include' });
       if (!res.ok) throw new Error('Failed to fetch projects');
       return res.json();
     }
   });
 
-  const projects = projectsData?.projects || [];
+  const projects = projectsData?.data || [];
 
   const handleCreateTechnology = () => {
     setEditingTechnology(null);

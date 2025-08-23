@@ -18,7 +18,7 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, capt
         throw new Error('Failed to fetch event locations');
       }
       const data = await response.json();
-      return data?.locations || [];
+      return data?.data || [];
     },
     staleTime: 5 * 60 * 1000, 
     gcTime: 10 * 60 * 1000,
@@ -35,7 +35,7 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, capt
         throw new Error('Failed to fetch courses');
       }
       const data = await response.json();
-      return data?.courses || [];
+      return data?.data || [];
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000, 

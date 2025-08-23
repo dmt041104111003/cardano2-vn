@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
+import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 
 export async function GET(
   request: NextRequest,
@@ -12,13 +13,13 @@ export async function GET(
     });
 
     if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+      return NextResponse.json(createErrorResponse("Project not found", "PROJECT_NOT_FOUND"), { status: 404 });
     }
 
-    return NextResponse.json({ project });
+    return NextResponse.json(createSuccessResponse(project));
   } catch (error) {
     console.error('Error fetching project:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 }
 
@@ -29,7 +30,7 @@ export const PUT = withAdmin(async (req) => {
 
   if (!title || !description || !status || !year || !quarterly) {
     return NextResponse.json(
-      { error: "Missing required fields" },
+      createErrorResponse("Missing required fields", "MISSING_FIELDS"),
       { status: 400 }
     );
   }
@@ -47,7 +48,7 @@ export const PUT = withAdmin(async (req) => {
     },
   });
 
-  return NextResponse.json({ project });
+  return NextResponse.json(createSuccessResponse(project));
 });
 
 export const DELETE = withAdmin(async (req) => {
@@ -57,5 +58,5 @@ export const DELETE = withAdmin(async (req) => {
     where: { id }
   });
 
-  return NextResponse.json({ message: "Project deleted successfully" });
+  return NextResponse.json(createSuccessResponse({ message: "Project deleted successfully" }));
 }); 

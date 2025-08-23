@@ -41,7 +41,7 @@ export function UsersPageClient() {
       return res.json();
     }
   });
-  const users: User[] = queryData?.users || [];
+  const users: User[] = queryData?.data || [];
 
   useEffect(() => {
     const session = window.sessionStorage.getItem('next-auth.session');

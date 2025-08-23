@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
+import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 
 export const GET = withAdmin(async () => {
   try {
@@ -9,11 +10,11 @@ export const GET = withAdmin(async () => {
       orderBy: { createdAt: 'desc' }
     });
 
-    return NextResponse.json({ aboutContent });
+    return NextResponse.json(createSuccessResponse(aboutContent));
   } catch (error) {
     console.error('Error fetching about content:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch about content' },
+      createErrorResponse('Failed to fetch about content', 'INTERNAL_ERROR'),
       { status: 500 }
     );
   }
@@ -40,7 +41,7 @@ export const POST = withAdmin(async (req) => {
       }
     });
 
-    return NextResponse.json({ aboutContent });
+    return NextResponse.json(createSuccessResponse(aboutContent));
   } else {
     const aboutContent = await prisma.aboutContent.create({
       data: {
@@ -54,6 +55,6 @@ export const POST = withAdmin(async (req) => {
       }
     });
 
-    return NextResponse.json({ aboutContent });
+    return NextResponse.json(createSuccessResponse(aboutContent));
   }
 }); 

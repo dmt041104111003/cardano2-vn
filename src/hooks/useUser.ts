@@ -42,7 +42,6 @@ export function useUser() {
       }
 
       try {
-        // Fetch full user data with role info from our own endpoint
         const params = new URLSearchParams();
         if (sessionUser.address) {
           params.set('address', sessionUser.address);
@@ -52,15 +51,17 @@ export function useUser() {
         
         const response = await fetch(`/api/user?${params}`);
         if (response.ok) {
-          const data = await response.json();
-          const userData: UserHook = {
-            id: data.id,
-            name: data.name || sessionUser.name || null,
-            email: data.email || sessionUser.email || null,
-            wallet: data.wallet || sessionUser.address || null,
-            image: data.image || sessionUser.image || null,
-            isAdmin: data.role?.name === "ADMIN"
-          };
+        const responseData = await response.json();
+        const data = responseData.data;
+        const userData: UserHook = {
+          id: data.id,
+          name: data.name || sessionUser.name || null,
+          email: data.email || sessionUser.email || undefined,
+          address: data.wallet || sessionUser.address || '',
+          image: data.image || sessionUser.image || null,
+          role: data.role?.name || 'USER',
+          isAdmin: data.role?.name === "ADMIN"
+        };
           
           setUser(userData);
           
@@ -68,25 +69,25 @@ export function useUser() {
             userCache.set(userIdentifier, { data: userData, timestamp: now });
           }
         } else {
-          // If API fails, create user object from session data
           const userData: UserHook = {
             id: userIdentifier || '',
             name: sessionUser.name || null,
-            email: sessionUser.email || null, 
-            wallet: sessionUser.address || null,
+            email: sessionUser.email || undefined, 
+            address: sessionUser.address || '',
             image: sessionUser.image || null,
+            role: 'USER',
             isAdmin: false
           };
           setUser(userData);
         }
       } catch (error) {
-        // Fallback to session data if fetch fails
         const userData: UserHook = {
           id: userIdentifier || '',
           name: sessionUser.name || null,
-          email: sessionUser.email || null,
-          wallet: sessionUser.address || null, 
+          email: sessionUser.email || undefined,
+          address: sessionUser.address || '',
           image: sessionUser.image || null,
+          role: 'USER',
           isAdmin: false
         };
         setUser(userData);

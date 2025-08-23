@@ -4,7 +4,7 @@ import BlogDetailClient from '~/components/blog/BlogDetailClient';
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://cardano2-vn.vercel.app'}/api/admin/posts/${params.slug}?public=1`);
   const data = await res.json();
-  const post = data.post;
+  const post = data.data;
   return {
     title: post?.title || 'Blog Detail | Cardano2vn',
     description: post?.excerpt || post?.content?.slice(0, 150) || '',
