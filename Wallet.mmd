@@ -1,0 +1,37 @@
+flowchart TD
+    A[User clicks wallet] --> B{Wallet Type?}
+    
+    B -->|Cardano Wallet| C[useCardanoWallet.connect]
+    B -->|Social Login| D[signIn with provider]
+    
+    C --> E[Check wallet installed]
+    E -->|Not installed| F[Show error message]
+    E -->|Installed| G[BrowserWallet.enable]
+    
+    G --> H[Get wallet addresses]
+    H --> I[Create message with timestamp]
+    I --> J[wallet.signData]
+    J --> K[signIn with cardano-wallet provider]
+    
+    K --> L[NextAuth authorize function]
+    L --> M[Check credentials]
+    M --> N[Database operations]
+    
+    N --> O{User exists?}
+    O -->|No| P[Create new user with ADMIN role]
+    O -->|Yes| Q[Update existing user]
+    
+    P --> R[Generate wallet avatar]
+    R --> S[Upload to Cloudinary]
+    S --> T[Save user to database]
+    
+    T --> U[JWT token creation]
+    Q --> U
+    
+    U --> V[Session established]
+    V --> W[Redirect to home page]
+    
+    D --> X[OAuth flow]
+    X --> Y[Provider authorization]
+    Y --> Z[Database user creation/update]
+    Z --> V
