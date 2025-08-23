@@ -8,6 +8,8 @@ export type ApiHandler = (
   user?: AuthUser
 ) => Promise<NextResponse>;
 
+const idempotencyStore = new Map<string, { response: any; timestamp: number }>();
+
 export function withAuth(handler: ApiHandler, rateLimit = { limit: 100, windowMs: 15 * 60 * 1000 }) {
   return async (req: NextRequest) => {
     try {
@@ -89,3 +91,47 @@ export function withOptionalAuth(handler: ApiHandler) {
     }
   };
 }
+
+export function withIdempotency(handler: ApiHandler, windowMs = 24 * 60 * 60 * 1000) {
+  return async (req: NextRequest) => {
+    if (req.method !== 'POST') {
+      return await handler(req);
+    }
+
+    const idempotencyKey = req.headers.get('Idempotency-Key');
+    if (!idempotencyKey) {
+      return NextResponse.json(
+        createErrorResponse('Idempotency-Key header required for POST requests', 'MISSING_IDEMPOTENCY_KEY'),
+        { status: 400 }
+      );
+    }
+
+    const now = Date.now();
+    const existingResponse = idempotencyStore.get(idempotencyKey);
+
+    if (existingResponse && (now - existingResponse.timestamp) < windowMs) {
+      return NextResponse.json(existingResponse.response);
+    }
+
+    const response = await handler(req);
+    const responseData = await response.json();
+    
+    idempotencyStore.set(idempotencyKey, {
+      response: responseData,
+      timestamp: now
+    });
+
+    return NextResponse.json(responseData, { status: response.status });
+  };
+}
+
+setInterval(() => {
+  const now = Date.now();
+  const windowMs = 24 * 60 * 60 * 1000;
+  
+  for (const [key, value] of idempotencyStore.entries()) {
+    if (now - value.timestamp > windowMs) {
+      idempotencyStore.delete(key);
+    }
+  }
+}, 60 * 60 * 1000);

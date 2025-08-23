@@ -33,19 +33,19 @@ export default function WelcomeModalContent({ welcomeData, onButtonClick }: Welc
         transition={{ delay: 0.3, duration: 0.4 }}
         className="text-3xl font-bold text-gray-900 dark:text-white"
       >
-        {welcomeData?.title || ""}
+        {welcomeData?.data?.title || ""}
       </motion.h2>
       
-      {(welcomeData?.startDate || welcomeData?.endDate) && (
+      {(welcomeData?.data?.startDate || welcomeData?.data?.endDate) && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.4 }}
           className="text-sm text-gray-500 dark:text-gray-400"
         >
-          {welcomeData?.startDate && `From: ${formatDate(welcomeData.startDate)}`}
-          {welcomeData?.startDate && welcomeData?.endDate && " - "}
-          {welcomeData?.endDate && `To: ${formatDate(welcomeData.endDate)}`}
+          {welcomeData?.data?.startDate && `From: ${formatDate(welcomeData.data.startDate)}`}
+          {welcomeData?.data?.startDate && welcomeData?.data?.endDate && " - "}
+          {welcomeData?.data?.endDate && `To: ${formatDate(welcomeData.data.endDate)}`}
         </motion.div>
       )}
       
@@ -55,9 +55,9 @@ export default function WelcomeModalContent({ welcomeData, onButtonClick }: Welc
         transition={{ delay: 0.4, duration: 0.4 }}
         className="w-full aspect-video mx-auto bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden"
       >
-        {welcomeData?.imageUrl ? (
+        {welcomeData?.data?.imageUrl ? (
           <img 
-            src={welcomeData.imageUrl} 
+            src={welcomeData.data.imageUrl} 
             alt="Welcome" 
             className="w-full h-full object-cover"
           />
@@ -71,7 +71,7 @@ export default function WelcomeModalContent({ welcomeData, onButtonClick }: Welc
       </motion.div>
       
       <WelcomeModalText
-        text={welcomeData?.description || ""}
+        text={welcomeData?.data?.description || ""}
         maxLength={200}
       />
       

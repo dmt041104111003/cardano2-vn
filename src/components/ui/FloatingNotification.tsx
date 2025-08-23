@@ -39,7 +39,7 @@ export default function FloatingNotification({ children }: FloatingNotificationP
   const handleOpenModal = () => {
     const isAdmin = !!session?.user;
     
-    if (!isAdmin && !welcomeData) {
+    if (!isAdmin && !welcomeData?.data) {
       showError('No event content available at the moment');
       return;
     }
