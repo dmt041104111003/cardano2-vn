@@ -216,7 +216,7 @@ export default function MemberPageClient() {
   const { data: queryData, isLoading } = useQuery({
     queryKey: ["members"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/members", { credentials: 'include' });
+      const response = await fetch("/api/members");
       if (!response.ok) {
         throw new Error("Failed to fetch members");
       }
@@ -227,7 +227,7 @@ export default function MemberPageClient() {
   const { data: tabsData } = useQuery({
     queryKey: ["tabs"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/tabs", { credentials: 'include' });
+      const response = await fetch("/api/tabs");
       if (!response.ok) {
         throw new Error("Failed to fetch tabs");
       }

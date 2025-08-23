@@ -11,9 +11,7 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, capt
   const { data: eventLocations } = useQuery({
     queryKey: ['contact-form-event-locations'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/event-locations', {
-        credentials: 'include'
-      });
+      const response = await fetch('/api/event-images');
       if (!response.ok) {
         throw new Error('Failed to fetch event locations');
       }
@@ -28,9 +26,7 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, capt
   const { data: courses } = useQuery({
     queryKey: ['contact-form-courses'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/courses', {
-        credentials: 'include'
-      });
+      const response = await fetch('/api/courses');
       if (!response.ok) {
         throw new Error('Failed to fetch courses');
       }
