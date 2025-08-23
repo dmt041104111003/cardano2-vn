@@ -57,6 +57,7 @@
     "@types/mdx": "^2.0.13",
     "@types/styled-components": "^5.1.34",
     "@types/ws": "^8.18.1",
+    "axios": "^1.11.0",
     "blockies-identicon": "^0.1.0",
     "cbor": "^10.0.10",
     "class-variance-authority": "^0.7.1",
