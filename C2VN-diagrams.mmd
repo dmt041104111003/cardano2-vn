@@ -1,0 +1,157 @@
+---
+config:
+  layout: dagre
+---
+flowchart TB
+ subgraph subGraph0["Next.js Frontend"]
+    direction TB
+        Landing["Landing Domain"]
+        Docs["Documentation Domain (MDX)"]
+        Blog["Blog Domain"]
+        Admin["Admin Domain"]
+  end
+ subgraph subGraph1["API Layer"]
+    direction TB
+        APIRoutes["Next.js API Routes"]
+        NextAuthAPI["NextAuth Route"]
+        AuthUtils["Auth Utilities"]
+        LeaderElectionAPI["Leader-Election API"]
+  end
+ subgraph subGraph2["Database & Media"]
+    direction TB
+        DB["PostgreSQL Database"]
+        PrismaClient["Prisma ORM"]
+        Cloudinary["Cloudinary Media Hosting"]
+  end
+ subgraph subGraph3["Real-time Subsystem"]
+    direction TB
+        WSCluster["WebSocket Cluster"]
+        LeaderElectionLib["Leader Election Service"]
+        CommentHandler["Comment Handler"]
+        ReplyHandler["Reply Handler"]
+        NotificationHandler["Notification Handler"]
+  end
+ subgraph subGraph4["External Blockchain Services"]
+    direction TB
+        BlockfrostAPI["Blockfrost API"]
+        CardanoNode["Cardano Node & Wallet"]
+        CardanoWalletLib["Cardano Wallet SDK"]
+        CardanoAuth["Cardano Auth Provider"]
+        APIWrapper["Blockfrost Wrapper"]
+  end
+ subgraph subGraph5["Utilities & Infra as Code"]
+    direction TB
+        RateLimiter["Rate Limiter"]
+        SlugUtil["Slug Utility"]
+        Validation["Validation Utility"]
+        UploadImage["Upload Image Utility"]
+        RenderYAML["Render Infrastructure Config"]
+  end
+ subgraph subGraph6["WebSocket Client Hooks"]
+    direction TB
+        WSHook["useWebSocket Hook"]
+        WSActions["Action Handlers"]
+        WSConnection["Connection Hook"]
+        WSMessageHandler["Message Handler"]
+  end
+ subgraph subGraph7["Content & UI Components"]
+    direction TB
+        ContentDocs["MDX Content"]
+        DocsComponents["Docs Components"]
+        Components["React UI Components"]
+  end
+    User["Client Browsers (Users & Admins)"] -- HTTP(S) GET/POST --> CDN["CDN/Hosting (Vercel)"]
+    CDN -- "Serves Next.js App" --> NextJS["Next.js App (App Router)"]
+    NextJS --> Landing & Docs & Blog & Admin
+    Landing -- API Calls --> APIRoutes
+    Blog -- API Calls --> APIRoutes
+    Admin -- API Calls --> APIRoutes
+    APIRoutes --> NextAuthAPI & LeaderElectionAPI & CardanoWalletLib & CardanoAuth & RateLimiter & SlugUtil & Validation & UploadImage
+    AuthUtils --> NextAuthAPI
+    APIRoutes -- Prisma Queries --> PrismaClient
+    PrismaClient --> DB
+    APIRoutes -- SDK Call --> Cloudinary
+    User -- WebSocket --> WSCluster
+    WSCluster -- Persist via Prisma --> PrismaClient
+    WSCluster --> LeaderElectionLib & CommentHandler & ReplyHandler & NotificationHandler
+    LeaderElectionLib --> LeaderElectionAPI
+    APIRoutes -- Blockfrost Calls --> BlockfrostAPI
+    APIRoutes -- Local Node RPC --> CardanoNode
+    APIWrapper --> BlockfrostAPI
+    Landing --> WSHook & Components
+    WSHook --> WSActions & WSConnection & WSMessageHandler
+    Docs --> ContentDocs & DocsComponents
+    Blog --> Components
+    Admin --> Components
+     Landing:::frontend
+     Docs:::frontend
+     Blog:::frontend
+     Admin:::frontend
+     APIRoutes:::backend
+     NextAuthAPI:::auth
+     AuthUtils:::auth
+     LeaderElectionAPI:::backend
+     DB:::dbMedia
+     PrismaClient:::dbMedia
+     Cloudinary:::dbMedia
+     WSCluster:::realtime
+     LeaderElectionLib:::realtime
+     CommentHandler:::realtime
+     ReplyHandler:::realtime
+     NotificationHandler:::realtime
+     BlockfrostAPI:::external
+     CardanoNode:::external
+     CardanoWalletLib:::external
+     CardanoAuth:::external
+     APIWrapper:::external
+     RateLimiter:::backend
+     SlugUtil:::backend
+     Validation:::backend
+     UploadImage:::backend
+     RenderYAML:::backend
+     WSHook:::frontend
+     WSActions:::frontend
+     WSConnection:::frontend
+     WSMessageHandler:::frontend
+     ContentDocs:::frontend
+     DocsComponents:::frontend
+     Components:::frontend
+     User:::external
+     CDN:::external
+     NextJS:::frontend
+    classDef frontend fill:#D0E8FF,stroke:#0284C7,stroke-width:2px
+    classDef backend fill:#DAF7DC,stroke:#28A745,stroke-width:2px
+    classDef external fill:#FFE5B4,stroke:#E67E22,stroke-width:2px
+    classDef dbMedia fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px
+    classDef auth fill:#F8BBD0,stroke:#D81B60,stroke-width:2px
+    classDef realtime fill:#E1BEE7,stroke:#8E24AA,stroke-width:2px
+    click Landing "https://github.com/dmt041104111003/cardano2-vn/tree/main/src/app/(landing)"
+    click Docs "https://github.com/dmt041104111003/cardano2-vn/tree/main/src/app/docs"
+    click Blog "https://github.com/dmt041104111003/cardano2-vn/tree/main/src/app/(landing)/blog"
+    click Admin "https://github.com/dmt041104111003/cardano2-vn/tree/main/src/app/(admin)"
+    click APIRoutes "https://github.com/dmt041104111003/cardano2-vn/tree/main/src/app/api"
+    click NextAuthAPI "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/app/api/auth/[...nextauth]/route.ts"
+    click AuthUtils "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/lib/auth-utils.ts"
+    click LeaderElectionAPI "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/app/api/leader-election/route.ts"
+    click DB "https://github.com/dmt041104111003/cardano2-vn/blob/main/prisma/schema.prisma"
+    click PrismaClient "https://github.com/dmt041104111003/cardano2-vn/blob/main/scripts/prisma/schema.prisma"
+    click Cloudinary "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/lib/cloudinary.ts"
+    click WSCluster "https://github.com/dmt041104111003/cardano2-vn/blob/main/scripts/websocket-server.js"
+    click LeaderElectionLib "https://github.com/dmt041104111003/cardano2-vn/blob/main/scripts/leader-election.js"
+    click CommentHandler "https://github.com/dmt041104111003/cardano2-vn/blob/main/scripts/handlers/comment-handler.js"
+    click ReplyHandler "https://github.com/dmt041104111003/cardano2-vn/blob/main/scripts/handlers/reply-handler.js"
+    click NotificationHandler "https://github.com/dmt041104111003/cardano2-vn/blob/main/scripts/handlers/notification-handler.js"
+    click CardanoWalletLib "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/lib/cardano-wallet.ts"
+    click CardanoAuth "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/lib/cardano-auth-provider.ts"
+    click APIWrapper "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/lib/api-wrapper.ts"
+    click RateLimiter "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/lib/rate-limiter.ts"
+    click SlugUtil "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/lib/slug.ts"
+    click Validation "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/lib/validation.ts"
+    click UploadImage "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/lib/uploadImage.ts"
+    click RenderYAML "https://github.com/dmt041104111003/cardano2-vn/blob/main/scripts/render.yaml"
+    click WSHook "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/hooks/useWebSocket.ts"
+    click WSActions "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/hooks/websocket/use-actions.ts"
+    click WSConnection "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/hooks/websocket/use-connection.ts"
+    click WSMessageHandler "https://github.com/dmt041104111003/cardano2-vn/blob/main/src/hooks/websocket/use-message-handler.ts"
+    click ContentDocs "https://github.com/dmt041104111003/cardano2-vn/tree/main/content/docs"
+    click Components "https://github.com/dmt041104111003/cardano2-vn/tree/main/src/components"
