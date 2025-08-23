@@ -63,7 +63,7 @@ export default function WelcomeModal({ isOpen, onClose, origin }: WelcomeModalPr
   const { data: welcomeData } = useQuery({
     queryKey: ['welcome-modal'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/welcome-modal');
+      const response = await fetch('/api/welcome-modal');
       if (!response.ok) {
         return null;
       }

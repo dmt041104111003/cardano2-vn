@@ -40,16 +40,13 @@ export default function LandingSection() {
   const { data: landingContents = [] } = useQuery({
     queryKey: ['landing-content'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/landing-content', {
-        credentials: 'include'
-      });
+      const response = await fetch('/api/landing-content');
       if (!response.ok) {
         return [];
       }
       const data = await response.json();
       return data?.data || [];
-    },
-    enabled: !!session?.user
+    }
   });
 
   useEffect(() => {

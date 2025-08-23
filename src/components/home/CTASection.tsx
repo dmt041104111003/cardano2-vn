@@ -58,9 +58,7 @@ export default function CTASection() {
       setErrorEvents(null);
 
       try {
-        const res = await fetch("/api/admin/event-images", {
-          credentials: 'include'
-        });
+        const res = await fetch("/api/event-images");
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
         setEvents(data?.data || []);
