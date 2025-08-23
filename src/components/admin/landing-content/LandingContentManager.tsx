@@ -10,6 +10,7 @@ import FormActions from './FormActions';
 export default function LandingContentManager() {
   const { showSuccess, showError } = useToastContext();
   const queryClient = useQueryClient();
+  const [currentContentId, setCurrentContentId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     section: 'hero',
     title: '',
@@ -40,6 +41,7 @@ export default function LandingContentManager() {
   useEffect(() => {
     if (landingContents.length > 0) {
       const firstContent = landingContents[0];
+      setCurrentContentId(firstContent.id);
       setFormData({
         section: firstContent.section || 'hero',
         title: firstContent.title || '',
@@ -51,6 +53,20 @@ export default function LandingContentManager() {
         media2Url: firstContent.media2Url || '',
         media3Url: firstContent.media3Url || '',
         media4Url: firstContent.media4Url || ''
+      });
+    } else {
+      setCurrentContentId(null);
+      setFormData({
+        section: 'hero',
+        title: '',
+        subtitle: '',
+        description: '',
+        mainText: '',
+        subText: '',
+        media1Url: '',
+        media2Url: '',
+        media3Url: '',
+        media4Url: ''
       });
     }
   }, [landingContents]);
@@ -68,8 +84,13 @@ export default function LandingContentManager() {
       media3Url?: string;
       media4Url?: string;
     }) => {
-      const response = await fetch('/api/admin/landing-content', {
-        method: 'POST',
+      const method = currentContentId ? 'PUT' : 'POST';
+      const url = currentContentId 
+        ? `/api/admin/landing-content/${currentContentId}`
+        : '/api/admin/landing-content';
+      
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(data)
@@ -80,8 +101,11 @@ export default function LandingContentManager() {
       }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       showSuccess('Landing content saved successfully');
+      if (!currentContentId && data?.data?.id) {
+        setCurrentContentId(data.data.id);
+      }
       queryClient.invalidateQueries({ queryKey: ['landing-content'] });
     },
     onError: (error: Error) => {

@@ -174,13 +174,14 @@ export function PostsPageClient() {
     try {
       const backendPost = {
         ...newPost,
+        slug: newPost.slug || newPost.title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim(),
         media: Array.isArray(newPost.media)
-          ? newPost.media.map(m => ({ ...m, type: m.type.toUpperCase() }))
+          ? newPost.media.map(m => ({ ...m, type: m.type })) // Don't convert to uppercase here, let the API handle it
           : [],
       };
       if (editingPost && editingPost.slug) {
         const res = await fetch(`/api/admin/posts/${editingPost.slug}`, {
-          method: 'PATCH',
+          method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(backendPost),
         });
@@ -188,7 +189,8 @@ export function PostsPageClient() {
           await fetchPosts();
           showSuccess('Post updated', 'The post has been updated.');
         } else {
-          showError('Failed to update post');
+          const errorData = await res.json();
+          showError('Failed to update post', errorData.error || 'Unknown error');
         }
       } else {
         const res = await fetch('/api/admin/posts', {
@@ -200,15 +202,16 @@ export function PostsPageClient() {
           await fetchPosts();
           showSuccess('Post created', 'The post has been created.');
         } else {
-          showError('Failed to create post');
+          const errorData = await res.json();
+          showError('Failed to create post', errorData.error || 'Unknown error');
         }
       }
-    } catch {
-      showError('Failed to save post');
+      setEditingPost(null);
+      setActiveSubTab('management');
+    } catch (error) {
+      console.error('Error saving post:', error);
+      showError('Failed to save post', 'An unexpected error occurred.');
     }
-    setEditingPost(null);
-    setActiveTab('posts');
-    setActiveSubTab('management');
   };
 
   const handleCancelEdit = () => {

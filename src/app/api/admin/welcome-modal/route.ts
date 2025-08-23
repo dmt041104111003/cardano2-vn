@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
 import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
-import { withWriteOperation } from "~/lib/leader-middleware";
 
 export const GET = withAdmin(async () => {
   try {
@@ -21,7 +20,7 @@ export const GET = withAdmin(async () => {
   }
 });
 
-export const POST = withWriteOperation(withAdmin(async (req) => {
+export const POST = withAdmin(async (req) => {
   const body = await req.json();
   const { title, description, imageUrl, buttonLink, startDate, endDate } = body;
 
@@ -61,4 +60,4 @@ export const POST = withWriteOperation(withAdmin(async (req) => {
 
     return NextResponse.json(createSuccessResponse(welcomeModal));
   }
-}));
+});

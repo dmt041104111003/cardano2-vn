@@ -13,17 +13,33 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
   const [image, setImage] = useState(technology?.image || "");
   const [githubRepo, setGithubRepo] = useState(technology?.githubRepo || "");
   const [copied, setCopied] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      title,
-      name,
-      description,
-      href,
-      image,
-      githubRepo,
-    });
+    
+    if (!title.trim() || !name.trim() || !description.trim() || !href.trim()) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      await onSave({
+        title: title.trim(),
+        name: name.trim(),
+        description: description.trim(),
+        href: href.trim(),
+        image: image.trim(),
+        githubRepo: githubRepo.trim(),
+      });
+    } catch (error) {
+      console.error('Error saving technology:', error);
+      alert('Failed to save technology');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const copyToClipboard = async (text: string) => {
@@ -46,7 +62,7 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Title
+            Title *
           </label>
           <input
             type="text"
@@ -55,11 +71,12 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
             placeholder="Enter technology title"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
+            disabled={isSubmitting}
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Name
+            Name *
           </label>
           <input
             type="text"
@@ -68,13 +85,14 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
             placeholder="Enter technology name"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
+            disabled={isSubmitting}
           />
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Description
+          Description *
         </label>
         <textarea
           value={description}
@@ -83,13 +101,14 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
           rows={4}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
+          disabled={isSubmitting}
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Link
+            Link *
           </label>
           <input
             type="url"
@@ -98,6 +117,7 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
             placeholder="https://example.com"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
+            disabled={isSubmitting}
           />
         </div>
         <div>
@@ -122,6 +142,7 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
                   onClick={() => copyToClipboard(image)}
                   className="ml-2 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                   title="Copy URL"
+                  disabled={isSubmitting}
                 >
                   {copied ? (
                     <Check className="h-4 w-4 text-green-600" />
@@ -145,6 +166,7 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
           onChange={(e) => setGithubRepo(e.target.value)}
           placeholder="Enter GitHub repository (e.g., dmt041104111003/cardano2-vn)"
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          disabled={isSubmitting}
         />
         <p className="text-xs text-gray-500 mt-1">
           This will add a GitHub star widget to the technology page
@@ -156,14 +178,16 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
           type="button"
           onClick={onCancel}
           className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+          disabled={isSubmitting}
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isSubmitting}
         >
-          {technology ? "Update" : "Create"} Technology
+          {isSubmitting ? 'Saving...' : (technology ? "Update" : "Create") + " Technology"}
         </button>
       </div>
     </form>

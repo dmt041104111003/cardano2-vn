@@ -135,7 +135,6 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
   };
 
   const handleSave = async () => {
-
     console.log('handleSave called, postState:', postState);
 
     if (!postState.title || !postState.title.trim()) {
@@ -154,24 +153,29 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       showError('At least one tag is required!');
       return;
     }
-    if (!postState.media || postState.media.length === 0) {
-      console.log('Media validation failed:', postState.media);
-      showError('Image or YouTube media is required!');
-      return;
-    }
-    console.log('Media validation passed:', postState.media);
-    const normalizedMedia =
-      Array.isArray(postState.media)
-        ? postState.media.map(m => ({
-            ...m,
-            type: m.type.toUpperCase(),
-            id: m.type === 'youtube' ? getYoutubeIdFromUrl(m.url) : m.id,
-          }))
-        : [];
-    console.log('Normalized media:', normalizedMedia);
+    
+    const normalizedMedia = Array.isArray(postState.media) 
+      ? postState.media.map(m => ({
+          ...m,
+          type: m.type.toUpperCase(),
+          id: m.type === 'youtube' ? getYoutubeIdFromUrl(m.url) : m.id,
+        }))
+      : [];
+    
+    
+    const generateSlug = (title: string) => {
+      return title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+    };
+    
     const postData: Post = {
       id: post && typeof post.id === 'string' ? post.id : '',
-      title: postState.title && postState.title.trim() ? postState.title : 'New Post',
+      title: postState.title.trim(),
+      slug: post?.slug || generateSlug(postState.title.trim()),
       content: postState.content,
       status: postState.status.toUpperCase() as 'draft' | 'published' | 'archived',
       tags: postState.selectedTags,
@@ -192,6 +196,7 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       SAD: post && typeof post.SAD === 'number' ? post.SAD : 0,
       ANGRY: post && typeof post.ANGRY === 'number' ? post.ANGRY : 0,
     };
+    
     if (onSave) onSave(postData);
   };
 

@@ -24,12 +24,16 @@ function MediaInput({ value, onChange, placeholder, accept }: MediaInputProps) {
       });
       
       const result = await response.json();
-      if (response.ok && result.media?.url) {
-        onChange(result.media.url);
+      console.log('MemberEditor upload response:', result);
+      
+      if (response.ok && result.data?.media?.url) {
+        onChange(result.data.media.url);
       } else {
+        console.error('Upload failed:', result);
         alert(result.error || 'Upload failed');
       }
     } catch (err) {
+      console.error('Upload error:', err);
       alert('Upload error');
     }
   };

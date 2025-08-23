@@ -84,6 +84,9 @@ export default function TechnologiesPageClient() {
         body: JSON.stringify(technologyData),
       });
 
+      const result = await response.json();
+      console.log('Technology save response:', { status: response.status, result });
+
       if (response.ok) {
         setShowEditor(false);
         await fetchTechnologies();
@@ -92,10 +95,13 @@ export default function TechnologiesPageClient() {
           editingTechnology ? 'Technology has been updated successfully.' : 'Technology has been created successfully.'
         );
       } else {
-        showError('Failed to save technology');
+        const errorMessage = result.error || result.message || 'Failed to save technology';
+        console.error('Technology save failed:', errorMessage);
+        showError(errorMessage);
       }
     } catch (error) {
-      showError('Failed to save technology');
+      console.error('Technology save error:', error);
+      showError('Failed to save technology - Network error');
     }
   };
 

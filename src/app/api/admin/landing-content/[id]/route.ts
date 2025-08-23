@@ -16,14 +16,22 @@ export const PUT = withAdmin(async (req, user) => {
     return NextResponse.json(createErrorResponse('Section is required', 'MISSING_SECTION'), { status: 400 });
   }
 
-  const existingContent = await prisma.landingContent.findFirst({
+  const existingContent = await prisma.landingContent.findUnique({
+    where: { id }
+  });
+
+  if (!existingContent) {
+    return NextResponse.json(createErrorResponse('Content not found', 'CONTENT_NOT_FOUND'), { status: 404 });
+  }
+
+  const conflictingContent = await prisma.landingContent.findFirst({
     where: {
       section,
       id: { not: id }
     }
   });
 
-  if (existingContent) {
+  if (conflictingContent) {
     return NextResponse.json(createErrorResponse('Section already exists', 'SECTION_ALREADY_EXISTS'), { status: 400 });
   }
 
@@ -41,7 +49,6 @@ export const PUT = withAdmin(async (req, user) => {
       media3Url,
       media4Url
     },
-
   });
 
   return NextResponse.json(createSuccessResponse(updatedContent));
