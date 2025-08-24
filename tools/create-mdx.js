@@ -91,3 +91,4 @@ if (fs.existsSync(metaPath)) {
 }
 console.log('\nSuccessfully created mdx file!');
 console.log(`Location: ${fullPath}`);
+

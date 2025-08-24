@@ -11,7 +11,9 @@
     "postinstall": "fumadocs-mdx",
     "seed": "tsx prisma/seed.ts",
     "upload-all": "node tools/upload-all.js",
-    "create-mdx": "node tools/create-mdx.js"
+    "create-mdx": "node tools/create-mdx.js",
+    "fix-mdx-frontmatter": "node tools/fix-mdx-frontmatter.js",
+    "fix-missing-titles": "node tools/fix-missing-titles.js"
   },
   "dependencies": {
     "@harmoniclabs/cbor": "1.6.0",
