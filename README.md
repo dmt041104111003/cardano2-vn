@@ -75,8 +75,8 @@
 
 ---
 ### Top contributors build web:
-<a href="https://github.com/independenceee/cardano2vn/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=independenceee/cardano2vn" alt="contrib.rocks image" />
+<a href="https://github.com/dmt041104111003/cardano2-vn/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=dmt041104111003/cardano2-vn" alt="contrib.rocks image" />
 </a>
 
 ## License

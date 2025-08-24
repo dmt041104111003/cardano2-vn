@@ -36,7 +36,7 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
         content: true,
         createdAt: true,
         userId: true,
-        user: { select: { wallet: true, image: true } },
+        user: { select: { wallet: true, image: true, name: true, id: true } },
         parentCommentId: true,
       },
       orderBy: { createdAt: 'asc' },
@@ -49,7 +49,16 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
         ? { ...m, id: m.id && m.id.length === 11 ? m.id : getYoutubeIdFromUrl(m.url) }
         : m
     );
-    return NextResponse.json(createSuccessResponse({ ...post, author: post.author?.name || 'Admin', authorId: post.author?.id || '', authorWallet: post.author?.wallet || '', tags, media, comments }));
+    const processedComments = comments.map(comment => ({
+      ...comment,
+      user: comment.user ? {
+        ...comment.user,
+        displayName: comment.user.name || comment.user.id || 'Anonymous',
+        ...(comment.user.name ? {} : { id: comment.user.id })
+      } : null
+    }));
+
+    return NextResponse.json(createSuccessResponse({ ...post, author: post.author?.name || 'Admin', authorId: post.author?.id || '', authorWallet: post.author?.wallet || '', tags, media, comments: processedComments }));
   } catch (error) {
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }

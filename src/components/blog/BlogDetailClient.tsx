@@ -229,7 +229,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
       return {
         id: c.id,
         userId: c.userId,
-        author: isPostAuthor ? (authorWallet || c.user?.wallet || c.author || '') : (c.user?.wallet ?? c.author ?? ''),
+        author: isPostAuthor ? (authorWallet || c.user?.displayName || c.user?.wallet || c.author || '') : (c.user?.displayName || c.user?.wallet || c.author || ''),
         content: c.content ?? '',
         createdAt: c.createdAt ?? '',
         time: c.time ?? c.createdAt ?? '',
