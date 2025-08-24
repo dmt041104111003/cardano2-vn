@@ -7,14 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import EventCard from "~/components/home/CTAEventCard";
 import CTALoadingGrid from "~/components/home/CTALoadingGrid";
 import EditModal from "~/components/home/CTAEditModal";
-
-interface Event {
-  id: number;
-  title: string;
-  location: string;
-  imageUrl: string;
-  order: number;
-}
+import { Event } from "~/constants/events";
 
 export default function CTASection() {
   const { data: session } = useSession();
@@ -109,7 +102,7 @@ export default function CTASection() {
   // if (errorEvents) return <p className="text-red-500">Error loading events: {errorEvents}</p>;
   // if (userData === undefined) return <p>Loading user info...</p>;
 
-  const sortedEvents = [...events].sort((a, b) => a.order - b.order);
+  const sortedEvents = [...events].sort((a, b) => a.orderNumber - b.orderNumber);
 
   return (
     <section id="CTA" className="w-full border-t border-gray-200 dark:border-gray-700">

@@ -6,22 +6,7 @@ import { useSession } from "next-auth/react";
 import { useToastContext } from "~/components/toast-provider";
 import MediaInput from "~/components/ui/media-input";
 import { MediaInputMedia } from "~/constants/media";
-
-interface Event {
-  id: number;
-  title: string;
-  location: string;
-  imageUrl: string;
-  order: number;
-}
-
-interface EditModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  event: Event;
-  index: number;
-  onSave: (index: number, updatedEvent: Partial<Event>) => void;
-}
+import { Event, EditModalProps } from "~/constants/events";
 
 export default function EditModal({ isOpen, onClose, event, index, onSave }: EditModalProps) {
   const { data: session } = useSession();
