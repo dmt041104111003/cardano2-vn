@@ -17,7 +17,6 @@ export async function GET(
 
     return NextResponse.json(createSuccessResponse(technology));
   } catch (error) {
-    console.error('Error fetching technology:', error);
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 }
@@ -29,9 +28,7 @@ export const PUT = withAdmin(async (req) => {
       return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
     }
 
-    const body = await req.json();
-    console.log('Updating technology:', { id, data: JSON.stringify(body, null, 2) });
-    
+    const body = await req.json();    
     const { title, name, description, href, image, githubRepo } = body;
 
     if (!title || !name || !description || !href) {
@@ -60,11 +57,8 @@ export const PUT = withAdmin(async (req) => {
         githubRepo: githubRepo || null
       }
     });
-
-    console.log('Technology updated successfully:', updatedTechnology.id);
     return NextResponse.json(createSuccessResponse(updatedTechnology));
   } catch (error) {
-    console.error('Error updating technology:', error);
     return NextResponse.json(createErrorResponse('Failed to update technology', 'UPDATE_FAILED'), { status: 500 });
   }
 });

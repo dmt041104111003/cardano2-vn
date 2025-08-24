@@ -33,7 +33,6 @@ export const GET = withOptionalAuth(async (req: NextRequest, user) => {
 
     return NextResponse.json(createSuccessResponse(dbUser));
   } catch (error) {
-    console.error('Error fetching user:', error);
     return NextResponse.json(createErrorResponse("Internal server error", "INTERNAL_ERROR"), { status: 500 });
   }
 });

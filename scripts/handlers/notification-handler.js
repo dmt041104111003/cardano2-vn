@@ -90,7 +90,6 @@ class NotificationHandler {
           timestamp: new Date().toISOString(),
         });
       }).catch((error) => {
-        console.error('Error saving notification to database:', error);
         const client = this.server.clients.get(clientId);
         if (client) {
           this.server.sendMessage(client.ws, {
@@ -103,7 +102,6 @@ class NotificationHandler {
       });
 
     } catch (error) {
-      console.error('Error handling new notification:', error);
       const client = this.server.clients.get(clientId);
       if (client) {
         this.server.sendError(client.ws, 'Failed to process notification');
@@ -115,7 +113,6 @@ class NotificationHandler {
     try {
       const client = this.server.clients.get(clientId);
       if (!client) {
-        console.error('Client not found:', clientId);
         return;
       }
 
@@ -135,7 +132,6 @@ class NotificationHandler {
       });
 
     } catch (error) {
-      console.error('Error handling notification mark as read:', error);
       const client = this.server.clients.get(clientId);
       if (client) {
         this.server.sendError(client.ws, 'Failed to mark notification as read');
@@ -147,7 +143,6 @@ class NotificationHandler {
     try {
       const client = this.server.clients.get(clientId);
       if (!client) {
-        console.error('Client not found:', clientId);
         return;
       }
 
@@ -187,7 +182,6 @@ class NotificationHandler {
       });
 
     } catch (error) {
-      console.error('Error handling get notifications:', error);
       const client = this.server.clients.get(clientId);
       if (client) {
         this.server.sendError(client.ws, 'Failed to get notifications');

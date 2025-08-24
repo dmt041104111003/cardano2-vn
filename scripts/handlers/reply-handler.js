@@ -27,10 +27,7 @@ class ReplyHandler {
         const realId = this.server.tempIdMapping.get(message.parentCommentId);
         if (realId) {
           realParentCommentId = realId;
-          console.log(`Mapped temp parent ID ${message.parentCommentId} to real ID ${realId}`);
         } else {
-          console.log(`Temp parent ID ${message.parentCommentId} not found in mapping, will queue reply for later`);
-          // Queue this reply for later processing
           if (!this.server.pendingReplies.has(message.parentCommentId)) {
             this.server.pendingReplies.set(message.parentCommentId, []);
           }
@@ -40,7 +37,6 @@ class ReplyHandler {
             timestamp: Date.now()
           });
           
-          // Send message to client that reply is queued
           this.server.sendMessage(this.server.clients.get(clientId).ws, {
             type: 'reply_queued',
             message: 'Reply will be processed when parent comment is ready',
@@ -58,7 +54,6 @@ class ReplyHandler {
       });
 
       if (!parentComment && message.parentCommentId.startsWith('temp_')) {
-        console.log('Parent comment is temp, will use temp data for immediate broadcast');
         parentComment = {
           id: message.parentCommentId,
           userId: message.userId, 
@@ -91,7 +86,6 @@ class ReplyHandler {
         isTemp: true,
       };
 
-      console.log(`Broadcasting new reply immediately to post room ${message.postId}`);
       this.server.broadcastToPostRoom(message.postId, {
         type: 'new_reply',
         reply: replyData,
@@ -136,7 +130,6 @@ class ReplyHandler {
             });
           }
         } catch (error) {
-          console.error('Error creating reply notification:', error);
         }
 
         const realReplyData = {
@@ -163,7 +156,6 @@ class ReplyHandler {
           isTemp: false,
         };
 
-        // Store temp ID mapping for future replies to this reply
         this.server.tempIdMapping.set(tempReplyId, savedReply.id);
         
         this.server.broadcastToPostRoom(message.postId, {
@@ -173,10 +165,8 @@ class ReplyHandler {
           timestamp: new Date().toISOString(),
         });
         
-        // Check if there are any pending replies waiting for this reply
         this.server.processPendingReplies(savedReply.id);
       }).catch((error) => {
-        console.error('Error saving reply to database:', error);
         this.server.sendMessage(this.server.clients.get(clientId).ws, {
           type: 'reply_error',
           message: 'Failed to save reply',
@@ -186,14 +176,12 @@ class ReplyHandler {
       });
 
     } catch (error) {
-      console.error('Error handling new reply:', error);
       this.server.sendError(this.server.clients.get(clientId).ws, 'Failed to process reply');
     }
   }
 
   async createNotification(notificationData) {
     try {
-      console.log('Creating notification:', notificationData);
       
       const notification = await prisma.notification.create({
         data: {
@@ -223,7 +211,6 @@ class ReplyHandler {
       });
       
     } catch (error) {
-      console.error('Error creating notification:', error);
     }
   }
 
@@ -253,14 +240,12 @@ class ReplyHandler {
     ];
 
     if (pendingReplies.length > 0) {
-      console.log(`Processing ${pendingReplies.length} pending replies for parent ${realParentId}`);
 
       pendingReplies.forEach(async (pendingReply) => {
         try {
           pendingReply.message.parentCommentId = realParentId;
           await this.handleNewReply(pendingReply.clientId, pendingReply.message);
         } catch (error) {
-          console.error('Error processing pending reply:', error);
         }
       });
 

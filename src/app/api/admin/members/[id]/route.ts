@@ -21,7 +21,6 @@ export async function GET(
 
     return NextResponse.json(createSuccessResponse(member));
   } catch (error) {
-    console.error('Error fetching member:', error);
     return NextResponse.json(
       createErrorResponse('Failed to fetch member', 'INTERNAL_ERROR'),
       { status: 500 }

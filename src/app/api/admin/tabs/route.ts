@@ -18,7 +18,6 @@ export const GET = withAdmin(async () => {
 
     return NextResponse.json(createSuccessResponse(tabs));
   } catch (error) {
-    console.error('Error fetching tabs:', error);
     return NextResponse.json(
       createErrorResponse('Failed to fetch tabs', 'INTERNAL_ERROR'),
       { status: 500 }

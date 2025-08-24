@@ -32,7 +32,6 @@ export async function GET() {
 
     return NextResponse.json(createSuccessResponse(welcomeModal));
   } catch (error) {
-    console.error('Error fetching welcome modal:', error);
     return NextResponse.json(
       createErrorResponse('Failed to fetch welcome modal', 'INTERNAL_ERROR'),
       { status: 500 }

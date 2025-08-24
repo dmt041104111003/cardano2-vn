@@ -6,7 +6,6 @@ class RoomManager {
   joinPostRoom(clientId, postId) {
     if (!this.server.postRooms.has(postId)) {
       this.server.postRooms.set(postId, new Set());
-      console.log(`Created new room for postId: ${postId}`);
     }
     this.server.postRooms.get(postId).add(clientId);
     
@@ -15,8 +14,6 @@ class RoomManager {
       client.postId = postId;
     }
     
-    console.log(`Client ${clientId} joined post room ${postId}`);
-    console.log(`Room ${postId} now has ${this.server.postRooms.get(postId).size} clients`);
   }
 
   leavePostRoom(clientId, postId) {
@@ -32,25 +29,20 @@ class RoomManager {
   broadcastToPostRoom(postId, message, excludeClientId) {
     let room = this.server.postRooms.get(postId);
     if (!room) {
-      console.log(`No room found for postId: ${postId}, creating temporary room for broadcast`);
       this.server.postRooms.set(postId, new Set());
       room = this.server.postRooms.get(postId);
     }
 
-    console.log(`Broadcasting to ${room.size} clients in room ${postId}, excluding: ${excludeClientId}`);
     
     room.forEach(clientId => {
       if (clientId === excludeClientId) {
-        console.log(`Skipping sender client: ${clientId}`);
         return;
       }
       
       const client = this.server.clients.get(clientId);
       if (client && client.ws.readyState === 1) { 
-        console.log(`Sending message to client: ${clientId}`);
         this.server.sendMessage(client.ws, message);
       } else {
-        console.log(`Client ${clientId} not ready or not found`);
       }
     });
   }

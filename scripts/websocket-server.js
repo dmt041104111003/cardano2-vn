@@ -58,7 +58,6 @@ class CommentWebSocketServer {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(healthData, null, 2));
       } catch (error) {
-        console.error('Health check error:', error);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ 
           status: 'error', 
@@ -101,15 +100,12 @@ class CommentWebSocketServer {
   }
 
   setupWebSocketServer() {
-    this.wss.on('connection', (ws, request) => {
-      console.log('New WebSocket connection');
-      
+    this.wss.on('connection', (ws, request) => {      
       const url = new URL(request.url || '', `http://${request.headers.host}`);
       const postId = url.searchParams.get('postId');
       const userId = url.searchParams.get('userId');
       
       if (!postId) {
-        console.log('Connection rejected: missing postId');
         ws.close(1008, 'Missing postId parameter');
         return;
       }
@@ -125,11 +121,9 @@ class CommentWebSocketServer {
 
       ws.on('message', (data) => {
         try {
-          console.log('WebSocket server received message:', data.toString());
           const message = JSON.parse(data.toString());
           this.handleMessage(clientId, message);
         } catch (error) {
-          console.error('Error parsing message:', error);
           this.sendError(ws, 'Invalid message format');
         }
       });
@@ -139,7 +133,6 @@ class CommentWebSocketServer {
       });
 
       ws.on('error', (error) => {
-        console.error('WebSocket error:', error);
         this.handleClientDisconnect(clientId);
       });
 
@@ -201,7 +194,6 @@ class CommentWebSocketServer {
       this.userRooms.set(userId, new Set());
     }
     this.userRooms.get(userId).add(clientId);
-    console.log(`Client ${clientId} joined user room ${userId}`);
   }
 
   leaveUserRoom(clientId, userId) {
@@ -211,7 +203,6 @@ class CommentWebSocketServer {
       if (userRoom.size === 0) {
         this.userRooms.delete(userId);
       }
-      console.log(`Client ${clientId} left user room ${userId}`);
     }
   }
 
@@ -252,7 +243,6 @@ class CommentWebSocketServer {
       }
     }
     this.clients.delete(clientId);
-    console.log(`Client ${clientId} disconnected`);
   }
 
   broadcastToPostRoom(postId, message, excludeClientId) {
@@ -268,23 +258,18 @@ class CommentWebSocketServer {
   }
 }
 
-console.log('Starting WebSocket server for realtime comments...');
-
 try {
   const port = process.env.WEBSOCKET_PORT;
   const wsServer = new CommentWebSocketServer(port);
   
   process.on('SIGINT', () => {
-    console.log('\nShutting down WebSocket server...');
     process.exit(0);
   });
   
   process.on('SIGTERM', () => {
-    console.log('\nShutting down WebSocket server...');
     process.exit(0);
   });
   
 } catch (error) {
-  console.error('Failed to start WebSocket server:', error);
   process.exit(1);
 }

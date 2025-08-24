@@ -16,7 +16,6 @@ export const GET = withAdmin(async () => {
     });
     return NextResponse.json(createSuccessResponse(tags));
   } catch (error) {
-    console.error('Error fetching tags:', error);
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 });
