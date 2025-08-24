@@ -9,7 +9,9 @@
     "lint": "next lint",
     "export": "next export",
     "postinstall": "fumadocs-mdx",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "upload-all": "node tools/upload-all.js",
+    "create-mdx": "node tools/create-mdx.js"
   },
   "dependencies": {
     "@harmoniclabs/cbor": "1.6.0",
