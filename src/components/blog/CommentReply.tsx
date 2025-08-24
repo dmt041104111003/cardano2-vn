@@ -74,14 +74,20 @@ export default function CommentReply({
         <div className="flex-1 min-w-0">
           <div className="bg-gray-800/20 rounded-xl px-3 py-2">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-white text-xs">UserID: {reply.userId}</span>
-              <span
-                className="font-mono text-blue-300 text-xs bg-blue-900/40 px-2 py-0.5 rounded select-all cursor-pointer hover:text-blue-200"
-                title="Copy address"
-                onClick={() => {navigator.clipboard.writeText(reply.author || '')}}
-              >
-                {shortAddress(reply.author || '')}
-              </span>
+
+              {!reply.user?.displayName && !reply.author && (
+                <span className="font-semibold text-white text-xs">UserID: {reply.userId}</span>
+              )}
+
+              {(reply.user?.displayName || reply.author) && (
+                <span
+                  className="font-mono text-blue-300 text-xs bg-blue-900/40 px-2 py-0.5 rounded select-all cursor-pointer hover:text-blue-200"
+                  title="Copy name/address"
+                  onClick={() => {navigator.clipboard.writeText(reply.user?.displayName || reply.author || '')}}
+                >
+                  {shortAddress(reply.user?.displayName || reply.author || '')}
+                </span>
+              )}
             </div>
             {renderReplyContent(reply.content)}
           </div>

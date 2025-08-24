@@ -7,6 +7,9 @@ export interface Comment {
   user?: {
     wallet?: string;
     image?: string;
+    name?: string;
+    id?: string;
+    displayName?: string;
   } | null;
   parentCommentId?: string | null;
   replies?: Comment[];

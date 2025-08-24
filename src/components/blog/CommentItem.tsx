@@ -222,26 +222,30 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
             <div className="flex-1 min-w-0">
               <div className="bg-gray-100 dark:bg-gray-800/30 rounded-2xl px-3 py-2">
                 <div className="flex items-center gap-2 mb-1">
-                  <span
-                    className="font-semibold text-gray-900 dark:text-white text-xs font-mono cursor-pointer select-all"
-                    title="Copy userId"
-                    onClick={() => {
-                      navigator.clipboard.writeText(comment.userId || '');
-                      showSuccess('Copied!');
-                    }}
-                  >
-                    {shortAddress(comment.userId || '')}
-                  </span>
-                  <span
-                    className="font-mono text-blue-700 dark:text-blue-300 text-xs bg-blue-100/40 dark:bg-blue-900/40 px-2 py-0.5 rounded select-all cursor-pointer hover:text-blue-800 dark:hover:text-blue-200"
-                    title="Copy address"
-                    onClick={() => {
-                      navigator.clipboard.writeText(comment.author || '');
-                      showSuccess('Copied!');
-                    }}
-                  >
-                    {shortAddress(comment.author || '')}
-                  </span>
+                  {!comment.user?.displayName && !comment.author && (
+                    <span
+                      className="font-semibold text-gray-900 dark:text-white text-xs font-mono cursor-pointer select-all"
+                      title="Copy userId"
+                      onClick={() => {
+                        navigator.clipboard.writeText(comment.userId || '');
+                        showSuccess('Copied!');
+                      }}
+                    >
+                      {shortAddress(comment.userId || '')}
+                    </span>
+                  )}
+                  {(comment.user?.displayName || comment.author) && (
+                    <span
+                      className="font-mono text-blue-700 dark:text-blue-300 text-xs bg-blue-100/40 dark:bg-blue-900/40 px-2 py-0.5 rounded select-all cursor-pointer hover:text-blue-800 dark:hover:text-blue-200"
+                      title="Copy name/address"
+                      onClick={() => {
+                        navigator.clipboard.writeText(comment.user?.displayName || comment.author || '');
+                        showSuccess('Copied!');
+                      }}
+                    >
+                      {shortAddress(comment.user?.displayName || comment.author || '')}
+                    </span>
+                  )}
                   {comment.isPostAuthor && (
                     <span className="ml-2 italic font-bold text-blue-600 dark:text-blue-500 text-xs">author</span>
                   )}
