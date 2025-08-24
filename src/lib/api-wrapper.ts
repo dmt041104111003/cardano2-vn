@@ -64,7 +64,8 @@ export function withAdmin(handler: ApiHandler, rateLimit = { limit: 50, windowMs
       }
 
       const user = await requireAdmin();
-      return await handler(req, user);
+      const result = await handler(req, user);
+      return result;
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === "Unauthorized") {

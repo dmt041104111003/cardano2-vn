@@ -124,14 +124,14 @@ export const authOptions = {
           });
 
           if (!dbUser) {
-		let userRole = roleCache.get("ADMIN");
+		let userRole = roleCache.get("USER");
 		if (!userRole) {
 		  userRole = await prisma.role.findFirst({
-		    where: { name: "ADMIN" },
+		    where: { name: "USER" },
 		    select: { id: true }
 		  });
 		  if (userRole) {
- 		   roleCache.set("ADMIN", userRole);
+ 		   roleCache.set("USER", userRole);
  		 }
 		}
 
@@ -223,14 +223,14 @@ export const authOptions = {
           });
 
           if (!dbUser) {
-		let userRole = roleCache.get("ADMIN");
+		let userRole = roleCache.get("USER");
 		if (!userRole) {
 		  userRole = await prisma.role.findFirst({
-		    where: { name: "ADMIN" },
+		    where: { name: "USER" },
 		    select: { id: true }
 		  });
 		  if (userRole) {
- 		   roleCache.set("ADMIN", userRole);
+ 		   roleCache.set("USER", userRole);
  		 }
 		}
 
@@ -320,14 +320,14 @@ export const authOptions = {
           });
 
           if (!dbUser) {
-		let userRole = roleCache.get("ADMIN");
+		let userRole = roleCache.get("USER");
 		if (!userRole) {
 		  userRole = await prisma.role.findFirst({
-		    where: { name: "ADMIN" },
+		    where: { name: "USER" },
 		    select: { id: true }
 		  });
  		 if (userRole) {
-		    roleCache.set("ADMIN", userRole);
+		    roleCache.set("USER", userRole);
 		  }
 		}
 

@@ -18,6 +18,7 @@ export interface UserTableProps {
   onDelete: (userId: string) => void;
   onRoleChange: (userId: string, role: 'USER' | 'ADMIN') => void;
   currentUserAddress?: string | null;
+  currentUserRole?: 'USER' | 'ADMIN';
 }
 
 export function shortenAddress(address: string, chars = 6) {

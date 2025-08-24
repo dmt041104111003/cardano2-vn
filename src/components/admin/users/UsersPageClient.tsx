@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User, ITEMS_PER_PAGE, isWithin24Hours } from '~/constants/users';
+import { User,isWithin24Hours } from '~/constants/users';
 import { AdminHeader } from '~/components/admin/common/AdminHeader';
 import { AdminStats } from '~/components/admin/common/AdminStats';
 import { AdminFilters } from '~/components/admin/common/AdminFilters';
@@ -22,6 +22,7 @@ export function UsersPageClient() {
   const [newUserAddress, setNewUserAddress] = useState('');
   const [newUserName, setNewUserName] = useState('');
   const [currentUserAddress, setCurrentUserAddress] = useState<string | null>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<'USER' | 'ADMIN' | null>(null);
   const [editUser, setEditUser] = useState<User | null>(null);
   const ITEMS_PER_PAGE = 6;
   const [editUserName, setEditUserName] = useState('');
@@ -49,6 +50,7 @@ export function UsersPageClient() {
       try {
         const parsed = JSON.parse(session);
         setCurrentUserAddress(parsed.user?.address || null);
+        setCurrentUserRole(parsed.user?.role || null);
       } catch {}
     }
   }, []);
@@ -97,26 +99,33 @@ export function UsersPageClient() {
   const handleRoleChange = async (userId: string, newRole: 'ADMIN' | 'USER') => {
     const user = users.find(u => u.id === userId);
     if (!user) return;
-    if (user.role === 'ADMIN' && newRole === 'USER') {
-      alert('Cannot demote admin to user');
+    
+    if (user.address === currentUserAddress && newRole === 'USER') {
+      showError('Cannot demote yourself to user');
       return;
     }
-    if (user.role === 'USER' && newRole === 'ADMIN') {
-      try {
-        const res = await fetch('/api/admin/users', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ address: user.address, promote: true })
-        });
-        if (!res.ok) {
-          alert('Failed to promote user');
-          return;
-        }
-        await fetchUsers();
-      } catch {
-        alert('Failed to promote user');
+    
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          address: user.address, 
+          promote: newRole === 'ADMIN' 
+        })
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        showError(errorData.message || 'Failed to update user role');
+        return;
       }
+      
+      await fetchUsers();
+      showSuccess('Role updated', `User role has been updated to ${newRole}`);
+    } catch {
+      showError('Failed to update user role');
     }
   };
 
@@ -168,6 +177,10 @@ export function UsersPageClient() {
     }
     return matchesSearch && matchesFilter;
   });
+
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  // }, [searchTerm, filterType]);
 
   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -251,6 +264,7 @@ export function UsersPageClient() {
           onDelete={handleDelete}
           onRoleChange={handleRoleChange}
           currentUserAddress={currentUserAddress}
+          currentUserRole={currentUserRole || undefined}
         />
         <Pagination
           currentPage={currentPage}

@@ -16,6 +16,7 @@ export interface AuthUser {
 export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
     const session = await getServerSession(authOptions);
+    
     if (!session?.user) return null;
 
     const sessionUser = session.user as { address?: string; email?: string };

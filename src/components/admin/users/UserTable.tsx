@@ -38,6 +38,7 @@ export function UserTable({
   onDelete,
   onRoleChange,
   currentUserAddress,
+  currentUserRole,
 }: UserTableProps) {
   const { showSuccess } = useToastContext();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -134,7 +135,7 @@ export function UserTable({
                     onChange={(e) => onRoleChange(user.id, e.target.value as 'USER' | 'ADMIN')}
                     className="text-sm border-0 bg-transparent focus:ring-0 focus:outline-none"
                     title={`Change role for ${user.name}`}
-                    disabled={Boolean(user.role === 'ADMIN' || (currentUserAddress && user.address === currentUserAddress))}
+                    disabled={false}
                   >
                     <option value="USER">User</option>
                     <option value="ADMIN">Admin</option>
