@@ -43,7 +43,7 @@ export interface CommentItemProps {
 
 export interface CommentReplyProps {
   reply: Comment;
-  onReply: (commentId: string) => void;
+  onReply: (commentId: string, displayName?: string) => void;
   replyingTo: string | null;
   onSubmitReply: (e: React.FormEvent, commentId: string, user: { id?: string; address?: string; image?: string }) => void;
   replyText: string;

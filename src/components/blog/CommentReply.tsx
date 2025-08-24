@@ -94,7 +94,10 @@ export default function CommentReply({
           <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
  
             <button 
-              onClick={() => onReply(reply.id)}
+              onClick={() => {
+                const displayName = reply.user?.displayName || reply.author || reply.userId;
+                onReply(reply.id, displayName);
+              }}
               className="hover:text-gray-300 transition-colors font-medium"
             >
               Reply

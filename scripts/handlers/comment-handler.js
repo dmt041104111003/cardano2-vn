@@ -34,6 +34,8 @@ class CommentHandler {
           wallet: user.wallet,
           image: user.image,
           name: user.name,
+          id: user.id,
+          displayName: user.name || user.id || 'Anonymous',
         } : null,
         isTemp: true,
       };
@@ -131,6 +133,8 @@ class CommentHandler {
             wallet: savedComment.user.wallet,
             image: savedComment.user.image,
             name: savedComment.user.name,
+            id: savedComment.user.id,
+            displayName: savedComment.user.name || savedComment.user.id || 'Anonymous',
           } : null,
           isTemp: false,
         };
@@ -317,6 +321,8 @@ class CommentHandler {
           wallet: updatedComment.user.wallet,
           image: updatedComment.user.image,
           name: updatedComment.user.name,
+          id: updatedComment.user.id,
+          displayName: updatedComment.user.name || updatedComment.user.id || 'Anonymous',
         } : null,
         isTemp: false,
       };
