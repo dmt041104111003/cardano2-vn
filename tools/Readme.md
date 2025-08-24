@@ -1,4 +1,4 @@
-# Bully Algorithm - Cardano2vn
+# Docs Management Tools - Cardano2vn
 
 ---
 ## Documentation Navigation
@@ -23,16 +23,18 @@
 
 ---
 
-## Core Concept
-- **Purpose**: Elect coordinator in distributed systems
-- **Principle**: Highest ID node becomes leader
-- **Trigger**: Leader failure detection via timeout
+Quick tools for managing documentation files.
 
----
-```
-FOLLOWER → CANDIDATE → LEADER
-    ↑         ↓         ↓
-    └─── Election Timeout ───┘
+## Quick Start
+
+### Upload entire folder
+```bash
+# Upload to specific path
+npm run upload-all "C:\Users\ADMIN\Downloads\Chuong1" content/docs/getting-started/Chuong1
 ```
 
+### Create new MDX file
+```bash
+npm run create-mdx "tutorial-guide" "content/docs/getting-started"
+```
 

@@ -1,3 +1,13 @@
 {
-  "pages": ["overview", "cardano-components","tools", "technical-conceptstechnical-concepts", "testnets-and-devnets", "cardano-developer-community", "videos"]
+  "pages": [
+    "overview",
+    "cardano-components",
+    "tools",
+    "technical-conceptstechnical-concepts",
+    "testnets-and-devnets",
+    "cardano-developer-community",
+    "videos",
+    "Chuong1",
+    "huong-dan-vi"
+  ]
 }
