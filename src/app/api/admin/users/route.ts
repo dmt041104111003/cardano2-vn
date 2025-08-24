@@ -16,7 +16,7 @@ export const GET = withAdmin(async () => {
       return {
         id: user.id,
         name: user.name || '',
-        address: user.wallet,
+        address: user.wallet || user.email || '',
         email: user.email,
         provider: user.provider,
         role: user.role.name,
@@ -88,45 +88,69 @@ export const PATCH = withAdmin(async (req, currentUser) => {
     return NextResponse.json(createErrorResponse('User not found', 'USER_NOT_FOUND'), { status: 404 });
   }
   
-  const { address, name, promote } = await req.json();
-  
-  if (!address) {
-    return NextResponse.json(createErrorResponse('Missing address', 'MISSING_ADDRESS'), { status: 400 });
-  }
-  
-  const user = await prisma.user.findUnique({
-    where: { wallet: address },
-    include: { role: true },
-  });
-  
-  if (!user) {
-    return NextResponse.json(createErrorResponse('User not found', 'USER_NOT_FOUND'), { status: 404 });
-  }
-  
-  if (currentUser.role.name === 'ADMIN' && name !== undefined) {
-    await prisma.user.update({ where: { wallet: address }, data: { name } });
-    return NextResponse.json(createSuccessResponse({ success: true }));
-  }
-  
-  if (name !== undefined && user.wallet === currentUser.wallet) {
-    return NextResponse.json(createErrorResponse('Forbidden', 'FORBIDDEN'), { status: 403 });
-  }
-  
-  if (currentUser.role.name !== 'ADMIN') {
-    return NextResponse.json(createErrorResponse('Forbidden', 'FORBIDDEN'), { status: 403 });
-  }
-
-  if (promote) {
-    if (user.role.name === 'ADMIN') {
-      return NextResponse.json(createErrorResponse('User is already admin', 'ALREADY_ADMIN'), { status: 400 });
+  try {
+    const { address, name, promote } = await req.json();
+    
+    if (!address) {
+      return NextResponse.json(createErrorResponse('Missing address', 'MISSING_ADDRESS'), { status: 400 });
     }
-    const adminRole = await prisma.role.findFirst({ where: { name: 'ADMIN' } });
-    if (!adminRole) {
-      return NextResponse.json(createErrorResponse('Role ADMIN not found', 'ROLE_NOT_FOUND'), { status: 500 });
+  
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { wallet: address },
+          { email: address }
+        ]
+      },
+      include: { role: true },
+    });
+  
+    if (!user) {
+      return NextResponse.json(createErrorResponse('User not found', 'USER_NOT_FOUND'), { status: 404 });
     }
-    await prisma.user.update({ where: { wallet: address }, data: { roleId: adminRole.id } });
+  
+    if (name !== undefined) {
+      if ((user.wallet && user.wallet === currentUser.wallet) || (user.email && user.email === currentUser.email)) {
+        return NextResponse.json(createErrorResponse('Forbidden', 'FORBIDDEN'), { status: 403 });
+      }
+      await prisma.user.update({ where: { id: user.id }, data: { name } });
+    }
+  
+    if (promote !== undefined) {
+      if (currentUser.role.name !== 'ADMIN') {
+        return NextResponse.json(createErrorResponse('Only admins can change user roles', 'FORBIDDEN'), { status: 403 });
+      }
+      
+      if (promote) {
+        if (user.role.name.toUpperCase() === 'ADMIN') {
+          return NextResponse.json(createErrorResponse('User is already admin', 'ALREADY_ADMIN'), { status: 400 });
+        }
+        const adminRole = await prisma.role.findFirst({ where: { name: 'ADMIN' } });
+        if (!adminRole) {
+          return NextResponse.json(createErrorResponse('Role ADMIN not found', 'ROLE_NOT_FOUND'), { status: 500 });
+        }
+        await prisma.user.update({ 
+          where: { id: user.id }, 
+          data: { roleId: adminRole.id } 
+        });
+      } else {
+        if ((user.wallet && user.wallet === currentUser.wallet) || (user.email && user.email === currentUser.email)) {
+          return NextResponse.json(createErrorResponse('Cannot demote yourself', 'CANNOT_DEMOTE_SELF'), { status: 400 });
+        }
+        
+        if (user.role.name.toUpperCase() === 'USER') {
+          return NextResponse.json(createErrorResponse('User is already user', 'ALREADY_USER'), { status: 400 });
+        }
+        const userRole = await prisma.role.findFirst({ where: { name: 'USER' } });
+        if (!userRole) {
+          return NextResponse.json(createErrorResponse('Role USER not found', 'ROLE_NOT_FOUND'), { status: 500 });
+        }
+        await prisma.user.update({ where: { id: user.id }, data: { roleId: userRole.id } });
+      }
+    }
+  
     return NextResponse.json(createSuccessResponse({ success: true }));
-  } else {
-    return NextResponse.json(createErrorResponse('Cannot demote admin', 'CANNOT_DEMOTE_ADMIN'), { status: 400 });
+  } catch (error) {
+    return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 }); 

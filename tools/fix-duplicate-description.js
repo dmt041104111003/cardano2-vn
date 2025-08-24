@@ -101,3 +101,4 @@ if (fs.existsSync(docsDir)) {
   console.error('content/docs directory not found');
   process.exit(1);
 }
+
