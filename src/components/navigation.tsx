@@ -157,7 +157,7 @@ export default function Navigation({
       </div>
 
       <div className="mt-6">
-        <Link href="https://andamio.notion.site/1fb44d820e1d804ebec4f0142d3f267a?pvs=105">
+        <Link href="/about#join-our-team">
           <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 shadow hover:text-success p-1 px-3 w-full rounded-sm bg-blue-600 text-white hover:bg-blue-700">
             Give Feedback
           </button>

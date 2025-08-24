@@ -578,7 +578,7 @@ export default function MemberPageClient() {
 
       <section id="contact" className="pt-32 pb-12 lg:pt-40 lg:pb-16 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
+          <div id="join-our-team" className="text-center mb-8">
             <div className="mb-4 flex items-center justify-center gap-4">
               <div className="h-1 w-12 bg-gradient-to-r from-blue-500 to-transparent"></div>
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white lg:text-4xl">Join Our Team</h2>
