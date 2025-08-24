@@ -1,21 +1,26 @@
-# Exploring the Wonderful World of Markdown - Cardano2vn
 ---
+title: "Exploring the Wonderful World of Markdown - Cardano2vn"
+description: "Comprehensive guide to Markdown syntax and advanced techniques"
+---
+
+# Exploring the Wonderful World of Markdown - Cardano2vn
+
 ## Documentation Navigation
 
-<div align="center">
-  <a href="#overview" style="text-decoration: none;">
+<div className="flex justify-center gap-4 flex-wrap">
+  <a href="#overview" className="inline-block">
     <img src="https://img.shields.io/badge/Overview-Main_README-blue?style=for-the-badge" alt="Overview" />
   </a>
-  <a href="scripts/WEBSOCKET_README.md" style="text-decoration: none;">
+  <a href="scripts/WEBSOCKET_README.md" className="inline-block">
     <img src="https://img.shields.io/badge/WebSocket-Real--time_System-orange?style=for-the-badge" alt="WebSocket Guide" />
   </a>
-  <a href="tools/MARKDOWN_GUIDE_EN.md" style="text-decoration: none;">
+  <a href="tools/MARKDOWN_GUIDE_EN.md" className="inline-block">
     <img src="https://img.shields.io/badge/Markdown_Guide-English_Guide-green?style=for-the-badge" alt="Markdown Guide" />
   </a>
-  <a href="BULLY_ALGORITHM_IMPLEMENTATION.md" style="text-decoration: none;">
+  <a href="BULLY_ALGORITHM_IMPLEMENTATION.md" className="inline-block">
     <img src="https://img.shields.io/badge/Bully_Algorithm-Distributed_System-red?style=for-the-badge" alt="Bully Algorithm" />
   </a>
-  <a href="tools/README.md" style="text-decoration: none;">
+  <a href="tools/README.md" className="inline-block">
     <img src="https://img.shields.io/badge/Docs_Tools-Automation-purple?style=for-the-badge" alt="Docs Tools" />
   </a>
 </div>
@@ -223,6 +228,6 @@ Now, pick up your Markdown editor and start creating! Explore the world of Markd
 
 ---
 
-<center>
-    <img src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png" style="width: 100px;">
-</center>
+<div className="text-center">
+    <img src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png" style={{width: '100px'}} alt="Doocs Logo" />
+</div>

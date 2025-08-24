@@ -72,20 +72,97 @@ function fixMdxFile(filePath) {
     return false;
   }
 }
+
+function fixFrontmatterFormatting(content) {
+  const lines = content.split('\n');
+  let inFrontmatter = false;
+  let frontmatterStart = -1;
+  let frontmatterEnd = -1;
+  let fixedLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    if (line.trim() === '---') {
+      if (!inFrontmatter) {
+        inFrontmatter = true;
+        frontmatterStart = i;
+      } else {
+        frontmatterEnd = i;
+        break;
+      }
+    }
+  }
+
+  if (frontmatterStart === -1 || frontmatterEnd === -1) {
+    return content;
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    if (i === frontmatterStart || i === frontmatterEnd) {
+      fixedLines.push(line);
+    } else if (i > frontmatterStart && i < frontmatterEnd) {
+      const trimmedLine = line.trim();
+      if (trimmedLine) {
+        fixedLines.push(trimmedLine);
+      } else {
+        fixedLines.push('');
+      }
+    } else {
+      fixedLines.push(line);
+    }
+  }
+
+  return fixedLines.join('\n');
+}
+
+function fixMdxFileFormatting(filePath) {
+  try {
+    console.log(`Processing: ${filePath}`);
+    const content = fs.readFileSync(filePath, 'utf8');
+    const fixedContent = fixFrontmatterFormatting(content);
+    
+    if (content !== fixedContent) {
+      fs.writeFileSync(filePath, fixedContent, 'utf8');
+      console.log(`Fixed formatting: ${filePath}`);
+      return true;
+    } else {
+      console.log(`⏭No formatting changes needed: ${filePath}`);
+      return false;
+    }
+  } catch (error) {
+    console.error(`Error processing ${filePath}:`, error.message);
+    return false;
+  }
+}
+
+const args = process.argv.slice(2);
+const mode = args[0] || 'add';
+
 const docsDir = 'content/docs';
 let totalFiles = 0;
 let fixedFiles = 0;
 
 if (fs.existsSync(docsDir)) {
-  console.log('🔍 Scanning for MDX files...');
+  console.log('canning for MDX files...');
   const mdxFiles = findMdxFiles(docsDir);
   totalFiles = mdxFiles.length;
   
   console.log(`Found ${totalFiles} MDX files`);
+  console.log(`Mode: ${mode}`);
+  console.log('---');
   
   for (const file of mdxFiles) {
-    if (fixMdxFile(file)) {
-      fixedFiles++;
+    if (mode === 'format') {
+      if (fixMdxFileFormatting(file)) {
+        fixedFiles++;
+      }
+    } else {
+      if (fixMdxFile(file)) {
+        fixedFiles++;
+      }
     }
   }
   
@@ -93,6 +170,12 @@ if (fs.existsSync(docsDir)) {
   console.log(`   Total files: ${totalFiles}`);
   console.log(`   Fixed files: ${fixedFiles}`);
   console.log(`   Already correct: ${totalFiles - fixedFiles}`);
+  
+  if (mode === 'format') {
+    console.log(`\nUsage:`);
+    console.log(`   node fix-mdx-frontmatter.js add     - Add missing frontmatter`);
+    console.log(`   node fix-mdx-frontmatter.js format  - Fix frontmatter formatting`);
+  }
   
 } else {
   console.error('content/docs directory not found');
