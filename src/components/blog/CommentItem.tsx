@@ -95,8 +95,10 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
     }
     setActiveReplyId(activeReplyId === comment.id ? null : comment.id);
     if (activeReplyId !== comment.id) {
-      if (comment.userId) {
-        setReplyText(`@${shortAddress(comment.userId)} `);
+
+      const displayName = comment.user?.displayName || comment.author || comment.userId;
+      if (displayName) {
+        setReplyText(`@${displayName} `);
       } else {
         setReplyText("");
       }
