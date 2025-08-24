@@ -5,26 +5,12 @@ import Image from "next/image";
 import { XIcon, UploadCloud } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { useCallback, useEffect, useState } from "react";
-
-interface Event {
-  id: number;
-  title: string;
-  location: string;
-  imageUrl: string;
-  order: number;
-}
-
-interface EventCardProps {
-  event: Event;
-  index: number;
-  editMode: boolean;
-  onEditClick?: (index: number) => void;
-  onUpload?: (file: File, index: number) => void;
-  className?: string;
-}
+import EventImageModal from "./EventImageModal";
+import { Event, EventCardProps } from "~/constants/events";
 
 export default function EventCard({ event, index, editMode, onEditClick, onUpload, className }: EventCardProps) {
   const [maxChars, setMaxChars] = useState(30);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const updateMaxChars = () => {
@@ -38,6 +24,16 @@ export default function EventCard({ event, index, editMode, onEditClick, onUploa
     window.addEventListener("resize", updateMaxChars);
     return () => window.removeEventListener("resize", updateMaxChars);
   }, []);
+
+  const handleImageClick = () => {
+    if (!editMode && event.imageUrl) {
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles[0] && onUpload) {
@@ -58,12 +54,13 @@ export default function EventCard({ event, index, editMode, onEditClick, onUploa
   const { onAnimationStart: _, ...safeRootProps } = rootProps as any;
 
   return (
-    <motion.div
-      whileHover={{ scale: editMode ? 1 : 1.02 }}
-      whileTap={{ scale: editMode ? 1 : 0.98 }}
-      className={`relative rounded-xl overflow-hidden shadow-lg group cursor-pointer ${className}`}
-      {...safeRootProps}
-    >
+    <>
+      <motion.div
+        whileHover={{ scale: editMode ? 1 : 1.02 }}
+        whileTap={{ scale: editMode ? 1 : 0.98 }}
+        className={`relative rounded-xl overflow-hidden shadow-lg group cursor-pointer ${className}`}
+        {...safeRootProps}
+      >
       {editMode && !event.imageUrl && <input {...getInputProps()} />}
       <div className="relative w-full h-full bg-gray-100 flex items-center justify-center">
         {event.imageUrl ? (
@@ -75,6 +72,7 @@ export default function EventCard({ event, index, editMode, onEditClick, onUploa
               fill
               quality={90}
               sizes="100vw"
+              onClick={handleImageClick}
             />
             {editMode && (
               <div
@@ -114,5 +112,12 @@ export default function EventCard({ event, index, editMode, onEditClick, onUploa
         )}
       </div>
     </motion.div>
+
+    <EventImageModal
+      event={event}
+      isOpen={isModalOpen}
+      onClose={handleCloseModal}
+    />
+    </>
   );
 }
