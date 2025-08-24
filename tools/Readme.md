@@ -37,4 +37,36 @@ npm run upload-all "C:\Users\ADMIN\Downloads\Chuong1" content/docs/getting-start
 ```bash
 npm run create-mdx "tutorial-guide" "content/docs/getting-started"
 ```
+### missing titles
+```bash
+npm run fix-missing-titles
+npm run fix-mdx-frontmatter
+node tools/fix-duplicate-description.js
+node tools/remove-jupyter-fields.js
+node tools/fix-frontmatter-indentation.js
+```
+
+### ex
+```bash
+npm run upload-all "C:\Users\ADMIN\Downloads\cardanovn-portal\docs\stake-pool-course\handbook" content/docs/getting-started/docs/stake-pool-course/handbook
+
+npm run upload-all "C:\Users\ADMIN\Downloads\cardanovn-portal\docs1\2020\01" content/docs/getting-started/docs1/2020/01
+npm run upload-all "C:\Users\ADMIN\Downloads\cardanovn-portal\docs1\2020\02" content/docs/getting-started/docs1/2020/02
+npm run upload-all "C:\Users\ADMIN\Downloads\cardanovn-portal\docs1\2022\01" content/docs/getting-started/docs1/2022/01
+```
+// quickly for
+```bash
+for ($i=1; $i -le 2; $i++) {
+    $folder = "{0:D2}" -f $i
+    npm run upload-all "C:\Users\ADMIN\Downloads\cardanovn-portal\docs1\2020\$folder" "content/docs/getting-started/docs1/2020/$folder"
+}
+
+for ($i = 1; $i -le 12; $i++) {
+    $folder = "{0:D2}" -f $i
+    npm run upload-all "C:\Users\ADMIN\Downloads\cardanovn-portal\docs1\2022\$folder" "content/docs/getting-started/docs1/2022/$folder"
+}
+
+
+
+```
 
