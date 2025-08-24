@@ -51,7 +51,6 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
     );
     return NextResponse.json(createSuccessResponse({ ...post, author: post.author?.name || 'Admin', authorId: post.author?.id || '', authorWallet: post.author?.wallet || '', tags, media, comments }));
   } catch (error) {
-    console.error('Error fetching post:', error);
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 }
@@ -68,7 +67,6 @@ export const PUT = withAdmin(async (req, user) => {
     }
 
     const body = await req.json();
-    console.log('Update post body:', JSON.stringify(body, null, 2));
     
     const { title, content, status, tags, media, githubRepo } = body;
 
@@ -83,8 +81,6 @@ export const PUT = withAdmin(async (req, user) => {
     if (!existingPost) {
       return NextResponse.json(createErrorResponse('Post not found', 'POST_NOT_FOUND'), { status: 404 });
     }
-
-    // Delete existing tags and media
     await prisma.postTag.deleteMany({
       where: { postId: existingPost.id }
     });
@@ -137,7 +133,6 @@ export const PUT = withAdmin(async (req, user) => {
 
     return NextResponse.json(createSuccessResponse(updatedPost));
   } catch (error) {
-    console.error('Error updating post:', error);
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 });

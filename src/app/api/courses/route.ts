@@ -10,7 +10,6 @@ export async function GET() {
     });
     return NextResponse.json(createSuccessResponse(courses));
   } catch (error) {
-    console.error('Error fetching courses:', error);
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 }

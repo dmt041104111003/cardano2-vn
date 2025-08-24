@@ -13,16 +13,13 @@ export const GET = withAdmin(async () => {
 
     return NextResponse.json(createSuccessResponse(technologies));
   } catch (error) {
-    console.error('Error fetching technologies:', error);
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 });
 
 export const POST = withAdmin(async (req) => {
   try {
-    const body = await req.json();
-    console.log('Creating technology with data:', JSON.stringify(body, null, 2));
-    
+    const body = await req.json();    
     const { title, name, description, href, image, githubRepo } = body;
 
     if (!title || !name || !description || !href) {
@@ -39,11 +36,8 @@ export const POST = withAdmin(async (req) => {
         githubRepo: githubRepo || null,
       },
     });
-
-    console.log('Technology created successfully:', technology.id);
     return NextResponse.json(createSuccessResponse(technology));
   } catch (error) {
-    console.error('Error creating technology:', error);
     return NextResponse.json(createErrorResponse('Failed to create technology', 'CREATE_FAILED'), { status: 500 });
   }
 }); 

@@ -14,7 +14,6 @@ export const GET = withAdmin(async () => {
 
     return NextResponse.json(createSuccessResponse(videos));
   } catch (error) {
-    console.error("GET /api/videos error:", error);
     return NextResponse.json(createErrorResponse('Failed to fetch videos', 'FAILED_TO_FETCH_VIDEOS'), { status: 500 });
   }
 });

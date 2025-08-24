@@ -69,7 +69,6 @@ export const GET = withAdmin(async () => {
       }
     }));
   } catch (error) {
-    console.error('Error fetching media:', error);
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 });

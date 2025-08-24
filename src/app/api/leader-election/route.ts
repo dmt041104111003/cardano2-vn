@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Error getting leader election status:', error);
     return NextResponse.json({ 
       error: 'Internal server error',
       status: 'error'

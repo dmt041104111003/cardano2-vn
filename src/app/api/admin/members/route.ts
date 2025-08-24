@@ -15,7 +15,6 @@ export const GET = withAdmin(async () => {
 
     return NextResponse.json(createSuccessResponse(members));
   } catch (error) {
-    console.error('Error fetching members:', error);
     return NextResponse.json(
       createErrorResponse('Failed to fetch members', 'INTERNAL_ERROR'),
       { status: 500 }

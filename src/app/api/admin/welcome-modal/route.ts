@@ -12,7 +12,6 @@ export const GET = withAdmin(async () => {
 
     return NextResponse.json(createSuccessResponse(welcomeModal || null));
   } catch (error) {
-    console.error('Error fetching welcome modal:', error);
     return NextResponse.json(
       createErrorResponse('Failed to fetch welcome modal', 'INTERNAL_ERROR'),
       { status: 500 }

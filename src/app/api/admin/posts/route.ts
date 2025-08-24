@@ -106,7 +106,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(createSuccessResponse(mapped, pagination));
   } catch (error) {
-    console.error('Error fetching posts:', error);
     return NextResponse.json(
       createErrorResponse('Internal server error', 'INTERNAL_ERROR'),
       { status: 500 }
@@ -179,7 +178,6 @@ export const POST = withAdmin(async (req, user) => {
     if (error instanceof Error && error.message.includes('Validation failed')) {
       return NextResponse.json(createErrorResponse(error.message, 'VALIDATION_ERROR'), { status: 400 });
     }
-    console.error('Error creating post:', error);
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 });

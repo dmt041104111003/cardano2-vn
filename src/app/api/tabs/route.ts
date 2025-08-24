@@ -10,7 +10,6 @@ export async function GET() {
     });
     return NextResponse.json(createSuccessResponse(tabs));
   } catch (error) {
-    console.error('Error fetching tabs:', error);
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }
 }

@@ -76,7 +76,6 @@ export const PUT = withAdmin(async (req) => {
       }
     }));
   } catch (error) {
-    console.error('Error updating event:', error);
     return NextResponse.json(createErrorResponse('Failed to update event', 'UPDATE_FAILED'), { status: 500 });
   }
 });

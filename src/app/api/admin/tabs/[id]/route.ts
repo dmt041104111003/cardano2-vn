@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "~/lib/prisma";
 import { withAdmin } from "~/lib/api-wrapper";
 import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";

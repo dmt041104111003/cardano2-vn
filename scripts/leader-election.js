@@ -22,7 +22,6 @@ class LeaderElection {
     this.wss = new WebSocketServer({ server: this.httpServer });
     
     this.wss.on('connection', (ws, request) => {
-      console.log(`[Server ${this.serverId}] New connection`);
       
       ws.on('message', (data) => {
         const message = JSON.parse(data.toString());
@@ -31,7 +30,6 @@ class LeaderElection {
     });
 
     this.httpServer.listen(this.port, () => {
-      console.log(`[Server ${this.serverId}] Listening on port ${this.port}`);
     });
   }
 
@@ -57,7 +55,6 @@ class LeaderElection {
       if (this.state !== 'LEADER') {
         const timeSinceLastHeartbeat = Date.now() - this.lastHeartbeat;
         if (timeSinceLastHeartbeat > this.electionTimeout) {
-          console.log(`[Server ${this.serverId}] Election timeout, starting election`);
           this.startElection();
         }
       }
@@ -70,7 +67,6 @@ class LeaderElection {
     this.votedFor = this.serverId;
     this.votesReceived = 1;
     
-    console.log(`[Server ${this.serverId}] Starting election for term ${this.currentTerm}`);
     
     this.peers.forEach(peer => {
       this.sendRequestVote(peer);
@@ -98,7 +94,6 @@ class LeaderElection {
         }
       });
     } catch (error) {
-      console.error(`[Server ${this.serverId}] Failed to send vote request to peer ${peer.id}:`, error);
     }
   }
 
@@ -149,7 +144,6 @@ class LeaderElection {
     this.leaderId = this.serverId;
     this.resetElectionTimer();
     
-    console.log(`[Server ${this.serverId}] Became LEADER for term ${this.currentTerm}`);
     
     this.startHeartbeat();
   }
@@ -178,7 +172,6 @@ class LeaderElection {
         }));
       });
     } catch (error) {
-      console.error(`[Server ${this.serverId}] Failed to send heartbeat to peer ${peer.id}:`, error);
     }
   }
 

@@ -12,7 +12,6 @@ export const GET = withAdmin(async () => {
 
     return NextResponse.json(createSuccessResponse(aboutContent));
   } catch (error) {
-    console.error('Error fetching about content:', error);
     return NextResponse.json(
       createErrorResponse('Failed to fetch about content', 'INTERNAL_ERROR'),
       { status: 500 }
