@@ -198,12 +198,14 @@ model AboutContent {
   youtubeUrl  String
   buttonText  String
   buttonUrl   String
+  publishStatus  ProjectPublishStatus @default(DRAFT)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([isActive])
   @@index([createdAt])
+  @@index([publishStatus])
 }
 
 model Member {
