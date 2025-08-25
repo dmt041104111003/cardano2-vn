@@ -6,22 +6,36 @@ import { TipTapEditor, TipTapPreview } from '~/components/ui/tiptap-editor';
 import MediaInput from '~/components/ui/media-input';
 import { useToastContext } from '~/components/toast-provider';
 
-import type { Post, PostEditorClientProps } from '~/constants/posts';
+import type { Post } from '~/constants/posts';
 
 interface Tag {
   id: string;
   name: string;
 }
 
-export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientProps) {
-  const [postState, setPostState] = useState({
-    title: '',
-    selectedTags: [] as string[],
-    status: 'DRAFT' as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
-    content: '',
-    media: [] as Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>,
-    githubRepo: '',
-  });
+interface PostEditorClientProps {
+  onSave: (post: Post) => void;
+  post?: Post;
+  onCancel: () => void;
+  postState: {
+    title: string;
+    selectedTags: string[];
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    content: string;
+    media: Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>;
+    githubRepo: string;
+  };
+  setPostState: React.Dispatch<React.SetStateAction<{
+    title: string;
+    selectedTags: string[];
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    content: string;
+    media: Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>;
+    githubRepo: string;
+  }>>;
+}
+
+export function PostEditorClient({ onSave, post, onCancel, postState, setPostState }: PostEditorClientProps) {
 
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -32,21 +46,6 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
   useEffect(() => { setIsClient(true); }, []);
 
   const { showError } = useToastContext();
-
-  useEffect(() => {
-    if (post) {
-      setPostState({
-        title: typeof post.title === 'string' ? post.title : '',
-        selectedTags: Array.isArray(post.tags)
-          ? post.tags.map((t: Tag | string) => typeof t === 'string' ? t : t.name)
-          : [],
-        status: (post.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') || 'DRAFT',
-        content: typeof post.content === 'string' ? post.content : '',
-        media: Array.isArray(post.media) ? post.media : [],
-        githubRepo: typeof post.githubRepo === 'string' ? post.githubRepo : '',
-      });
-    }
-  }, [post]);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -83,8 +82,12 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       });
   }, []);
 
+
+
   const handleInputChange = (field: string, value: string) => {
-    setPostState(prev => ({ ...prev, [field]: value }));
+    setPostState(prev => ({
+      ...prev, [field]: value
+    }));
   };
 
   const handleRemoveTag = (tagName: string) => {
@@ -108,14 +111,10 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       newMedia = { ...media, id: ytId };
     }
     console.log('Setting new media:', newMedia);
-    setPostState(prev => {
-      const newState = {
+    setPostState(prev => ({
       ...prev,
       media: [newMedia]
-      };
-      console.log('New postState:', newState);
-      return newState;
-    });
+    }));
   };
 
   const handleRemoveMedia = () => {
@@ -132,6 +131,23 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
         ? prev.selectedTags.filter(tag => tag !== tagName)
         : [...prev.selectedTags, tagName]
     }));
+  };
+
+  const handleClear = () => {
+    if (!post) {
+      setPostState({
+        title: '',
+        selectedTags: [],
+        status: 'DRAFT',
+        content: '',
+        media: [],
+        githubRepo: '',
+      });
+    }
+  };
+
+  const handleCancel = () => {
+    if (onCancel) onCancel();
   };
 
   const handleSave = async () => {
@@ -197,7 +213,9 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       ANGRY: post && typeof post.ANGRY === 'number' ? post.ANGRY : 0,
     };
     
-    if (onSave) onSave(postData);
+    if (onSave) {
+      onSave(postData);
+    }
   };
 
  
@@ -379,7 +397,7 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
                 <>
                   <button
                     type="button"
-                    onClick={onCancel ? onCancel : undefined}
+                    onClick={handleCancel}
                     className="flex items-center px-4 py-2 border border-gray-200 bg-gray-50/80 text-gray-600 rounded-xl backdrop-blur-sm hover:bg-gray-100/90 transition-shadow shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2"
                   >
                     <X className="h-4 w-4 mr-2 text-gray-400" />
@@ -395,14 +413,24 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
                   </button>
                 </>
               ) : (
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  className="flex items-center px-4 py-2 border border-blue-200 bg-blue-100/80 text-blue-700 rounded-xl backdrop-blur-sm hover:bg-blue-200/90 transition-shadow shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-offset-2"
-                >
-                  <Save className="h-4 w-4 mr-2 text-blue-500" />
-                  Create Post
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    className="flex items-center px-4 py-2 border border-red-200 bg-red-50/80 text-red-600 rounded-xl backdrop-blur-sm hover:bg-red-100/90 transition-shadow shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-200 focus:ring-offset-2"
+                  >
+                    <X className="h-4 w-4 mr-2 text-red-400" />
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    className="flex items-center px-4 py-2 border border-blue-200 bg-blue-100/80 text-blue-700 rounded-xl backdrop-blur-sm hover:bg-blue-200/90 transition-shadow shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-offset-2"
+                  >
+                    <Save className="h-4 w-4 mr-2 text-blue-500" />
+                    Create Post
+                  </button>
+                </>
               )}
             </div>
           </div>

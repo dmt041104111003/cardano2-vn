@@ -10,7 +10,7 @@ export const PUT = withAdmin(async (req) => {
   }
 
   const body = await req.json();
-  const { name } = body;
+  const { name, publishStatus } = body;
 
   if (!name) {
     return NextResponse.json(createErrorResponse('Name is required', 'MISSING_NAME'), { status: 400 });
@@ -29,7 +29,7 @@ export const PUT = withAdmin(async (req) => {
 
   const updatedLocation = await prisma.eventLocation.update({
     where: { id },
-    data: { name }
+    data: { name, publishStatus }
   });
 
   return NextResponse.json(createSuccessResponse(updatedLocation));

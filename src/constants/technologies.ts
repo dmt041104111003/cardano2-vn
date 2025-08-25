@@ -7,6 +7,7 @@ export interface Technology {
   href: string;
   image: string;
   githubRepo?: string;
+  publishStatus: 'DRAFT' | 'PUBLISHED';
   createdAt?: string;
   updatedAt?: string;
 }
@@ -21,7 +22,7 @@ export interface TechnologyDetailsModalProps {
 // TechnologyEditor interfaces
 export interface TechnologyEditorProps {
   technology?: Technology;
-  onSave: (data: { title: string; name: string; description: string; href: string; image: string; githubRepo?: string }) => void;
+  onSave: (data: { title: string; name: string; description: string; href: string; image: string; githubRepo?: string; publishStatus: 'DRAFT' | 'PUBLISHED' }) => void;
   onCancel: () => void;
 }
 

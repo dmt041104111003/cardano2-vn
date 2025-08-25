@@ -5,6 +5,9 @@ import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 export async function GET() {
   try {
     const projects = await prisma.project.findMany({
+      where: {
+        publishStatus: 'PUBLISHED'
+      },
       orderBy: [
         { year: 'desc' },
         { quarterly: 'asc' },

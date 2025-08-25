@@ -25,6 +25,16 @@ export function PostsPageClient() {
   const [selectedYear] = useState<number>(new Date().getFullYear());
   const [editingTag, setEditingTag] = useState<any>(null);
   const [showTagEditor, setShowTagEditor] = useState(false);
+  
+  const [postState, setPostState] = useState({
+    title: '',
+    selectedTags: [] as string[],
+    status: 'DRAFT' as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
+    content: '',
+    media: [] as Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>,
+    githubRepo: '',
+  });
+  
   const queryClient = useQueryClient();
   
   useNotifications();
@@ -129,6 +139,18 @@ export function PostsPageClient() {
     const res = await fetch(`/api/admin/posts/${post.slug || post.id}`);
     const data = await res.json();
     setEditingPost(data.data);
+    const postData = data.data;
+    setPostState({
+      title: typeof postData.title === 'string' ? postData.title : '',
+      selectedTags: Array.isArray(postData.tags)
+        ? postData.tags.map((t: any) => typeof t === 'string' ? t : t.name)
+        : [],
+      status: (postData.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') || 'DRAFT',
+      content: typeof postData.content === 'string' ? postData.content : '',
+      media: Array.isArray(postData.media) ? postData.media : [],
+      githubRepo: typeof postData.githubRepo === 'string' ? postData.githubRepo : '',
+    });
+    
     setActiveTab('posts');
     setActiveSubTab('create');
   };
@@ -216,6 +238,14 @@ export function PostsPageClient() {
 
   const handleCancelEdit = () => {
     setEditingPost(null);
+    setPostState({
+      title: '',
+      selectedTags: [],
+      status: 'DRAFT',
+      content: '',
+      media: [],
+      githubRepo: '',
+    });
     setActiveTab('posts');
     setActiveSubTab('management');
   };
@@ -336,7 +366,13 @@ export function PostsPageClient() {
               )}
             </>
           ) : (
-            <PostEditor onSave={handleSavePost} post={editingPost || undefined} onCancel={handleCancelEdit} />
+            <PostEditor 
+              onSave={handleSavePost} 
+              post={editingPost || undefined} 
+              onCancel={handleCancelEdit}
+              postState={postState}
+              setPostState={setPostState}
+            />
           )}
         </>
       );

@@ -8,6 +8,7 @@ export async function GET() {
     const welcomeModal = await prisma.welcomeModal.findFirst({
       where: {
         isActive: true,
+        publishStatus: 'PUBLISHED',
         OR: [
           {
             startDate: null,

@@ -34,7 +34,7 @@ export const PUT = withAdmin(async (req) => {
     return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
   }
 
-  const { name, role, description, image, email, color, skills, order, tabId, isActive } = await req.json();
+  const { name, role, description, image, email, color, skills, order, tabId, isActive, publishStatus } = await req.json();
 
   const member = await prisma.member.update({
     where: { id },
@@ -48,7 +48,8 @@ export const PUT = withAdmin(async (req) => {
       skills,
       order,
       tabId,
-      isActive
+      isActive,
+      publishStatus
     }
   });
 

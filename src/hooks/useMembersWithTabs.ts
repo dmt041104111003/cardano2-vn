@@ -5,6 +5,7 @@ import { Tab, Member } from "~/constants/members";
 
 export function useMembersWithTabs() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [publishStatusFilter, setPublishStatusFilter] = useState<'all' | 'DRAFT' | 'PUBLISHED'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [showEditor, setShowEditor] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
@@ -174,7 +175,10 @@ export function useMembersWithTabs() {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+    
+    const matchesPublishStatus = publishStatusFilter === 'all' || member.publishStatus === publishStatusFilter;
+    
+    return matchesSearch && matchesPublishStatus;
   });
 
   const filteredTabs = tabs.filter(tab => {
@@ -197,10 +201,12 @@ export function useMembersWithTabs() {
     setActiveTab(tab);
     setCurrentPage(1);
     setSearchTerm('');
+    setPublishStatusFilter('all');
   };
 
   return {
     searchTerm,
+    publishStatusFilter,
     currentPage,
     showEditor,
     editingMember,
@@ -219,6 +225,7 @@ export function useMembersWithTabs() {
     ITEMS_PER_PAGE,
     
     setSearchTerm,
+    setPublishStatusFilter,
     setShowEditor,
     setViewingMember,
     setShowTabEditor,
@@ -237,4 +244,4 @@ export function useMembersWithTabs() {
     handlePageChange,
     handleTabChange,
   };
-} 
+}

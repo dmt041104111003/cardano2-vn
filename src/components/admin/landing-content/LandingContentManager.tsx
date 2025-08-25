@@ -7,22 +7,39 @@ import ContentSection from './ContentSection';
 import MediaSection from './MediaSection';
 import FormActions from './FormActions';
 
-export default function LandingContentManager() {
+interface LandingContentManagerProps {
+  formData: {
+    section: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    mainText: string;
+    subText: string;
+    media1Url: string;
+    media2Url: string;
+    media3Url: string;
+    media4Url: string;
+    publishStatus: 'DRAFT' | 'PUBLISHED';
+  };
+  setFormData: React.Dispatch<React.SetStateAction<{
+    section: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    mainText: string;
+    subText: string;
+    media1Url: string;
+    media2Url: string;
+    media3Url: string;
+    media4Url: string;
+    publishStatus: 'DRAFT' | 'PUBLISHED';
+  }>>;
+}
+
+export default function LandingContentManager({ formData, setFormData }: LandingContentManagerProps) {
   const { showSuccess, showError } = useToastContext();
   const queryClient = useQueryClient();
   const [currentContentId, setCurrentContentId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    section: 'hero',
-    title: '',
-    subtitle: '',
-    description: '',
-    mainText: '',
-    subText: '',
-    media1Url: '',
-    media2Url: '',
-    media3Url: '',
-    media4Url: ''
-  });
 
   const { data: landingContents = [] } = useQuery({
     queryKey: ['landing-content'],
@@ -42,34 +59,46 @@ export default function LandingContentManager() {
     if (landingContents.length > 0) {
       const firstContent = landingContents[0];
       setCurrentContentId(firstContent.id);
-      setFormData({
-        section: firstContent.section || 'hero',
-        title: firstContent.title || '',
-        subtitle: firstContent.subtitle || '',
-        description: firstContent.description || '',
-        mainText: firstContent.mainText || '',
-        subText: firstContent.subText || '',
-        media1Url: firstContent.media1Url || '',
-        media2Url: firstContent.media2Url || '',
-        media3Url: firstContent.media3Url || '',
-        media4Url: firstContent.media4Url || ''
+      setFormData(prev => {
+        if (prev.title === '' && prev.subtitle === '' && prev.description === '') {
+          return {
+            section: firstContent.section || 'hero',
+            title: firstContent.title || '',
+            subtitle: firstContent.subtitle || '',
+            description: firstContent.description || '',
+            mainText: firstContent.mainText || '',
+            subText: firstContent.subText || '',
+            media1Url: firstContent.media1Url || '',
+            media2Url: firstContent.media2Url || '',
+            media3Url: firstContent.media3Url || '',
+            media4Url: firstContent.media4Url || '',
+            publishStatus: firstContent.publishStatus || 'DRAFT'
+          };
+        }
+        return prev;
       });
     } else {
       setCurrentContentId(null);
-      setFormData({
-        section: 'hero',
-        title: '',
-        subtitle: '',
-        description: '',
-        mainText: '',
-        subText: '',
-        media1Url: '',
-        media2Url: '',
-        media3Url: '',
-        media4Url: ''
+      setFormData(prev => {
+        if (prev.title !== '' || prev.subtitle !== '' || prev.description !== '') {
+          return {
+            section: 'hero',
+            title: '',
+            subtitle: '',
+            description: '',
+            mainText: '',
+            subText: '',
+            media1Url: '',
+            media2Url: '',
+            media3Url: '',
+            media4Url: '',
+            publishStatus: 'DRAFT'
+          };
+        }
+        return prev;
       });
     }
-  }, [landingContents]);
+  }, [landingContents, setFormData]);
 
   const updateMutation = useMutation({
     mutationFn: async (data: {
@@ -125,6 +154,7 @@ export default function LandingContentManager() {
       description: formData.description,
       mainText: formData.mainText,
       subText: formData.subText,
+      publishStatus: formData.publishStatus,
     };
 
     if (formData.media1Url && formData.media1Url.trim()) {
@@ -175,10 +205,6 @@ export default function LandingContentManager() {
   return (
     <div className="space-y-6">
       <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-        <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white">
-          Landing Content Management
-        </h3>
-        
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
             <ContentSection formData={formData} setFormData={setFormData} />
@@ -190,7 +216,11 @@ export default function LandingContentManager() {
             />
           </div>
           
-          <FormActions isPending={updateMutation.isPending} />
+          <FormActions 
+            isPending={updateMutation.isPending} 
+            publishStatus={formData.publishStatus}
+            onPublishStatusChange={(status) => setFormData(prev => ({ ...prev, publishStatus: status }))}
+          />
         </form>
       </div>
     </div>

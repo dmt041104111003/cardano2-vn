@@ -17,16 +17,17 @@ export default function EventLocationTableSection({ eventLocations = [], onSucce
   const { showSuccess, showError } = useToastContext();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
+  const [publishStatusFilter, setPublishStatusFilter] = useState<'all' | 'DRAFT' | 'PUBLISHED'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 4;
   const [editingLocation, setEditingLocation] = useState<EventLocation | null>(null);
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+    mutationFn: async ({ id, name, publishStatus }: { id: string; name: string; publishStatus: 'DRAFT' | 'PUBLISHED' }) => {
       const response = await fetch(`/api/admin/event-locations/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({ name, publishStatus })
       });
       if (!response.ok) {
         const error = await response.json();
@@ -68,7 +69,7 @@ export default function EventLocationTableSection({ eventLocations = [], onSucce
     }
   });
 
-  const handleUpdate = (id: string, name: string) => {
+  const handleUpdate = (id: string, name: string, publishStatus: 'DRAFT' | 'PUBLISHED') => {
     if (!name.trim()) {
       showError('Name is required');
       return;
@@ -85,7 +86,7 @@ export default function EventLocationTableSection({ eventLocations = [], onSucce
       return;
     }
     
-    updateMutation.mutate({ id, name: name.trim() });
+    updateMutation.mutate({ id, name: name.trim(), publishStatus });
   };
 
   const handleDelete = (id: string) => {
@@ -97,10 +98,12 @@ export default function EventLocationTableSection({ eventLocations = [], onSucce
   };
 
   const filteredEventLocations = useMemo(() => {
-    return eventLocations?.filter((location: EventLocation) =>
-      location.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
-  }, [eventLocations, searchTerm]);
+    return eventLocations?.filter((location: EventLocation) => {
+      const matchesSearch = location.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = publishStatusFilter === 'all' || location.publishStatus === publishStatusFilter;
+      return matchesSearch && matchesStatus;
+    }) || [];
+  }, [eventLocations, searchTerm, publishStatusFilter]);
 
   const totalPages = Math.ceil(filteredEventLocations.length / ITEMS_PER_PAGE);
   const paginatedEventLocations = useMemo(() => {
@@ -110,6 +113,12 @@ export default function EventLocationTableSection({ eventLocations = [], onSucce
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
+    setPublishStatusFilter('all');
+    setCurrentPage(1);
+  };
+
+  const handlePublishStatusFilterChange = (value: string) => {
+    setPublishStatusFilter(value as 'all' | 'DRAFT' | 'PUBLISHED');
     setCurrentPage(1);
   };
 
@@ -129,6 +138,16 @@ export default function EventLocationTableSection({ eventLocations = [], onSucce
               onChange={(e) => handleSearchChange(e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <select
+              value={publishStatusFilter}
+              onChange={(e) => handlePublishStatusFilterChange(e.target.value)}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              title="Filter by publish status"
+            >
+              <option value="all">All Status</option>
+              <option value="DRAFT">Draft</option>
+              <option value="PUBLISHED">Published</option>
+            </select>
           </div>
         </div>
       </div>

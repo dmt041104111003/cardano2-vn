@@ -15,7 +15,7 @@ export const GET = withAdmin(async () => {
 });
 
 export const POST = withAdmin(async (req) => {
-  const { name, image, title, description } = await req.json();
+  const { name, image, title, description, publishStatus } = await req.json();
   
   if (!name) {
     return NextResponse.json(createErrorResponse('Missing course name', 'MISSING_NAME'), { status: 400 });
@@ -27,7 +27,7 @@ export const POST = withAdmin(async (req) => {
   }
   
   const course = await prisma.course.create({
-    data: { name, image, title, description }
+    data: { name, image, title, description, publishStatus }
   });
   
   return NextResponse.json(createSuccessResponse(course));

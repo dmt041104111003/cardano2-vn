@@ -21,7 +21,7 @@ export const GET = withAdmin(async () => {
 
 export const POST = withAdmin(async (req) => {
   const body = await req.json();
-  const { title, description, imageUrl, buttonLink, startDate, endDate } = body;
+  const { title, description, imageUrl, buttonLink, startDate, endDate, publishStatus } = body;
 
   const finalStartDate = startDate && startDate.trim() !== '' ? new Date(startDate) : new Date();
 
@@ -39,6 +39,7 @@ export const POST = withAdmin(async (req) => {
         buttonLink,
         startDate: finalStartDate,
         endDate: endDate ? new Date(endDate) : null,
+        publishStatus,
         updatedAt: new Date()
       }
     });
@@ -53,6 +54,7 @@ export const POST = withAdmin(async (req) => {
         buttonLink,
         startDate: finalStartDate,
         endDate: endDate ? new Date(endDate) : null,
+        publishStatus,
         isActive: true
       }
     });

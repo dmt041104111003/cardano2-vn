@@ -29,9 +29,9 @@ export const PUT = withAdmin(async (req) => {
     }
 
     const body = await req.json();    
-    const { title, name, description, href, image, githubRepo } = body;
+    const { title, name, description, href, image, githubRepo, publishStatus } = body;
 
-    if (!title || !name || !description || !href) {
+    if (!title || !name || !description || !href || !publishStatus) {
       return NextResponse.json(createErrorResponse('Missing required fields', 'MISSING_FIELDS'), { status: 400 });
     }
 
@@ -54,7 +54,8 @@ export const PUT = withAdmin(async (req) => {
         description,
         href,
         image,
-        githubRepo: githubRepo || null
+        githubRepo: githubRepo || null,
+        publishStatus
       }
     });
     return NextResponse.json(createSuccessResponse(updatedTechnology));

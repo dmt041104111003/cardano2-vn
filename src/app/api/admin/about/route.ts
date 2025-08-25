@@ -20,7 +20,7 @@ export const GET = withAdmin(async () => {
 });
 
 export const POST = withAdmin(async (req) => {
-  const { title, subtitle, description, youtubeUrl, buttonText, buttonUrl } = await req.json();
+  const { title, subtitle, description, youtubeUrl, buttonText, buttonUrl, publishStatus } = await req.json();
 
   const existingContent = await prisma.aboutContent.findFirst({
     where: { isActive: true }
@@ -36,6 +36,7 @@ export const POST = withAdmin(async (req) => {
         youtubeUrl,
         buttonText,
         buttonUrl,
+        publishStatus,
         updatedAt: new Date()
       }
     });
@@ -50,6 +51,7 @@ export const POST = withAdmin(async (req) => {
         youtubeUrl,
         buttonText,
         buttonUrl,
+        publishStatus,
         isActive: true
       }
     });

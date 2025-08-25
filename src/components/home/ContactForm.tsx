@@ -11,7 +11,7 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, capt
   const { data: eventLocations } = useQuery({
     queryKey: ['contact-form-event-locations'],
     queryFn: async () => {
-      const response = await fetch('/api/event-images');
+      const response = await fetch('/api/event-locations');
       if (!response.ok) {
         throw new Error('Failed to fetch event locations');
       }

@@ -15,7 +15,7 @@ export const GET = withAdmin(async () => {
 });
 
 export const POST = withAdmin(async (req) => {
-  const { name } = await req.json();
+  const { name, publishStatus } = await req.json();
   
   if (!name) {
     return NextResponse.json(createErrorResponse('Missing location name', 'MISSING_LOCATION_NAME'), { status: 400 });
@@ -27,7 +27,7 @@ export const POST = withAdmin(async (req) => {
   }
   
   const location = await prisma.eventLocation.create({
-    data: { name }
+    data: { name, publishStatus }
   });
   
   return NextResponse.json(createSuccessResponse(location));

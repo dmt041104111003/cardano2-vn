@@ -5,6 +5,7 @@ export interface Project {
   description: string;
   href?: string;
   status: 'PROPOSED' | 'APPROVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  publishStatus: 'DRAFT' | 'PUBLISHED';
   year: number;
   quarterly: string;
   fund?: string;

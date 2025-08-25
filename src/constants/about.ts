@@ -8,6 +8,7 @@ export interface AboutContent {
   youtubeUrl: string;
   buttonText: string;
   buttonUrl: string;
+  publishStatus: 'DRAFT' | 'PUBLISHED';
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

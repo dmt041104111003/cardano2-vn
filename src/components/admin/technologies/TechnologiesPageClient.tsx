@@ -20,6 +20,7 @@ import { useNotifications } from "~/hooks/useNotifications";
 
 export default function TechnologiesPageClient() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [publishStatusFilter, setPublishStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [showEditor, setShowEditor] = useState(false);
   const [editingTechnology, setEditingTechnology] = useState<Technology | null>(null);
@@ -69,9 +70,7 @@ export default function TechnologiesPageClient() {
     setShowEditor(true);
   };
 
-
-
-  const handleSaveTechnology = async (technologyData: { title: string; name: string; description: string; href: string; image: string }) => {
+  const handleSaveTechnology = async (technologyData: { title: string; name: string; description: string; href: string; image: string; publishStatus: 'DRAFT' | 'PUBLISHED' }) => {
     try {
       const url = editingTechnology ? `/api/admin/technologies/${editingTechnology.id}` : '/api/admin/technologies';
       const method = editingTechnology ? 'PUT' : 'POST';
@@ -105,15 +104,12 @@ export default function TechnologiesPageClient() {
     }
   };
 
-
-
-
-
   const filteredTechnologies = technologies.filter(technology => {
     const matchesSearch = technology.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          technology.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          technology.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+    const matchesPublishStatusFilter = publishStatusFilter === 'all' || technology.publishStatus === publishStatusFilter;
+    return matchesSearch && matchesPublishStatusFilter;
   });
 
   const ITEMS_PER_PAGE = 6;
@@ -127,6 +123,8 @@ export default function TechnologiesPageClient() {
 
   const stats = {
     total: technologies.length,
+    draft: technologies.filter(t => t.publishStatus === 'DRAFT').length,
+    published: technologies.filter(t => t.publishStatus === 'PUBLISHED').length,
   };
 
   return (
@@ -169,18 +167,22 @@ export default function TechnologiesPageClient() {
           <AdminStats 
             stats={[
               { label: "Total Projects", value: stats.total },
+              { label: "Draft", value: stats.draft },
+              { label: "Published", value: stats.published },
             ]}
           />
 
           <AdminFilters
             searchTerm={searchTerm}
-            filterType="all"
+            filterType={publishStatusFilter}
             searchPlaceholder="Search projects by title, name or description..."
             filterOptions={[
-              { value: "all", label: "All Projects" },
+              { value: "all", label: "All Publish Status" },
+              { value: "DRAFT", label: "Draft" },
+              { value: "PUBLISHED", label: "Published" },
             ]}
             onSearchChange={setSearchTerm}
-            onFilterChange={() => {}}
+            onFilterChange={setPublishStatusFilter}
           />
 
           {loadingTechnologies ? (
@@ -189,7 +191,7 @@ export default function TechnologiesPageClient() {
             <NotFoundInline 
               onClearFilters={() => {
                 setSearchTerm('');
-                // setStatusFilter('all'); // This line was not in the new_code, so I'm not adding it.
+                setPublishStatusFilter('all');
               }}
             />
           ) : (

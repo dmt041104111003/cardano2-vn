@@ -13,6 +13,7 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
     youtubeUrl: "",
     buttonText: "",
     buttonUrl: "",
+    publishStatus: "DRAFT",
     isActive: true,
     createdAt: "",
     updatedAt: ""
@@ -193,6 +194,21 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="publishStatus" className="block text-sm font-medium text-gray-700">Publish Status</label>
+        <select
+          id="publishStatus"
+          value={formData.publishStatus}
+          onChange={(e) => setFormData({ ...formData, publishStatus: e.target.value as 'DRAFT' | 'PUBLISHED' })}
+          required
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          title="Select publish status"
+        >
+          <option value="DRAFT">Draft</option>
+          <option value="PUBLISHED">Published</option>
+        </select>
       </div>
 
       <div className="flex justify-end space-x-4">

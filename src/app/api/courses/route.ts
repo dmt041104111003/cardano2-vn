@@ -5,7 +5,10 @@ import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 export async function GET() {
   try {
     const courses = await prisma.course.findMany({
-      where: { isActive: true },
+      where: { 
+        isActive: true,
+        publishStatus: 'PUBLISHED'
+      },
       orderBy: { order: 'asc' },
     });
     return NextResponse.json(createSuccessResponse(courses));

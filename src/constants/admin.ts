@@ -46,6 +46,7 @@ export interface ModalProps {
 export interface EventLocation {
   id: string;
   name: string;
+  publishStatus: 'DRAFT' | 'PUBLISHED';
   isActive: boolean;
   order: number;
   createdAt: string;
@@ -62,7 +63,7 @@ export interface EventLocationEditModalProps {
   eventLocation: EventLocation | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (id: string, name: string) => void;
+  onSave: (id: string, name: string, publishStatus: 'DRAFT' | 'PUBLISHED') => void;
   isSaving: boolean;
 }
 
@@ -73,6 +74,7 @@ export interface Course {
   image?: string;
   title?: string;
   description?: string;
+  publishStatus: 'DRAFT' | 'PUBLISHED';
   isActive: boolean;
   order: number;
   createdAt: string;
@@ -89,7 +91,7 @@ export interface CourseEditModalProps {
   course: Course | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (id: string, name: string, image?: string, title?: string, description?: string) => void;
+  onSave: (id: string, name: string, publishStatus: 'DRAFT' | 'PUBLISHED', image?: string, title?: string, description?: string) => void;
   isSaving: boolean;
 }
 
@@ -104,6 +106,7 @@ export interface LandingContentFormData {
   media2Url: string;
   media3Url: string;
   media4Url: string;
+  publishStatus: 'DRAFT' | 'PUBLISHED';
 }
 
 export interface LandingContentProps {
@@ -122,10 +125,13 @@ export interface LandingMediaProps {
 
 // Welcome Modal interfaces
 export interface WelcomeModalData {
+  id?: string;
   title: string;
   description: string;
   imageUrl: string | null;
   buttonLink: string | null;
   startDate: string | null;
   endDate: string | null;
+  publishStatus: 'DRAFT' | 'PUBLISHED';
+  isActive: boolean;
 } 

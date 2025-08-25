@@ -8,6 +8,7 @@ export interface Member {
   email?: string;
   color?: string;
   skills?: string[];
+  publishStatus?: 'DRAFT' | 'PUBLISHED';
   order: number;
   isActive?: boolean;
   createdAt?: string;
@@ -70,6 +71,7 @@ export interface MemberType {
   email?: string;
   color?: string;
   skills?: string[];
+  publishStatus?: 'DRAFT' | 'PUBLISHED';
   order: number;
   isActive: boolean;
   createdAt: string;

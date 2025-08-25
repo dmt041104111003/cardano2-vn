@@ -1,5 +1,27 @@
 import dynamic from 'next/dynamic';
-import type { Post, PostEditorProps } from '~/constants/posts';
+import type { Post } from '~/constants/posts';
+
+interface PostEditorProps {
+  onSave: (post: Post) => void;
+  post?: Post;
+  onCancel: () => void;
+  postState: {
+    title: string;
+    selectedTags: string[];
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    content: string;
+    media: Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>;
+    githubRepo: string;
+  };
+  setPostState: React.Dispatch<React.SetStateAction<{
+    title: string;
+    selectedTags: string[];
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    content: string;
+    media: Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>;
+    githubRepo: string;
+  }>>;
+}
 
 const PostEditorClient = dynamic(() => import('./PostEditorClient').then(mod => ({ default: mod.PostEditorClient })), {
   ssr: false,
@@ -48,6 +70,6 @@ const PostEditorClient = dynamic(() => import('./PostEditorClient').then(mod => 
 
 
 
-export function PostEditor({ onSave, post, onCancel }: PostEditorProps) {
-  return <PostEditorClient onSave={onSave} post={post} onCancel={onCancel} />;
+export function PostEditor({ onSave, post, onCancel, postState, setPostState }: PostEditorProps) {
+  return <PostEditorClient onSave={onSave} post={post} onCancel={onCancel} postState={postState} setPostState={setPostState} />;
 }
