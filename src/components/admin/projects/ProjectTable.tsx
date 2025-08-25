@@ -31,7 +31,10 @@ export function ProjectTable({ projects, onEdit, onDelete, onViewDetails }: Proj
               Project
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
+              Project Status
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Publish Status
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Year/Quarter
@@ -78,6 +81,14 @@ export function ProjectTable({ projects, onEdit, onDelete, onViewDetails }: Proj
                   'bg-red-100 text-red-800'
                 }`}>
                   {project.status.replace('_', ' ')}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                  project.publishStatus === 'PUBLISHED' ? 'bg-green-100 text-green-800' :
+                  'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {project.publishStatus}
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

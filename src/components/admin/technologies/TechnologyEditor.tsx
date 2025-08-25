@@ -12,6 +12,7 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
   const [href, setHref] = useState(technology?.href || "");
   const [image, setImage] = useState(technology?.image || "");
   const [githubRepo, setGithubRepo] = useState(technology?.githubRepo || "");
+  const [publishStatus, setPublishStatus] = useState(technology?.publishStatus || "DRAFT");
   const [copied, setCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,6 +34,7 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
         href: href.trim(),
         image: image.trim(),
         githubRepo: githubRepo.trim(),
+        publishStatus: publishStatus,
       });
     } catch (error) {
       console.error('Error saving technology:', error);
@@ -87,6 +89,25 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
             required
             disabled={isSubmitting}
           />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Publish Status *
+          </label>
+          <select
+            value={publishStatus}
+            onChange={(e) => setPublishStatus(e.target.value as 'DRAFT' | 'PUBLISHED')}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+            disabled={isSubmitting}
+            title="Select publish status"
+          >
+            <option value="DRAFT">Draft</option>
+            <option value="PUBLISHED">Published</option>
+          </select>
         </div>
       </div>
 

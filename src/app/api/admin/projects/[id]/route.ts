@@ -25,9 +25,9 @@ export async function GET(
 export const PUT = withAdmin(async (req) => {
   const id = req.nextUrl.pathname.split('/').pop();
   const body = await req.json();
-  const { title, description, href, status, year, quarterly, fund } = body;
+  const { title, description, href, status, publishStatus, year, quarterly, fund } = body;
 
-  if (!title || !description || !status || !year || !quarterly) {
+  if (!title || !description || !status || !publishStatus || !year || !quarterly) {
     return NextResponse.json(
       createErrorResponse("Missing required fields", "MISSING_FIELDS"),
       { status: 400 }
@@ -41,6 +41,7 @@ export const PUT = withAdmin(async (req) => {
       description,
       href: href || null,
       status,
+      publishStatus,
       year: parseInt(year),
       quarterly,
       fund: fund || null,

@@ -5,6 +5,9 @@ import { createSuccessResponse, createErrorResponse } from '~/lib/api-response';
 export async function GET() {
   try {
     const technologies = await prisma.technology.findMany({
+      where: {
+        publishStatus: 'PUBLISHED'
+      },
       orderBy: {
         createdAt: 'desc',
       },

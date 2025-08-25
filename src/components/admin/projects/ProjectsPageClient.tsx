@@ -18,6 +18,7 @@ import { Project } from "~/constants/projects";
 export default function ProjectsPageClient() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [publishStatusFilter, setPublishStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [showEditor, setShowEditor] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -79,13 +80,12 @@ export default function ProjectsPageClient() {
     }
   };
 
-
-
   const filteredProjects = projects.filter(project => {
     const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          project.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = statusFilter === 'all' || project.status === statusFilter;
-    return matchesSearch && matchesFilter;
+    const matchesStatusFilter = statusFilter === 'all' || project.status === statusFilter;
+    const matchesPublishStatusFilter = publishStatusFilter === 'all' || project.publishStatus === publishStatusFilter;
+    return matchesSearch && matchesStatusFilter && matchesPublishStatusFilter;
   });
 
   const ITEMS_PER_PAGE = 6;
@@ -103,6 +103,8 @@ export default function ProjectsPageClient() {
     approved: projects.filter(p => p.status === 'APPROVED').length,
     inProgress: projects.filter(p => p.status === 'IN_PROGRESS').length,
     completed: projects.filter(p => p.status === 'COMPLETED').length,
+    draft: projects.filter(p => p.publishStatus === 'DRAFT').length,
+    published: projects.filter(p => p.publishStatus === 'PUBLISHED').length,
   };
 
   return (
@@ -117,6 +119,8 @@ export default function ProjectsPageClient() {
       <AdminStats 
         stats={[
           { label: "Total Projects", value: stats.total },
+          { label: "Draft", value: stats.draft },
+          { label: "Published", value: stats.published },
           { label: "Proposed", value: stats.proposed },
           { label: "Approved", value: stats.approved },
           { label: "In Progress", value: stats.inProgress },
@@ -124,21 +128,36 @@ export default function ProjectsPageClient() {
         ]}
       />
 
-      <AdminFilters
-        searchTerm={searchTerm}
-        filterType={statusFilter}
-        searchPlaceholder="Search projects by title or description..."
-        filterOptions={[
-          { value: "all", label: "All Status" },
-          { value: "PROPOSED", label: "Proposed" },
-          { value: "APPROVED", label: "Approved" },
-          { value: "IN_PROGRESS", label: "In Progress" },
-          { value: "COMPLETED", label: "Completed" },
-          { value: "CANCELLED", label: "Cancelled" },
-        ]}
-        onSearchChange={setSearchTerm}
-        onFilterChange={setStatusFilter}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <AdminFilters
+          searchTerm={searchTerm}
+          filterType={statusFilter}
+          searchPlaceholder="Search projects by title or description..."
+          filterOptions={[
+            { value: "all", label: "All Project Status" },
+            { value: "PROPOSED", label: "Proposed" },
+            { value: "APPROVED", label: "Approved" },
+            { value: "IN_PROGRESS", label: "In Progress" },
+            { value: "COMPLETED", label: "Completed" },
+            { value: "CANCELLED", label: "Cancelled" },
+          ]}
+          onSearchChange={setSearchTerm}
+          onFilterChange={setStatusFilter}
+        />
+
+        <AdminFilters
+          searchTerm=""
+          filterType={publishStatusFilter}
+          searchPlaceholder=""
+          filterOptions={[
+            { value: "all", label: "All Publish Status" },
+            { value: "DRAFT", label: "Draft" },
+            { value: "PUBLISHED", label: "Published" },
+          ]}
+          onSearchChange={() => {}}
+          onFilterChange={setPublishStatusFilter}
+        />
+      </div>
 
       {loadingProjects ? (
         <AdminTableSkeleton columns={7} rows={5} />
@@ -147,6 +166,7 @@ export default function ProjectsPageClient() {
           onClearFilters={() => {
             setSearchTerm('');
             setStatusFilter('all');
+            setPublishStatusFilter('all');
           }}
         />
       ) : (
