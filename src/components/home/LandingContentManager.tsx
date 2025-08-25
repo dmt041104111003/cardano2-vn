@@ -5,7 +5,36 @@ import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import LandingContentManager from '~/components/admin/landing-content/LandingContentManager';
 
-export default function LandingContentManagerWrapper() {
+interface LandingContentManagerWrapperProps {
+  formData: {
+    section: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    mainText: string;
+    subText: string;
+    media1Url: string;
+    media2Url: string;
+    media3Url: string;
+    media4Url: string;
+    publishStatus: 'DRAFT' | 'PUBLISHED';
+  };
+  setFormData: React.Dispatch<React.SetStateAction<{
+    section: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    mainText: string;
+    subText: string;
+    media1Url: string;
+    media2Url: string;
+    media3Url: string;
+    media4Url: string;
+    publishStatus: 'DRAFT' | 'PUBLISHED';
+  }>>;
+}
+
+export default function LandingContentManagerWrapper({ formData, setFormData }: LandingContentManagerWrapperProps) {
   const { data: session } = useSession();
 
   const { data: userData } = useQuery({
@@ -50,7 +79,7 @@ export default function LandingContentManagerWrapper() {
       <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
         Landing Content Management
       </h3>
-      <LandingContentManager />
+      <LandingContentManager formData={formData} setFormData={setFormData} />
     </div>
   );
 } 

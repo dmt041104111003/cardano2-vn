@@ -6,24 +6,37 @@ import { TipTapEditor, TipTapPreview } from '~/components/ui/tiptap-editor';
 import MediaInput from '~/components/ui/media-input';
 import { useToastContext } from '~/components/toast-provider';
 
-import type { Post, PostEditorClientProps } from '~/constants/posts';
+import type { Post } from '~/constants/posts';
 
 interface Tag {
   id: string;
   name: string;
 }
 
-export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientProps) {
-  const [postState, setPostState] = useState({
-    title: '',
-    selectedTags: [] as string[],
-    status: 'DRAFT' as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
-    content: '',
-    media: [] as Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>,
-    githubRepo: '',
-  });
+interface PostEditorClientProps {
+  onSave: (post: Post) => void;
+  post?: Post;
+  onCancel: () => void;
+  postState: {
+    title: string;
+    selectedTags: string[];
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    content: string;
+    media: Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>;
+    githubRepo: string;
+  };
+  setPostState: React.Dispatch<React.SetStateAction<{
+    title: string;
+    selectedTags: string[];
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    content: string;
+    media: Array<{ type: 'image' | 'youtube' | 'video'; url: string; id: string }>;
+    githubRepo: string;
+  }>>;
+}
 
-  const DRAFT_STORAGE_KEY = 'post_draft_data';
+export function PostEditorClient({ onSave, post, onCancel, postState, setPostState }: PostEditorClientProps) {
+
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -33,33 +46,6 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
   useEffect(() => { setIsClient(true); }, []);
 
   const { showError } = useToastContext();
-
-  useEffect(() => {
-    if (post) {
-      setPostState({
-        title: typeof post.title === 'string' ? post.title : '',
-        selectedTags: Array.isArray(post.tags)
-          ? post.tags.map((t: Tag | string) => typeof t === 'string' ? t : t.name)
-          : [],
-        status: (post.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') || 'DRAFT',
-        content: typeof post.content === 'string' ? post.content : '',
-        media: Array.isArray(post.media) ? post.media : [],
-        githubRepo: typeof post.githubRepo === 'string' ? post.githubRepo : '',
-      });
-    } else {
-      try {
-        const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
-        if (savedDraft) {
-          const parsedDraft = JSON.parse(savedDraft);
-          setPostState(prev => ({
-            ...prev,
-            ...parsedDraft
-          }));
-        }
-      } catch (error) {
-      }
-    }
-  }, [post]);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -96,44 +82,19 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       });
   }, []);
 
-  useEffect(() => {
-    if (!post && isClient) {
-      try {
-        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(postState));
-      } catch (error) {
-      }
-    }
-  }, [postState, post, isClient]);
+
 
   const handleInputChange = (field: string, value: string) => {
-    setPostState(prev => {
-      const newState = { ...prev, [field]: value };
-      if (!post) {
-        try {
-          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(newState));
-        } catch (error) {
-        }
-      }
-      
-      return newState;
-    });
+    setPostState(prev => ({
+      ...prev, [field]: value
+    }));
   };
 
   const handleRemoveTag = (tagName: string) => {
-    setPostState(prev => {
-      const newState = {
-        ...prev,
-        selectedTags: prev.selectedTags.filter(tag => tag !== tagName)
-      };
-      if (!post) {
-        try {
-          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(newState));
-        } catch (error) {
-        }
-      }
-      
-      return newState;
-    });
+    setPostState(prev => ({
+      ...prev,
+      selectedTags: prev.selectedTags.filter(tag => tag !== tagName)
+    }));
   };
 
   function getYoutubeIdFromUrl(url: string): string {
@@ -150,73 +111,38 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       newMedia = { ...media, id: ytId };
     }
     console.log('Setting new media:', newMedia);
-    setPostState(prev => {
-      const newState = {
-        ...prev,
-        media: [newMedia]
-      };
-      if (!post) {
-        try {
-          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(newState));
-        } catch (error) {
-        }
-      }
-      
-      console.log('New postState:', newState);
-      return newState;
-    });
+    setPostState(prev => ({
+      ...prev,
+      media: [newMedia]
+    }));
   };
 
   const handleRemoveMedia = () => {
-    setPostState(prev => {
-      const newState = {
-        ...prev,
-        media: []
-      };
-      if (!post) {
-        try {
-          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(newState));
-        } catch (error) {
-        }
-      }
-      
-      return newState;
-    });
+    setPostState(prev => ({
+      ...prev,
+      media: []
+    }));
   };
 
   const handleTagToggle = (tagName: string) => {
-    setPostState(prev => {
-      const newState = {
-        ...prev,
-        selectedTags: prev.selectedTags.includes(tagName)
-          ? prev.selectedTags.filter(tag => tag !== tagName)
-          : [...prev.selectedTags, tagName]
-      };
-      if (!post) {
-        try {
-          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(newState));
-        } catch (error) {
-        }
-      }
-      
-      return newState;
-    });
+    setPostState(prev => ({
+      ...prev,
+      selectedTags: prev.selectedTags.includes(tagName)
+        ? prev.selectedTags.filter(tag => tag !== tagName)
+        : [...prev.selectedTags, tagName]
+    }));
   };
 
   const handleClear = () => {
     if (!post) {
-      try {
-        localStorage.removeItem(DRAFT_STORAGE_KEY);
-        setPostState({
-          title: '',
-          selectedTags: [],
-          status: 'DRAFT',
-          content: '',
-          media: [],
-          githubRepo: '',
-        });
-      } catch (error) {
-      }
+      setPostState({
+        title: '',
+        selectedTags: [],
+        status: 'DRAFT',
+        content: '',
+        media: [],
+        githubRepo: '',
+      });
     }
   };
 
@@ -289,12 +215,6 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
     
     if (onSave) {
       onSave(postData);
-      if (!post) {
-        try {
-          localStorage.removeItem(DRAFT_STORAGE_KEY);
-        } catch (error) {
-        }
-      }
     }
   };
 

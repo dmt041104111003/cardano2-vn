@@ -16,6 +16,19 @@ export default function LandingSection() {
   const { data: session } = useSession();
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState<"content" | "manage">("content");
+  const [formData, setFormData] = useState({
+    section: 'hero',
+    title: '',
+    subtitle: '',
+    description: '',
+    mainText: '',
+    subText: '',
+    media1Url: '',
+    media2Url: '',
+    media3Url: '',
+    media4Url: '',
+    publishStatus: 'DRAFT' as 'DRAFT' | 'PUBLISHED'
+  });
 
   const { data: userData } = useQuery({
     queryKey: ['user-role'],
@@ -57,46 +70,62 @@ export default function LandingSection() {
     setIsAdmin(adminStatus);
   }, [userData]);
 
+  useEffect(() => {
+    if (landingContents.length > 0) {
+      const firstContent = landingContents[0];
+      setFormData({
+        section: firstContent.section || 'hero',
+        title: firstContent.title || '',
+        subtitle: firstContent.subtitle || '',
+        description: firstContent.description || '',
+        mainText: firstContent.mainText || '',
+        subText: firstContent.subText || '',
+        media1Url: firstContent.media1Url || '',
+        media2Url: firstContent.media2Url || '',
+        media3Url: firstContent.media3Url || '',
+        media4Url: firstContent.media4Url || '',
+        publishStatus: firstContent.publishStatus || 'DRAFT'
+      });
+    }
+  }, [landingContents]);
+
   const handleTabChange = (tab: "content" | "manage") => {
     setActiveTab(tab);
   };
 
   const getMediaItems = () => {
     const items: any[] = [];
-    if (landingContents.length > 0) {
-      const firstContent = landingContents[0];
-      
-      if (firstContent.media1Url) {
-        items.push({
-          url: firstContent.media1Url,
-          type: 'image',
-          title: firstContent.title || 'Media 1'
-        });
-      }
-      
-      if (firstContent.media2Url) {
-        items.push({
-          url: firstContent.media2Url,
-          type: 'image',
-          title: firstContent.title || 'Media 2'
-        });
-      }
-      
-      if (firstContent.media3Url) {
-        items.push({
-          url: firstContent.media3Url,
-          type: 'image',
-          title: firstContent.title || 'Media 3'
-        });
-      }
-      
-      if (firstContent.media4Url) {
-        items.push({
-          url: firstContent.media4Url,
-          type: 'image',
-          title: firstContent.title || 'Media 4'
-        });
-      }
+    
+    if (formData.media1Url) {
+      items.push({
+        url: formData.media1Url,
+        type: 'image',
+        title: formData.title || 'Media 1'
+      });
+    }
+    
+    if (formData.media2Url) {
+      items.push({
+        url: formData.media2Url,
+        type: 'image',
+        title: formData.title || 'Media 2'
+      });
+    }
+    
+    if (formData.media3Url) {
+      items.push({
+        url: formData.media3Url,
+        type: 'image',
+        title: formData.title || 'Media 3'
+      });
+    }
+    
+    if (formData.media4Url) {
+      items.push({
+        url: formData.media4Url,
+        type: 'image',
+        title: formData.title || 'Media 4'
+      });
     }
     
     if (items.length === 0) {
@@ -114,23 +143,12 @@ export default function LandingSection() {
   const mediaItems = getMediaItems();
 
   const getContent = () => {
-    if (landingContents.length > 0) {
-      const firstContent = landingContents[0];
-      return {
-        title: firstContent.title || "",
-        subtitle: firstContent.subtitle || "", 
-        description: firstContent.description || "",
-        mainText: firstContent.mainText || "",
-        subText: firstContent.subText || ""
-      };
-    }
-    
     return {
-      title: "",
-      subtitle: "",
-      description: "", 
-      mainText: "",
-      subText: ""
+      title: formData.title || "",
+      subtitle: formData.subtitle || "", 
+      description: formData.description || "",
+      mainText: formData.mainText || "",
+      subText: formData.subText || ""
     };
   };
 
@@ -166,7 +184,11 @@ export default function LandingSection() {
             )}
 
             {activeTab === "manage" && (
-              <LandingManageSection landingContents={landingContents} />
+              <LandingManageSection 
+                landingContents={landingContents} 
+                formData={formData}
+                setFormData={setFormData}
+              />
             )}
           </motion.div>
         </div>
