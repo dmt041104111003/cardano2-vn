@@ -23,7 +23,7 @@ export const GET = withAdmin(async () => {
 });
 
 export const POST = withAdmin(async (req) => {
-  const { name, role, description, image, email, color, skills, order, tabId } = await req.json();
+  const { name, role, description, image, email, color, skills, order, tabId, publishStatus } = await req.json();
 
   const member = await prisma.member.create({
     data: {
@@ -34,6 +34,7 @@ export const POST = withAdmin(async (req) => {
       email,
       color: color || "blue",
       skills: skills || [],
+      publishStatus,
       order: order || 0,
       tabId: tabId || null,
       isActive: true

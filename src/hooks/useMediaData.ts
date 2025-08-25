@@ -90,7 +90,7 @@ export function useMediaData() {
       });
 
       if (response.ok) {
-        await fetchMedia(); // Refetch to update the list
+        await fetchMedia(); 
         filterAndSortMedia();
         showSuccess('Media deleted', 'The media file has been deleted successfully.');
       } else {
@@ -131,4 +131,4 @@ export function useMediaData() {
     handlePageChange,
     resetPage,
   };
-} 
+}

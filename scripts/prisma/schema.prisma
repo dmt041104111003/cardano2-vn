@@ -215,6 +215,7 @@ model Member {
   description String
   image       String
   email       String?
+  publishStatus  ProjectPublishStatus @default(DRAFT)
   color       String?  @default("blue")
   skills      String[] @default([])
   isActive    Boolean  @default(true)
@@ -228,6 +229,7 @@ model Member {
   @@index([order])
   @@index([createdAt])
   @@index([tabId])
+  @@index([publishStatus])
 }
 
 model Tab {

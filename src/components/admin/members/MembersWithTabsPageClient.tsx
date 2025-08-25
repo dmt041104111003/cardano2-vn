@@ -12,7 +12,7 @@ import TabEditor from "~/components/admin/tabs/TabEditor";
 import { Pagination } from "~/components/ui/pagination";
 import AdminTableSkeleton from "~/components/admin/common/AdminTableSkeleton";
 import Modal from "~/components/admin/common/Modal";
-import { useMembersWithTabs } from "~/components/admin/members/useMembersWithTabs";
+import { useMembersWithTabs } from "~/hooks/useMembersWithTabs";
 import NotFoundInline from "~/components/ui/not-found-inline";
 import AboutEditor from "~/components/admin/about/AboutEditor";
 import { useToastContext } from "~/components/toast-provider";
@@ -26,6 +26,7 @@ export default function MembersWithTabsPageClient() {
   
   const {
     searchTerm,
+    publishStatusFilter,
     currentPage,
     showEditor,
     editingMember,
@@ -43,6 +44,7 @@ export default function MembersWithTabsPageClient() {
     totalPages,
     ITEMS_PER_PAGE,
     setSearchTerm,
+    setPublishStatusFilter,
     handleCreateMember,
     handleEditMember,
     handleViewMember,
@@ -64,6 +66,8 @@ export default function MembersWithTabsPageClient() {
   const stats = {
     totalMembers: members.length,
     totalTabs: tabs.length,
+    draftMembers: members.filter(m => m.publishStatus === 'DRAFT').length,
+    publishedMembers: members.filter(m => m.publishStatus === 'PUBLISHED').length,
   };
 
   const getActiveTabContent = () => {
@@ -80,18 +84,22 @@ export default function MembersWithTabsPageClient() {
           <AdminStats 
             stats={[
               { label: "Total Members", value: stats.totalMembers },
+              { label: "Draft", value: stats.draftMembers },
+              { label: "Published", value: stats.publishedMembers },
             ]}
           />
 
           <AdminFilters
             searchTerm={searchTerm}
-            filterType="all"
+            filterType={publishStatusFilter}
             searchPlaceholder="Search members by name, role or description..."
             filterOptions={[
               { value: "all", label: "All Members" },
+              { value: "DRAFT", label: "Draft" },
+              { value: "PUBLISHED", label: "Published" },
             ]}
             onSearchChange={setSearchTerm}
-            onFilterChange={() => {}}
+            onFilterChange={(value) => setPublishStatusFilter(value as 'all' | 'DRAFT' | 'PUBLISHED')}
           />
 
           {loadingMembers ? (
@@ -100,6 +108,7 @@ export default function MembersWithTabsPageClient() {
             <NotFoundInline 
               onClearFilters={() => {
                 setSearchTerm('');
+                setPublishStatusFilter('all');
               }}
             />
           ) : (

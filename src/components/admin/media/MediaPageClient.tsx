@@ -7,7 +7,7 @@ import { AdminFilters } from '~/components/admin/common/AdminFilters';
 import { Pagination } from '~/components/ui/pagination';
 import { MediaUpload } from './MediaUpload';
 import { MediaTable } from './MediaTable';
-import { useMediaData } from './useMediaData';
+import { useMediaData } from '~/hooks/useMediaData';
 import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
 import NotFoundInline from '~/components/ui/not-found-inline';
 
