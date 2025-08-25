@@ -23,6 +23,7 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
     githubRepo: '',
   });
 
+  const DRAFT_STORAGE_KEY = 'post_draft_data';
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -45,6 +46,18 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
         media: Array.isArray(post.media) ? post.media : [],
         githubRepo: typeof post.githubRepo === 'string' ? post.githubRepo : '',
       });
+    } else {
+      try {
+        const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
+        if (savedDraft) {
+          const parsedDraft = JSON.parse(savedDraft);
+          setPostState(prev => ({
+            ...prev,
+            ...parsedDraft
+          }));
+        }
+      } catch (error) {
+      }
     }
   }, [post]);
 
@@ -83,15 +96,44 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       });
   }, []);
 
+  useEffect(() => {
+    if (!post && isClient) {
+      try {
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(postState));
+      } catch (error) {
+      }
+    }
+  }, [postState, post, isClient]);
+
   const handleInputChange = (field: string, value: string) => {
-    setPostState(prev => ({ ...prev, [field]: value }));
+    setPostState(prev => {
+      const newState = { ...prev, [field]: value };
+      if (!post) {
+        try {
+          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(newState));
+        } catch (error) {
+        }
+      }
+      
+      return newState;
+    });
   };
 
   const handleRemoveTag = (tagName: string) => {
-    setPostState(prev => ({
-      ...prev,
-      selectedTags: prev.selectedTags.filter(tag => tag !== tagName)
-    }));
+    setPostState(prev => {
+      const newState = {
+        ...prev,
+        selectedTags: prev.selectedTags.filter(tag => tag !== tagName)
+      };
+      if (!post) {
+        try {
+          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(newState));
+        } catch (error) {
+        }
+      }
+      
+      return newState;
+    });
   };
 
   function getYoutubeIdFromUrl(url: string): string {
@@ -110,28 +152,76 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
     console.log('Setting new media:', newMedia);
     setPostState(prev => {
       const newState = {
-      ...prev,
-      media: [newMedia]
+        ...prev,
+        media: [newMedia]
       };
+      if (!post) {
+        try {
+          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(newState));
+        } catch (error) {
+        }
+      }
+      
       console.log('New postState:', newState);
       return newState;
     });
   };
 
   const handleRemoveMedia = () => {
-    setPostState(prev => ({
-      ...prev,
-      media: []
-    }));
+    setPostState(prev => {
+      const newState = {
+        ...prev,
+        media: []
+      };
+      if (!post) {
+        try {
+          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(newState));
+        } catch (error) {
+        }
+      }
+      
+      return newState;
+    });
   };
 
   const handleTagToggle = (tagName: string) => {
-    setPostState(prev => ({
-      ...prev,
-      selectedTags: prev.selectedTags.includes(tagName)
-        ? prev.selectedTags.filter(tag => tag !== tagName)
-        : [...prev.selectedTags, tagName]
-    }));
+    setPostState(prev => {
+      const newState = {
+        ...prev,
+        selectedTags: prev.selectedTags.includes(tagName)
+          ? prev.selectedTags.filter(tag => tag !== tagName)
+          : [...prev.selectedTags, tagName]
+      };
+      if (!post) {
+        try {
+          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(newState));
+        } catch (error) {
+        }
+      }
+      
+      return newState;
+    });
+  };
+
+  const handleClear = () => {
+    if (!post) {
+      try {
+        localStorage.removeItem(DRAFT_STORAGE_KEY);
+        setPostState({
+          title: '',
+          selectedTags: [],
+          status: 'DRAFT',
+          content: '',
+          media: [],
+          githubRepo: '',
+        });
+      } catch (error) {
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    if (onCancel) onCancel();
   };
 
   const handleSave = async () => {
@@ -197,7 +287,15 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
       ANGRY: post && typeof post.ANGRY === 'number' ? post.ANGRY : 0,
     };
     
-    if (onSave) onSave(postData);
+    if (onSave) {
+      onSave(postData);
+      if (!post) {
+        try {
+          localStorage.removeItem(DRAFT_STORAGE_KEY);
+        } catch (error) {
+        }
+      }
+    }
   };
 
  
@@ -379,7 +477,7 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
                 <>
                   <button
                     type="button"
-                    onClick={onCancel ? onCancel : undefined}
+                    onClick={handleCancel}
                     className="flex items-center px-4 py-2 border border-gray-200 bg-gray-50/80 text-gray-600 rounded-xl backdrop-blur-sm hover:bg-gray-100/90 transition-shadow shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2"
                   >
                     <X className="h-4 w-4 mr-2 text-gray-400" />
@@ -395,14 +493,24 @@ export function PostEditorClient({ onSave, post, onCancel }: PostEditorClientPro
                   </button>
                 </>
               ) : (
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  className="flex items-center px-4 py-2 border border-blue-200 bg-blue-100/80 text-blue-700 rounded-xl backdrop-blur-sm hover:bg-blue-200/90 transition-shadow shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-offset-2"
-                >
-                  <Save className="h-4 w-4 mr-2 text-blue-500" />
-                  Create Post
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    className="flex items-center px-4 py-2 border border-red-200 bg-red-50/80 text-red-600 rounded-xl backdrop-blur-sm hover:bg-red-100/90 transition-shadow shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-200 focus:ring-offset-2"
+                  >
+                    <X className="h-4 w-4 mr-2 text-red-400" />
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    className="flex items-center px-4 py-2 border border-blue-200 bg-blue-100/80 text-blue-700 rounded-xl backdrop-blur-sm hover:bg-blue-200/90 transition-shadow shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-offset-2"
+                  >
+                    <Save className="h-4 w-4 mr-2 text-blue-500" />
+                    Create Post
+                  </button>
+                </>
               )}
             </div>
           </div>
