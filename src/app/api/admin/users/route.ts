@@ -156,8 +156,8 @@ export const PATCH = withAdmin(async (req, currentUser) => {
         return NextResponse.json(createErrorResponse('Only admins can ban users', 'FORBIDDEN'), { status: 403 });
       }
       
-      if (!banHours || !banReason) {
-        return NextResponse.json(createErrorResponse('Missing ban hours or reason', 'MISSING_BAN_DATA'), { status: 400 });
+      if (!banHours) {
+        return NextResponse.json(createErrorResponse('Missing ban hours', 'MISSING_BAN_HOURS'), { status: 400 });
       }
 
       const bannedUntil = new Date();
@@ -167,8 +167,7 @@ export const PATCH = withAdmin(async (req, currentUser) => {
         where: { id: user.id }, 
         data: { 
           isBanned: true,
-          bannedUntil,
-          banReason
+          bannedUntil
         } 
       });
     }
@@ -182,8 +181,7 @@ export const PATCH = withAdmin(async (req, currentUser) => {
         where: { id: user.id }, 
         data: { 
           isBanned: false,
-          bannedUntil: null,
-          banReason: null
+          bannedUntil: null
         } 
       });
     }
