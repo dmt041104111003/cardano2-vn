@@ -343,12 +343,14 @@ model WelcomeModal {
   buttonLink  String?
   startDate   DateTime?
   endDate     DateTime?
+  publishStatus  ProjectPublishStatus @default(DRAFT)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([isActive])
   @@index([createdAt])
+  @@index([publishStatus])
 }
 
 enum ProjectStatus {

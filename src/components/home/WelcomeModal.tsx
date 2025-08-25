@@ -26,7 +26,9 @@ export default function WelcomeModal({ isOpen, onClose, origin }: WelcomeModalPr
     imageUrl: "",
     buttonLink: "",
     startDate: "",
-    endDate: ""
+    endDate: "",
+    publishStatus: "DRAFT",
+    isActive: true
   });
   const [previewImage, setPreviewImage] = useState<string>("");
 
@@ -80,7 +82,9 @@ export default function WelcomeModal({ isOpen, onClose, origin }: WelcomeModalPr
         imageUrl: data.imageUrl || "",
         buttonLink: data.buttonLink || "",
         startDate: data.startDate || "",
-        endDate: data.endDate || ""
+        endDate: data.endDate || "",
+        publishStatus: data.publishStatus || "DRAFT",
+        isActive: data.isActive || true
       });
       setPreviewImage(data.imageUrl || "");
     }

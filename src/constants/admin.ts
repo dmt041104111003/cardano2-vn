@@ -122,10 +122,13 @@ export interface LandingMediaProps {
 
 // Welcome Modal interfaces
 export interface WelcomeModalData {
+  id?: string;
   title: string;
   description: string;
   imageUrl: string | null;
   buttonLink: string | null;
   startDate: string | null;
   endDate: string | null;
+  publishStatus: 'DRAFT' | 'PUBLISHED';
+  isActive: boolean;
 } 

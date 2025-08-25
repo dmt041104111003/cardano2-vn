@@ -181,6 +181,21 @@ export default function WelcomeModalEdit({
         />
       </div>
 
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-center">
+          Publish Status
+        </label>
+        <select
+          value={formData.publishStatus}
+          onChange={(e) => onInputChange('publishStatus', e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+          title="Select publish status"
+        >
+          <option value="DRAFT">Draft</option>
+          <option value="PUBLISHED">Published</option>
+        </select>
+      </div>
+
       {/* Save Button */}
       <div className="text-center">
         <button 
