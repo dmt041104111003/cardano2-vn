@@ -24,8 +24,8 @@ export interface Comment {
 }
 
 export interface CommentInputProps {
-  onSubmit: (comment: string, user?: { id: string; address: string; image: string | null } | null) => void;
-  user?: { id: string; address: string; image: string | null } | null;
+  onSubmit: (comment: string, user?: { id: string; address: string; image: string | null; isBanned?: boolean; bannedUntil?: string } | null) => void;
+  user?: { id: string; address: string; image: string | null; isBanned?: boolean; bannedUntil?: string } | null;
 }
 
 export interface CommentItemProps {

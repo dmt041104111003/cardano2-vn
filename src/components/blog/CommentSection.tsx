@@ -324,7 +324,13 @@ export default function CommentSection({ comments: initialComments, onSubmitComm
       </div>
 
       {isAuthenticated ? (
-        <CommentInput onSubmit={handleSubmitComment} user={user} />
+        <CommentInput onSubmit={handleSubmitComment} user={{
+          id: user?.id || '',
+          address: user?.address || '',
+          image: user?.image || null,
+          isBanned: user?.isBanned || false,
+          bannedUntil: user?.bannedUntil || undefined
+        }} />
       ) : (
         <div className="bg-gray-100 dark:bg-gray-800/30 rounded-2xl p-3 border border-gray-200 dark:border-gray-700/50 text-center text-gray-600 dark:text-gray-400">
           <span>You need to <b>log in</b> to comment.</span>

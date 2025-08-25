@@ -36,7 +36,16 @@ export async function GET(request: NextRequest, context: { params: Promise<Recor
         content: true,
         createdAt: true,
         userId: true,
-        user: { select: { wallet: true, image: true, name: true, id: true } },
+        user: { 
+          select: { 
+            wallet: true, 
+            image: true, 
+            name: true, 
+            id: true,
+            isBanned: true,
+            bannedUntil: true
+          } 
+        },
         parentCommentId: true,
       },
       orderBy: { createdAt: 'asc' },
