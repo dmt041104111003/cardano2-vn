@@ -13,6 +13,7 @@ import VideoSection from "~/components/home/VideoSection";
 
 import ContactFormSection from "~/components/home/ContactFormSection";
 import WaveFooterSection from "~/components/home/WaveFooterSection";
+// import StatsSection from "~/components/home/StatsSection";
 import { useNotifications } from "~/hooks/useNotifications";
 
 export default function HomePage() {
@@ -39,6 +40,7 @@ export default function HomePage() {
       </div>
 
       <LandingSection />
+      {/* <StatsSection /> */}
       <ProtocolSection />
       <VideoSection />
       {/* <PartnerLogosCarousel /> */}
