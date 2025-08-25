@@ -21,7 +21,8 @@ export default function LandingContentManager() {
     media1Url: '',
     media2Url: '',
     media3Url: '',
-    media4Url: ''
+    media4Url: '',
+    publishStatus: 'DRAFT' as 'DRAFT' | 'PUBLISHED'
   });
 
   const { data: landingContents = [] } = useQuery({
@@ -52,7 +53,8 @@ export default function LandingContentManager() {
         media1Url: firstContent.media1Url || '',
         media2Url: firstContent.media2Url || '',
         media3Url: firstContent.media3Url || '',
-        media4Url: firstContent.media4Url || ''
+        media4Url: firstContent.media4Url || '',
+        publishStatus: firstContent.publishStatus || 'DRAFT'
       });
     } else {
       setCurrentContentId(null);
@@ -66,7 +68,8 @@ export default function LandingContentManager() {
         media1Url: '',
         media2Url: '',
         media3Url: '',
-        media4Url: ''
+        media4Url: '',
+        publishStatus: 'DRAFT'
       });
     }
   }, [landingContents]);
@@ -125,6 +128,7 @@ export default function LandingContentManager() {
       description: formData.description,
       mainText: formData.mainText,
       subText: formData.subText,
+      publishStatus: formData.publishStatus,
     };
 
     if (formData.media1Url && formData.media1Url.trim()) {
@@ -190,7 +194,11 @@ export default function LandingContentManager() {
             />
           </div>
           
-          <FormActions isPending={updateMutation.isPending} />
+          <FormActions 
+            isPending={updateMutation.isPending} 
+            publishStatus={formData.publishStatus}
+            onPublishStatusChange={(status) => setFormData(prev => ({ ...prev, publishStatus: status }))}
+          />
         </form>
       </div>
     </div>

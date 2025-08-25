@@ -17,16 +17,17 @@ export default function CourseTableSection({ courses = [], onSuccess }: CourseTa
   const { showSuccess, showError } = useToastContext();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
+  const [publishStatusFilter, setPublishStatusFilter] = useState<'all' | 'DRAFT' | 'PUBLISHED'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 4;
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, name, image, title, description }: { id: string; name: string; image?: string; title?: string; description?: string }) => {
+    mutationFn: async ({ id, name, image, title, description, publishStatus }: { id: string; name: string; image?: string; title?: string; description?: string; publishStatus: 'DRAFT' | 'PUBLISHED' }) => {
       const response = await fetch(`/api/admin/courses/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, image, title, description })
+        body: JSON.stringify({ name, image, title, description, publishStatus })
       });
       if (!response.ok) {
         const error = await response.json();
@@ -70,7 +71,7 @@ export default function CourseTableSection({ courses = [], onSuccess }: CourseTa
     }
   });
 
-  const handleUpdate = (id: string, name: string, image?: string, title?: string, description?: string) => {
+  const handleUpdate = (id: string, name: string, publishStatus: 'DRAFT' | 'PUBLISHED', image?: string, title?: string, description?: string) => {
     if (!name.trim()) {
       showError('Name is required');
       return;
@@ -87,7 +88,7 @@ export default function CourseTableSection({ courses = [], onSuccess }: CourseTa
       return;
     }
     
-    updateMutation.mutate({ id, name: name.trim(), image, title, description });
+    updateMutation.mutate({ id, name: name.trim(), image, title, description, publishStatus });
   };
 
   const handleDelete = (id: string) => {
@@ -99,10 +100,12 @@ export default function CourseTableSection({ courses = [], onSuccess }: CourseTa
   };
 
   const filteredCourses = useMemo(() => {
-    return courses?.filter((course: Course) =>
-      course.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
-  }, [courses, searchTerm]);
+    return courses?.filter((course: Course) => {
+      const matchesSearch = course.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = publishStatusFilter === 'all' || course.publishStatus === publishStatusFilter;
+      return matchesSearch && matchesStatus;
+    }) || [];
+  }, [courses, searchTerm, publishStatusFilter]);
 
   const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
   const paginatedCourses = useMemo(() => {
@@ -112,6 +115,12 @@ export default function CourseTableSection({ courses = [], onSuccess }: CourseTa
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
+    setPublishStatusFilter('all');
+    setCurrentPage(1);
+  };
+
+  const handlePublishStatusFilterChange = (value: string) => {
+    setPublishStatusFilter(value as 'all' | 'DRAFT' | 'PUBLISHED');
     setCurrentPage(1);
   };
 
@@ -131,6 +140,16 @@ export default function CourseTableSection({ courses = [], onSuccess }: CourseTa
               onChange={(e) => handleSearchChange(e.target.value)}
               className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <select
+              value={publishStatusFilter}
+              onChange={(e) => handlePublishStatusFilterChange(e.target.value)}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              title="Filter by publish status"
+            >
+              <option value="all">All Status</option>
+              <option value="DRAFT">Draft</option>
+              <option value="PUBLISHED">Published</option>
+            </select>
           </div>
         </div>
       </div>

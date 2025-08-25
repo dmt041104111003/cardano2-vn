@@ -276,6 +276,7 @@ enum MediaType {
 model EventLocation {
   id          String   @id @default(uuid())
   name        String   @unique
+  publishStatus  ProjectPublishStatus @default(DRAFT)
   isActive    Boolean  @default(true)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -284,6 +285,7 @@ model EventLocation {
   @@index([isActive])
   @@index([order])
   @@index([createdAt])
+  @@index([publishStatus])
 }
 
 model Course {
@@ -292,6 +294,7 @@ model Course {
   image       String?
   title       String?
   description String?
+  publishStatus  ProjectPublishStatus @default(DRAFT)
   isActive    Boolean  @default(true)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -300,6 +303,7 @@ model Course {
   @@index([isActive])
   @@index([order])
   @@index([createdAt])
+  @@index([publishStatus])
 }
 
 model LandingContent {
@@ -314,6 +318,7 @@ model LandingContent {
   media2Url   String?
   media3Url   String?
   media4Url   String?
+  publishStatus  ProjectPublishStatus @default(DRAFT)
   isActive    Boolean  @default(true)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -323,6 +328,7 @@ model LandingContent {
   @@index([order])
   @@index([createdAt])
   @@index([section])
+  @@index([publishStatus])
 }
 
 model EventImages {

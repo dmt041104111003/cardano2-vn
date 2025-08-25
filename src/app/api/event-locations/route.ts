@@ -4,14 +4,14 @@ import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 
 export async function GET() {
   try {
-    const content = await prisma.landingContent.findMany({
+    const eventLocations = await prisma.eventLocation.findMany({
       where: { 
         isActive: true,
         publishStatus: 'PUBLISHED'
       },
       orderBy: { order: 'asc' },
     });
-    return NextResponse.json(createSuccessResponse(content));
+    return NextResponse.json(createSuccessResponse(eventLocations));
   } catch (error) {
     return NextResponse.json(createErrorResponse('Internal server error', 'INTERNAL_ERROR'), { status: 500 });
   }

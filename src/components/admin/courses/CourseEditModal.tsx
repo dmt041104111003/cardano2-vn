@@ -14,6 +14,7 @@ export default function CourseEditModal({
   const [image, setImage] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [publishStatus, setPublishStatus] = useState<'DRAFT' | 'PUBLISHED'>('DRAFT');
 
   useEffect(() => {
     if (course) {
@@ -21,12 +22,13 @@ export default function CourseEditModal({
       setImage(course.image || '');
       setTitle(course.title || '');
       setDescription(course.description || '');
+      setPublishStatus(course.publishStatus || 'DRAFT');
     }
   }, [course]);
 
   const handleSave = () => {
     if (!course || !name.trim()) return;
-    onSave(course.id, name.trim(), image, title.trim(), description.trim());
+    onSave(course.id, name.trim(), publishStatus, image, title.trim(), description.trim());
   };
 
   const handleMediaSelect = (media: { id: string; url: string; type: string }) => {
@@ -82,6 +84,21 @@ export default function CourseEditModal({
             placeholder="Enter course description"
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[60px]"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Publish Status
+          </label>
+          <select
+            value={publishStatus}
+            onChange={(e) => setPublishStatus(e.target.value as 'DRAFT' | 'PUBLISHED')}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            title="Select publish status"
+          >
+            <option value="DRAFT">Draft</option>
+            <option value="PUBLISHED">Published</option>
+          </select>
         </div>
 
         <div>

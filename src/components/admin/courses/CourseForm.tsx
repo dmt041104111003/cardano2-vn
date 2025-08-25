@@ -18,13 +18,14 @@ export default function CourseForm({ courses = [], onSuccess }: CourseFormProps)
   const [newImage, setNewImage] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
+  const [publishStatus, setPublishStatus] = useState<'DRAFT' | 'PUBLISHED'>('DRAFT');
 
   const createMutation = useMutation({
-    mutationFn: async ({ name, image, title, description }: { name: string; image?: string; title?: string; description?: string }) => {
+    mutationFn: async ({ name, image, title, description, publishStatus }: { name: string; image?: string; title?: string; description?: string; publishStatus: 'DRAFT' | 'PUBLISHED' }) => {
       const response = await fetch('/api/admin/courses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, image, title, description })
+        body: JSON.stringify({ name, image, title, description, publishStatus })
       });
       if (!response.ok) {
         const error = await response.json();
@@ -40,6 +41,7 @@ export default function CourseForm({ courses = [], onSuccess }: CourseFormProps)
       setNewImage('');
       setNewTitle('');
       setNewDescription('');
+      setPublishStatus('DRAFT');
       showSuccess('Course created successfully');
       onSuccess?.();
     },
@@ -64,7 +66,7 @@ export default function CourseForm({ courses = [], onSuccess }: CourseFormProps)
       return;
     }
     
-    createMutation.mutate({ name: newName.trim(), image: newImage, title: newTitle.trim(), description: newDescription.trim() });
+    createMutation.mutate({ name: newName.trim(), image: newImage, title: newTitle.trim(), description: newDescription.trim(), publishStatus: publishStatus });
   };
 
   const handleMediaSelect = (media: { id: string; url: string; type: string }) => {
@@ -82,6 +84,15 @@ export default function CourseForm({ courses = [], onSuccess }: CourseFormProps)
             placeholder="Enter course name"
             className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <select
+            value={publishStatus}
+            onChange={(e) => setPublishStatus(e.target.value as 'DRAFT' | 'PUBLISHED')}
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            title="Select publish status"
+          >
+            <option value="DRAFT">Draft</option>
+            <option value="PUBLISHED">Published</option>
+          </select>
           <button
             type="submit"
             disabled={createMutation.isPending}
