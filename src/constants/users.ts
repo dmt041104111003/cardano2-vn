@@ -6,6 +6,8 @@ export interface User {
   provider?: string;
   role: 'USER' | 'ADMIN';
   status: 'active' | 'inactive';
+  isBanned?: boolean;
+  bannedUntil?: string;
   createdAt: string;
   updatedAt?: string;
   lastLogin?: string;
@@ -17,6 +19,8 @@ export interface UserTableProps {
   onEdit: (user: User) => void;
   onDelete: (userId: string) => void;
   onRoleChange: (userId: string, role: 'USER' | 'ADMIN') => void;
+  onBanUser: (userId: string, hours: number) => void;
+  onUnbanUser: (userId: string) => void;
   currentUserAddress?: string | null;
   currentUserRole?: 'USER' | 'ADMIN';
 }
@@ -66,4 +70,6 @@ export interface UserHook {
   address: string;
   email?: string;
   provider?: string;
+  isBanned?: boolean;
+  bannedUntil?: string;
 } 

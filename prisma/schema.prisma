@@ -17,6 +17,8 @@ model User {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   roleId        String
+  isBanned      Boolean        @default(false)
+  bannedUntil   DateTime?
   comments      Comment[]      @relation("UserComments")
   media         Media[]        @relation("UserMedia")
   posts         Post[]         @relation("UserPosts")
@@ -26,6 +28,7 @@ model User {
 
   @@index([createdAt])
   @@index([provider])
+  @@index([isBanned])
 }
 
 model Role {

@@ -20,6 +20,9 @@ export const GET = withAdmin(async () => {
         email: user.email,
         provider: user.provider,
         role: user.role.name,
+        status: user.isBanned ? 'banned' : 'active',
+        isBanned: user.isBanned || false,
+        bannedUntil: user.bannedUntil?.toISOString() || null,
         createdAt: user.createdAt.toISOString(),
         updatedAt: user.updatedAt.toISOString(),
         avatar: user.image || null,
@@ -88,7 +91,7 @@ export const PATCH = withAdmin(async (req, currentUser) => {
   }
   
   try {
-    const { address, name, promote } = await req.json();
+    const { address, name, promote, ban, unban, banHours } = await req.json();
     
     if (!address) {
       return NextResponse.json(createErrorResponse('Missing address', 'MISSING_ADDRESS'), { status: 400 });
@@ -146,6 +149,43 @@ export const PATCH = withAdmin(async (req, currentUser) => {
         }
         await prisma.user.update({ where: { id: user.id }, data: { roleId: userRole.id } });
       }
+    }
+
+    if (ban) {
+      if (currentUser.role.name !== 'ADMIN') {
+        return NextResponse.json(createErrorResponse('Only admins can ban users', 'FORBIDDEN'), { status: 403 });
+      }
+      
+      if (!banHours || !banReason) {
+        return NextResponse.json(createErrorResponse('Missing ban hours or reason', 'MISSING_BAN_DATA'), { status: 400 });
+      }
+
+      const bannedUntil = new Date();
+      bannedUntil.setHours(bannedUntil.getHours() + banHours);
+
+      await prisma.user.update({ 
+        where: { id: user.id }, 
+        data: { 
+          isBanned: true,
+          bannedUntil,
+          banReason
+        } 
+      });
+    }
+
+    if (unban) {
+      if (currentUser.role.name !== 'ADMIN') {
+        return NextResponse.json(createErrorResponse('Only admins can unban users', 'FORBIDDEN'), { status: 403 });
+      }
+
+      await prisma.user.update({ 
+        where: { id: user.id }, 
+        data: { 
+          isBanned: false,
+          bannedUntil: null,
+          banReason: null
+        } 
+      });
     }
   
     return NextResponse.json(createSuccessResponse({ success: true }));

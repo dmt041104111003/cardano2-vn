@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
 import NotFoundInline from '~/components/ui/not-found-inline';
 import { useNotifications } from "~/hooks/useNotifications";
+import { OnlineUsersResponse, WEBSOCKET_CONFIG } from '~/constants/online-users';
 
 export function UsersPageClient() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,6 +43,21 @@ export function UsersPageClient() {
       return res.json();
     }
   });
+
+  const {
+    data: onlineData,
+    isLoading: onlineLoading,
+  } = useQuery<OnlineUsersResponse>({
+    queryKey: ['online-users'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/online-users', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch online users');
+      return res.json();
+    },
+    refetchInterval: WEBSOCKET_CONFIG.REFETCH_INTERVAL,
+    refetchIntervalInBackground: true,
+  });
+
   const users: User[] = queryData?.data || [];
 
   useEffect(() => {
@@ -155,6 +171,63 @@ export function UsersPageClient() {
     }
   };
 
+  const handleBanUser = async (userId: string, hours: number) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+    
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          address: user.address, 
+          ban: true,
+          banHours: hours
+        })
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        showError(errorData.message || 'Failed to ban user');
+        return;
+      }
+      
+      await fetchUsers();
+      showSuccess('User banned', `User has been banned for ${hours} hours`);
+    } catch {
+      showError('Failed to ban user');
+    }
+  };
+
+  const handleUnbanUser = async (userId: string) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+    
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          address: user.address, 
+          unban: true
+        })
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        showError(errorData.message || 'Failed to unban user');
+        return;
+      }
+      
+      await fetchUsers();
+      showSuccess('User unbanned', 'User has been unbanned successfully');
+    } catch {
+      showError('Failed to unban user');
+    }
+  };
+
   const filteredUsers = users.filter(user => {
     const matchesSearch = (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (user.address?.toLowerCase() || '').includes(searchTerm.toLowerCase());
@@ -188,9 +261,11 @@ export function UsersPageClient() {
 
   const stats = [
     { label: 'Total Users', value: users.length, color: 'default' as const },
-    { label: 'Active Users', value: users.filter(u => u.status === 'active').length, color: 'green' as const },
+    { label: 'Active Users', value: users.filter(u => !u.isBanned).length, color: 'green' as const },
+    { label: 'Banned Users', value: users.filter(u => u.isBanned).length, color: 'red' as const },
     { label: 'Admins', value: users.filter(u => u.role === 'ADMIN').length, color: 'blue' as const },
     { label: 'New Users (24h)', value: users.filter(u => isWithin24Hours(u.createdAt)).length, color: 'blue' as const },
+    { label: 'Online Now', value: onlineData?.data?.stats?.total || 0, color: 'green' as const },
   ];
 
   const filterOptions = [
@@ -263,6 +338,8 @@ export function UsersPageClient() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           onRoleChange={handleRoleChange}
+          onBanUser={handleBanUser}
+          onUnbanUser={handleUnbanUser}
           currentUserAddress={currentUserAddress}
           currentUserRole={currentUserRole || undefined}
         />

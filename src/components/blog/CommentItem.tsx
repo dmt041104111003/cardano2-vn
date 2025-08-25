@@ -36,6 +36,7 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(comment.content);
   const canEdit = currentUser && currentUser.id === comment.userId;
+  const isUserBanned = currentUser && currentUser.isBanned && currentUser.bannedUntil && new Date(currentUser.bannedUntil) > new Date();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -281,13 +282,15 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
               ) : renderCommentContent(comment.content)}
               </div>
               <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                <button 
-                  onClick={handleReplyClick}
-                  className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors font-medium"
-                >
-                  Reply
-                </button>
-                {canEdit && !editing && (
+                {!isUserBanned && (
+                  <button 
+                    onClick={handleReplyClick}
+                    className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors font-medium"
+                  >
+                    Reply
+                  </button>
+                )}
+                {canEdit && !editing && !isUserBanned && (
                   <button
                     onClick={handleEdit}
                     className="hover:text-yellow-600 dark:hover:text-yellow-400 text-yellow-600 dark:text-yellow-300 transition-colors font-medium ml-2"
@@ -295,7 +298,7 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
                     Edit
                   </button>
                 )}
-                {canDelete && (
+                {canDelete && !isUserBanned && (
                   <>
                     <button
                       onClick={() => setShowDeleteModal(true)}
@@ -333,7 +336,7 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
             </div>
           </div>
 
-          {activeReplyId === comment.id && (
+          {activeReplyId === comment.id && !isUserBanned && (
             <div className="ml-11">
               <div className="bg-gray-100 dark:bg-gray-800/30 rounded-2xl p-3 border border-gray-200 dark:border-gray-700/50">
                 <div className="flex items-start gap-3">

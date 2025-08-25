@@ -60,7 +60,9 @@ export function useUser() {
           address: data.wallet || sessionUser.address || '',
           image: data.image || sessionUser.image || null,
           role: data.role?.name || 'USER',
-          isAdmin: data.role?.name === "ADMIN"
+          isAdmin: data.role?.name === "ADMIN",
+          isBanned: data.isBanned || false,
+          bannedUntil: data.bannedUntil || undefined
         };
           
           setUser(userData);

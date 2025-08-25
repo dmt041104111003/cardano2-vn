@@ -19,6 +19,9 @@ class CommentWebSocketServer {
     this.userRooms = new Map();
     this.tempIdMapping = new Map();
     this.pendingReplies = new Map();
+    this.onlineUsers = new Map(); 
+    this.anonymousUsers = new Map(); 
+    
     this.commentHandler = new CommentHandler(this);
     this.replyHandler = new ReplyHandler(this);
     this.notificationHandler = new NotificationHandler(this);
@@ -26,6 +29,11 @@ class CommentWebSocketServer {
     
     this.setupWebSocketServer();
     this.startServer(port);
+    
+    // Cleanup offline users every 5 minutes
+    setInterval(() => {
+      this.cleanupOfflineUsers();
+    }, 5 * 60 * 1000);
   }
 
   handleHttpRequest(req, res) {
@@ -51,6 +59,11 @@ class CommentWebSocketServer {
             postRooms: this.postRooms.size,
             userRooms: this.userRooms.size
           },
+          onlineUsers: {
+            authenticated: this.onlineUsers.size,
+            anonymous: this.anonymousUsers.size,
+            total: this.onlineUsers.size + this.anonymousUsers.size
+          },
           environment: process.env.NODE_ENV || 'development',
           externalUrl: process.env.RENDER_EXTERNAL_URL || 'localhost'
         };
@@ -65,6 +78,38 @@ class CommentWebSocketServer {
           timestamp: new Date().toISOString()
         }));
       }
+    } else if (req.url === '/api/online-users') {
+      try {
+        const onlineData = {
+          authenticated: Array.from(this.onlineUsers.entries()).map(([userId, data]) => ({
+            userId,
+            lastSeen: data.lastSeen,
+            userAgent: data.userAgent,
+            ip: data.ip
+          })),
+          anonymous: Array.from(this.anonymousUsers.entries()).map(([sessionId, data]) => ({
+            sessionId,
+            lastSeen: data.lastSeen,
+            userAgent: data.userAgent,
+            ip: data.ip
+          })),
+          stats: {
+            total: this.onlineUsers.size + this.anonymousUsers.size,
+            authenticated: this.onlineUsers.size,
+            anonymous: this.anonymousUsers.size
+          }
+        };
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(onlineData, null, 2));
+      } catch (error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ 
+          status: 'error', 
+          message: 'Failed to get online users',
+          timestamp: new Date().toISOString()
+        }));
+      }
     } else if (req.url === '/ping') {
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end('pong');
@@ -73,7 +118,7 @@ class CommentWebSocketServer {
       res.end(JSON.stringify({ 
         status: 'not_found', 
         message: 'Endpoint not found',
-        available: ['/health', '/api/health', '/ping']
+        available: ['/health', '/api/health', '/api/online-users', '/ping']
       }));
     }
   }
@@ -84,12 +129,14 @@ class CommentWebSocketServer {
       console.log(`Health check URLs:`);
       console.log(`   - http://localhost:${port}/health`);
       console.log(`   - http://localhost:${port}/api/health`);
+      console.log(`   - http://localhost:${port}/api/online-users`);
       console.log(`   - http://localhost:${port}/ping`);
       
       if (process.env.RENDER_EXTERNAL_URL) {
         console.log(`Production URLs:`);
         console.log(`   - ${process.env.RENDER_EXTERNAL_URL}/health`);
         console.log(`   - ${process.env.RENDER_EXTERNAL_URL}/api/health`);
+        console.log(`   - ${process.env.RENDER_EXTERNAL_URL}/api/online-users`);
         console.log(`   - ${process.env.RENDER_EXTERNAL_URL}/ping`);
       }
     });
@@ -104,6 +151,7 @@ class CommentWebSocketServer {
       const url = new URL(request.url || '', `http://${request.headers.host}`);
       const postId = url.searchParams.get('postId');
       const userId = url.searchParams.get('userId');
+      const sessionId = url.searchParams.get('sessionId') || this.generateSessionId();
       
       if (!postId) {
         ws.close(1008, 'Missing postId parameter');
@@ -111,7 +159,25 @@ class CommentWebSocketServer {
       }
       
       const clientId = this.roomManager.generateClientId();
-      this.clients.set(clientId, { ws, postId, userId });
+      const userAgent = request.headers['user-agent'] || 'Unknown';
+      const ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress || 'Unknown';
+      
+      this.clients.set(clientId, { ws, postId, userId, sessionId });
+      if (userId) {
+        this.onlineUsers.set(userId, {
+          lastSeen: new Date(),
+          userAgent,
+          ip,
+          clientId
+        });
+      } else {
+        this.anonymousUsers.set(sessionId, {
+          lastSeen: new Date(),
+          userAgent,
+          ip,
+          clientId
+        });
+      }
 
       this.roomManager.joinPostRoom(clientId, postId);
       
@@ -123,6 +189,18 @@ class CommentWebSocketServer {
         try {
           const message = JSON.parse(data.toString());
           this.handleMessage(clientId, message);
+          
+          if (userId) {
+            const userData = this.onlineUsers.get(userId);
+            if (userData) {
+              userData.lastSeen = new Date();
+            }
+          } else {
+            const sessionData = this.anonymousUsers.get(sessionId);
+            if (sessionData) {
+              sessionData.lastSeen = new Date();
+            }
+          }
         } catch (error) {
           this.sendError(ws, 'Invalid message format');
         }
@@ -151,8 +229,41 @@ class CommentWebSocketServer {
       }, 30000);
 
       ws.on('pong', () => {
+        if (userId) {
+          const userData = this.onlineUsers.get(userId);
+          if (userData) {
+            userData.lastSeen = new Date();
+          }
+        } else {
+          const sessionData = this.anonymousUsers.get(sessionId);
+          if (sessionData) {
+            sessionData.lastSeen = new Date();
+          }
+        }
       });
     });
+  }
+
+  generateSessionId() {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  }
+
+  cleanupOfflineUsers() {
+    const now = new Date();
+    const timeout = 5 * 60 * 1000; 
+
+    for (const [userId, data] of this.onlineUsers.entries()) {
+      if (now - data.lastSeen > timeout) {
+        this.onlineUsers.delete(userId);
+      }
+    }
+
+    
+    for (const [sessionId, data] of this.anonymousUsers.entries()) {
+      if (now - data.lastSeen > timeout) {
+        this.anonymousUsers.delete(sessionId);
+      }
+    }
   }
 
   async handleMessage(clientId, message) {
@@ -235,6 +346,12 @@ class CommentWebSocketServer {
   handleClientDisconnect(clientId) {
     const client = this.clients.get(clientId);
     if (client) {
+      if (client.userId) {
+        this.onlineUsers.delete(client.userId);
+      } else if (client.sessionId) {
+        this.anonymousUsers.delete(client.sessionId);
+      }
+
       if (client.postId) {
         this.roomManager.leavePostRoom(clientId, client.postId);
       }
@@ -254,7 +371,14 @@ class CommentWebSocketServer {
   }
 
   getStats() {
-    return this.roomManager.getStats();
+    return {
+      ...this.roomManager.getStats(),
+      onlineUsers: {
+        authenticated: this.onlineUsers.size,
+        anonymous: this.anonymousUsers.size,
+        total: this.onlineUsers.size + this.anonymousUsers.size
+      }
+    };
   }
 }
 
