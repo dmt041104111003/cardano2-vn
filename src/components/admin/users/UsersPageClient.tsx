@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import AdminTableSkeleton from '~/components/admin/common/AdminTableSkeleton';
 import NotFoundInline from '~/components/ui/not-found-inline';
 import { useNotifications } from "~/hooks/useNotifications";
+import { OnlineUsersResponse, WEBSOCKET_CONFIG } from '~/constants/online-users';
 
 export function UsersPageClient() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,6 +43,21 @@ export function UsersPageClient() {
       return res.json();
     }
   });
+
+  const {
+    data: onlineData,
+    isLoading: onlineLoading,
+  } = useQuery<OnlineUsersResponse>({
+    queryKey: ['online-users'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/online-users', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch online users');
+      return res.json();
+    },
+    refetchInterval: WEBSOCKET_CONFIG.REFETCH_INTERVAL,
+    refetchIntervalInBackground: true,
+  });
+
   const users: User[] = queryData?.data || [];
 
   useEffect(() => {
@@ -191,6 +207,7 @@ export function UsersPageClient() {
     { label: 'Active Users', value: users.filter(u => u.status === 'active').length, color: 'green' as const },
     { label: 'Admins', value: users.filter(u => u.role === 'ADMIN').length, color: 'blue' as const },
     { label: 'New Users (24h)', value: users.filter(u => isWithin24Hours(u.createdAt)).length, color: 'blue' as const },
+    { label: 'Online Now', value: onlineData?.data?.stats?.total || 0, color: 'green' as const },
   ];
 
   const filterOptions = [
