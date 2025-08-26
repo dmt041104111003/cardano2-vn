@@ -127,9 +127,7 @@ export default function ContactFormSection() {
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useQuery({
     queryKey: ['contact-courses'],
     queryFn: async () => {
-      const response = await fetch('/api/admin/courses', {
-        credentials: 'include'
-      });
+      const response = await fetch('/api/courses');
       if (!response.ok) throw new Error('Failed to fetch courses');
       const data = await response.json();
       return data?.data || [];
