@@ -7,6 +7,7 @@ import AboutSection from "~/components/technology/AboutSection";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { motion } from "framer-motion";
 import { useToastContext } from "~/components/toast-provider";
 import { ContactFormData, FormErrors } from "~/constants/contact";
 import { useNotifications } from "~/hooks/useNotifications";
@@ -410,7 +411,13 @@ export default function MemberPageClient() {
     return (
       <main className="relative pt-20 bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900">
         {/* Background Logo */}
-        <div className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 opacity-3 pointer-events-none select-none block">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 0.15, scale: 1 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 pointer-events-none select-none block"
+        >
           <img
             src="/images/common/loading.png"
             alt="Cardano2VN Logo"
@@ -418,7 +425,7 @@ export default function MemberPageClient() {
             draggable={false}
             style={{ objectPosition: "left center" }}
           />
-        </div>
+        </motion.div>
 
         <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
           <Title title="Founding Team" description="" />
@@ -465,7 +472,13 @@ export default function MemberPageClient() {
   return (
     <main className="relative pt-20 bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900" suppressHydrationWarning>
       {/* Background Logo */}
-      <div className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 opacity-3 pointer-events-none select-none block">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 0.15, scale: 1 }}
+        viewport={{ once: false, amount: 0.3 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 pointer-events-none select-none block"
+      >
         <img
           src="/images/common/loading.png"
           alt="Cardano2VN Logo"
@@ -473,11 +486,16 @@ export default function MemberPageClient() {
           draggable={false}
           style={{ objectPosition: "left center" }}
         />
-      </div>
+      </motion.div>
 
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <Title title="Founding Team" description="" />
-        <AboutSection />
+        <div>
+          <Title title="Founding Team" description="" />
+        </div>
+        
+        <div>
+          <AboutSection />
+        </div>
 
         <div className="mx-auto mb-16">
           <div className="rounded-sm border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 p-8 backdrop-blur-sm">
@@ -503,7 +521,12 @@ export default function MemberPageClient() {
         {sortedTabs.length > 0 && (
           <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
             <nav className="-mb-px flex flex-wrap gap-1 sm:gap-2 md:gap-8 overflow-x-auto pb-2">
-              <button
+              <motion.button
+                whileHover={{ 
+                  scale: 1.05,
+                  transition: { duration: 0.2 }
+                }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveTab(null)}
                 className={`py-2 px-2 sm:px-3 md:px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex-shrink-0 ${
                   activeTab === null
@@ -523,10 +546,15 @@ export default function MemberPageClient() {
                   <span className="hidden sm:inline">All Members</span>
                   <span className="sm:hidden">All</span>
                 </div>
-              </button>
-              {sortedTabs.map((tab) => (
-                <button
+              </motion.button>
+              {sortedTabs.map((tab, idx) => (
+                <motion.button
                   key={tab.id}
+                  whileHover={{ 
+                    scale: 1.05,
+                    transition: { duration: 0.2 }
+                  }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setActiveTab(tab.id)}
                   className={`py-2 px-2 sm:px-3 md:px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex-shrink-0 ${
                     activeTab === tab.id
@@ -546,7 +574,7 @@ export default function MemberPageClient() {
                     <span className="hidden sm:inline">{tab.name}</span>
                     <span className="sm:hidden">{tab.name.length > 8 ? tab.name.substring(0, 8) + "..." : tab.name}</span>
                   </div>
-                </button>
+                </motion.button>
               ))}
             </nav>
           </div>
@@ -557,14 +585,39 @@ export default function MemberPageClient() {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {paginatedMembers.map(function (member, index) {
               return (
-                <Member
-                  name={member.name}
+                <motion.div
                   key={member.id}
-                  description={member.description}
-                  role={member.role}
-                  image={member.image}
-                  onClick={() => handleMemberClick(member)}
-                />
+                  variants={{
+                    hidden: { 
+                      opacity: 0, 
+                      y: 40,
+                      scale: 0.9
+                    },
+                    show: { 
+                      opacity: 1, 
+                      y: 0,
+                      scale: 1,
+                      transition: {
+                        duration: 0.6,
+                        type: "spring",
+                        stiffness: 100
+                      }
+                    }
+                  }}
+                  whileHover={{ 
+                    y: -8,
+                    scale: 1.02,
+                    transition: { duration: 0.3 }
+                  }}
+                >
+                  <Member
+                    name={member.name}
+                    description={member.description}
+                    role={member.role}
+                    image={member.image}
+                    onClick={() => handleMemberClick(member)}
+                  />
+                </motion.div>
               );
             })}
           </div>
@@ -572,23 +625,66 @@ export default function MemberPageClient() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
+          </motion.div>
         )}
       </section>
 
-      <section id="contact" className="pt-32 pb-12 lg:pt-40 lg:pb-16 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-950">
+      <motion.section 
+        id="contact" 
+        className="pt-32 pb-12 lg:pt-40 lg:pb-16 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-950"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, amount: 0.3 }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div id="join-our-team" className="text-center mb-8">
+          <motion.div 
+            id="join-our-team" 
+            className="text-center mb-8"
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              show: { 
+                opacity: 1, 
+                y: 0,
+                transition: {
+                  duration: 0.6,
+                  delay: 0.2
+                }
+              }
+            }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: false, amount: 0.3 }}
+          >
             <div className="mb-4 flex items-center justify-center gap-4">
-              <div className="h-1 w-12 bg-gradient-to-r from-blue-500 to-transparent"></div>
+              <motion.div 
+                initial={{ width: 0 }}
+                whileInView={{ width: "3rem" }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="h-1 w-12 bg-gradient-to-r from-blue-500 to-transparent"
+              ></motion.div>
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white lg:text-4xl">Join Our Team</h2>
-              <div className="h-1 w-12 bg-gradient-to-r from-transparent to-blue-500"></div>
+              <motion.div 
+                initial={{ width: 0 }}
+                whileInView={{ width: "3rem" }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="h-1 w-12 bg-gradient-to-r from-transparent to-blue-500"
+              ></motion.div>
             </div>
             <p className="max-w-2xl mx-auto text-lg text-gray-700 dark:text-gray-300">
               Ready to contribute to the Cardano ecosystem? We're always looking for passionate individuals who want to make a difference in the
               blockchain space.
             </p>
-          </div>
+          </motion.div>
 
           <div className="flex justify-center">
             <div className="w-full max-w-xl">
@@ -602,7 +698,7 @@ export default function MemberPageClient() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Modal */}
       {selectedMember && <MemberModal member={selectedMember} isOpen={isModalOpen} onClose={handleCloseModal} />}

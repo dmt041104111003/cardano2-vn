@@ -2,6 +2,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import ProjectCard from "~/components/project-card";
 import ProjectModal from "~/components/project-modal";
 import ProjectSkeleton from "~/components/project/ProjectSkeleton";
@@ -94,7 +95,13 @@ function ProjectPageContent() {
   return (
     <main className="relative pt-20 bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900">
       {/* Background Logo */}
-      <div className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 opacity-3 pointer-events-none select-none block">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 0.15, scale: 1 }}
+        viewport={{ once: false, amount: 0.3 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 pointer-events-none select-none block"
+      >
         <img
           src="/images/common/loading.png"
           alt="Cardano2VN Logo"
@@ -102,43 +109,49 @@ function ProjectPageContent() {
           draggable={false}
           style={{ objectPosition: 'left center' }}
         />
-      </div>
+      </motion.div>
       
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <Title
-          title="Catalyst Cardano2vn Roadmap"
-          description="Our journey of building the Andamio platform and ecosystem, from founding to the present day and beyond."
-        />
+        <div>
+          <Title
+            title="Catalyst Cardano2vn Roadmap"
+            description="Our journey of building the Andamio platform and ecosystem, from founding to the present day and beyond."
+          />
+        </div>
+        
         <div className="relative">
           <div className="relative z-10">
             <div className="mb-8 mt-2">
               <div dir="ltr" data-orientation="vertical" className="flex flex-col md:flex-row">
-                <Navigation 
-                  searchTerm={searchTerm}
-                  statusFilter={statusFilter}
-                  fundFilter={fundFilter}
-                  typeFilter={typeFilter}
-                  projects={projects}
-                  years={years}
-                  selectedYear={year || 0}
-                  onSearchChange={(value) => {
-                    setSearchTerm(value);
-                    handleFilterChange();
-                  }}
-                  onStatusChange={(value) => {
-                    setStatusFilter(value);
-                    handleFilterChange();
-                  }}
-                  onFundChange={(value) => {
-                    setFundFilter(value);
-                    handleFilterChange();
-                  }}
-                  onTypeChange={(value) => {
-                    setTypeFilter(value);
-                    handleFilterChange();
-                  }}
-                  onYearChange={handleYearChange}
-                />
+                <div>
+                  <Navigation 
+                    searchTerm={searchTerm}
+                    statusFilter={statusFilter}
+                    fundFilter={fundFilter}
+                    typeFilter={typeFilter}
+                    projects={projects}
+                    years={years}
+                    selectedYear={year || 0}
+                    onSearchChange={(value) => {
+                      setSearchTerm(value);
+                      handleFilterChange();
+                    }}
+                    onStatusChange={(value) => {
+                      setStatusFilter(value);
+                      handleFilterChange();
+                    }}
+                    onFundChange={(value) => {
+                      setFundFilter(value);
+                      handleFilterChange();
+                    }}
+                    onTypeChange={(value) => {
+                      setTypeFilter(value);
+                      handleFilterChange();
+                    }}
+                    onYearChange={handleYearChange}
+                  />
+                </div>
+                
                 <div className="mt-6 flex-1 md:-mt-12">
                   {typeFilter === "catalyst" ? (
                     <div
@@ -149,32 +162,52 @@ function ProjectPageContent() {
                       id="radix-:ri:-content-2023"
                       className="ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 mt-0"
                     >
-                      <div className="mb-8 text-right">
+                      <motion.div 
+                        className="mb-8 text-right"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: false, amount: 0.3 }}
+                        transition={{ 
+                          duration: 0.8, 
+                          delay: 0.6,
+                          type: "spring",
+                          stiffness: 100
+                        }}
+                        whileHover={{ 
+                          scale: 1.05,
+                          transition: { duration: 0.3 }
+                        }}
+                      >
                         <h2 className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300 bg-clip-text text-6xl font-bold tracking-tight text-transparent">
                           {year}
                         </h2>
-                      </div>
+                      </motion.div>
+                      
                       <div className="mb-16 grid grid-cols-1 gap-6">
                         {isLoading ? (
                           <>
-                            <ProjectSkeleton />
-                            <ProjectSkeleton />
-                            <ProjectSkeleton />
-                            <ProjectSkeleton />
-                            <ProjectSkeleton />
+                            {[...Array(5)].map((_, idx) => (
+                              <div key={idx}>
+                                <ProjectSkeleton />
+                              </div>
+                            ))}
                           </>
                         ) : filteredProjects.length === 0 ? (
-                          <NotFoundInline 
-                            onClearFilters={() => {
-                              setSearchTerm('');
-                              setStatusFilter('all');
-                              setFundFilter('all');
-                            }}
-                          />
+                          <div>
+                            <NotFoundInline 
+                              onClearFilters={() => {
+                                setSearchTerm('');
+                                setStatusFilter('all');
+                                setFundFilter('all');
+                              }}
+                            />
+                          </div>
                         ) : (
                           <>
                             {paginatedProjects.map((proposal: any, index: number) => (
-                              <ProjectCard key={index} project={proposal} onOpenModal={handleOpenModal} />
+                              <div key={index}>
+                                <ProjectCard project={proposal} onOpenModal={handleOpenModal} />
+                              </div>
                             ))}
 
                             {totalPages > 1 && (
@@ -191,7 +224,14 @@ function ProjectPageContent() {
                       </div>
                     </div>
                   ) : (
-                    <TechnologyPageClient isEmbedded={true} searchTerm={searchTerm} />
+                    <motion.div
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: false, amount: 0.3 }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      <TechnologyPageClient isEmbedded={true} searchTerm={searchTerm} />
+                    </motion.div>
                   )}
                 </div>
               </div>

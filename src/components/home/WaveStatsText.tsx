@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import CountUp from 'react-countup';
 
 const POOL_ID = process.env.NEXT_PUBLIC_POOL_ID;
 const BLOCKFROST_KEY = process.env.NEXT_PUBLIC_BLOCKFROST_KEY;
@@ -22,6 +23,28 @@ function useBlockfrost<T>(url: string, select?: (data: any) => T) {
 }
 
 export default function WaveStatsText() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        } else {
+          setIsVisible(false);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   const { data: paidToDelegates, error: paidToDelegatesError } = useBlockfrost(
     `https://cardano-mainnet.blockfrost.io/api/v0/pools/${POOL_ID}/history`,
     (data) => {
@@ -81,46 +104,115 @@ export default function WaveStatsText() {
   const communityContributors = poolInfo?.owners.length.toLocaleString() ?? "None";
 
   return (
-    <div className="w-full px-2 sm:px-4 py-4 sm:py-8">
+    <div ref={sectionRef} className="w-full px-2 sm:px-4 py-4 sm:py-8">
       <div className="mb-6 sm:mb-8">
         <h2 className="text-white text-base sm:text-lg font-bold mb-3 sm:mb-4 tracking-wide">C2VN STATS</h2>
         <div className="flex flex-wrap gap-x-6 sm:gap-x-12 gap-y-3 sm:gap-y-4">
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-white">
-              {paidToDelegates ?? "None"}
-              {/* <span className="align-super text-sm sm:text-lg">₳</span> */}
+              {isVisible && paidToDelegates ? (
+                <CountUp
+                  end={parseFloat(paidToDelegates.replace(" ₳", "").replace(/,/g, ""))}
+                  duration={2.5}
+                  delay={0}
+                  decimals={2}
+                  suffix=" ₳"
+                />
+              ) : (
+                paidToDelegates ?? "None"
+              )}
             </div>
             <div className="text-sm sm:text-base text-white/80">Paid to Delegates</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">{delegates}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">
+              {isVisible && delegates !== "None" ? (
+                <CountUp
+                  end={parseInt(delegates.replace(/,/g, ""))}
+                  duration={2.5}
+                  delay={0.2}
+                />
+              ) : (
+                delegates
+              )}
+            </div>
             <div className="text-sm sm:text-base text-white/80">Delegates</div>
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-white">
-              {causesFund}
-               {/* <span className="align-super text-sm sm:text-lg">₳</span> */}
+              {isVisible && causesFund !== "None" ? (
+                <CountUp
+                  end={parseFloat(causesFund.replace(" ₳", "").replace(/,/g, ""))}
+                  duration={2.5}
+                  delay={0.4}
+                  decimals={2}
+                  suffix=" ₳"
+                />
+              ) : (
+                causesFund
+              )}
             </div>
             <div className="text-sm sm:text-base text-white/80">Causes Fund</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">{stakedWithC2VN}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">
+              {isVisible && stakedWithC2VN !== "None" ? (
+                <CountUp
+                  end={parseFloat(stakedWithC2VN.replace(" ₳", "").replace(/,/g, ""))}
+                  duration={2.5}
+                  delay={0.6}
+                  decimals={2}
+                  suffix=" ₳"
+                />
+              ) : (
+                stakedWithC2VN
+              )}
+            </div>
             <div className="text-sm sm:text-base text-white/80">Staked with C2VN</div>
           </div>
           <div>
             <div className="text-2xl sm:text-3xl font-bold text-white">
-              {foundersPledge} 
-              {/* <span className="align-super text-sm sm:text-lg">₳</span> */}
+              {isVisible && foundersPledge !== "None" ? (
+                <CountUp
+                  end={parseFloat(foundersPledge.replace(" ₳", "").replace(/,/g, ""))}
+                  duration={2.5}
+                  delay={0.8}
+                  decimals={2}
+                  suffix=" ₳"
+                />
+              ) : (
+                foundersPledge
+              )}
             </div>
             <div className="text-sm sm:text-base text-white/80">Founders Pledge</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">{communityContributors}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">
+              {isVisible && communityContributors !== "None" ? (
+                <CountUp
+                  end={parseInt(communityContributors.replace(/,/g, ""))}
+                  duration={2.5}
+                  delay={1.0}
+                />
+              ) : (
+                communityContributors
+              )}
+            </div>
             <div className="text-sm sm:text-base text-white/80">Community Contributors</div>
           </div>
         </div>
         <div className="mt-6 sm:mt-8">
-          <div className="text-2xl sm:text-3xl font-bold text-white">{blocksMinted}</div>
+          <div className="text-2xl sm:text-3xl font-bold text-white">
+            {isVisible && blocksMinted !== "None" ? (
+              <CountUp
+                end={parseInt(blocksMinted.replace(/,/g, ""))}
+                duration={2.5}
+                delay={1.2}
+              />
+            ) : (
+              blocksMinted
+            )}
+          </div>
           <div className="text-sm sm:text-base text-white/80">
             Lifetime
             <br />
@@ -135,19 +227,61 @@ export default function WaveStatsText() {
         <h2 className="text-white text-base sm:text-lg font-bold mb-3 sm:mb-4 tracking-wide">CARDANO STATS</h2>
         <div className="flex flex-wrap gap-x-6 sm:gap-x-12 gap-y-3 sm:gap-y-4 items-end">
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">1,683,196</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">
+              {isVisible ? (
+                <CountUp
+                  end={1683196}
+                  duration={2.5}
+                  delay={1.4}
+                />
+              ) : (
+                "1,683,196"
+              )}
+            </div>
             <div className="text-sm sm:text-base text-white/80">Total Staked Addresses</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">1,339</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">
+              {isVisible ? (
+                <CountUp
+                  end={1339}
+                  duration={2.5}
+                  delay={1.6}
+                />
+              ) : (
+                "1,339"
+              )}
+            </div>
             <div className="text-sm sm:text-base text-white/80">Total Pools</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">{currentEpoch ?? "None"}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">
+              {isVisible && currentEpoch ? (
+                <CountUp
+                  end={parseInt(currentEpoch)}
+                  duration={2.5}
+                  delay={1.8}
+                />
+              ) : (
+                currentEpoch ?? "None"
+              )}
+            </div>
             <div className="text-sm sm:text-base text-white/80">Current Epoch</div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">{adaPrice || "$0.00"}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white">
+              {isVisible && adaPrice ? (
+                <CountUp
+                  end={parseFloat(adaPrice.replace("$", ""))}
+                  duration={2.5}
+                  delay={2.0}
+                  decimals={2}
+                  prefix="$"
+                />
+              ) : (
+                adaPrice || "$0.00"
+              )}
+            </div>
             <div className="text-sm sm:text-base text-white/80">Price USD</div>
           </div>
         </div>

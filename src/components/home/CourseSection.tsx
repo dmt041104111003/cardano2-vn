@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { Course } from "~/constants/admin";
 import CourseModal from "./CourseModal";
 import { Pagination } from "~/components/ui/pagination";
@@ -149,60 +150,89 @@ export default function CourseSection() {
             <div className="grid max-w-none gap-16 lg:grid-cols-3">
               {isLoading ? (
                 [...Array(3)].map((_, idx) => (
-                  <div key={idx} className="animate-pulse">
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, amount: 0.3 }}
+                    transition={{ duration: 0.6, delay: idx * 0.2 }}
+                    className="animate-pulse"
+                  >
                     <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-48 mb-4"></div>
                     <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                     <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
                     <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-full"></div>
-                  </div>
+                  </motion.div>
                 ))
               ) : (
                 displayCourses.map((course, idx) =>
                   course ? (
-                    <div
+                    <motion.div
                       key={course.id}
-                      className="rounded-xl shadow-lg bg-white dark:bg-gray-800 overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-                      onClick={() => handleCourseClick(course)}
+                      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ 
+                        duration: 0.6, 
+                        delay: idx * 0.2,
+                        ease: "easeOut"
+                      }}
+                      viewport={{ once: false, amount: 0.3 }}
+                      whileHover={{ 
+                        y: -8,
+                        transition: { duration: 0.3 }
+                      }}
+                      className="flex flex-col"
                     >
-                      <div className="relative h-48 overflow-hidden">
-                        <img
-                          src={course.image || "/images/common/loading.png"}
-                          alt={course.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/images/common/loading.png";
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                      </div>
-                      <div className="p-6">
-                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                          {course.title || course.name}
-                        </h3>
-                        {course.description && (
-                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                            {course.description}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between">
-                                                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                             {new Date(course.createdAt).toLocaleDateString("en-US", {
-                               day: "2-digit",
-                               month: "2-digit",
-                               year: "numeric"
-                             })}
-                           </span>
-                          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                            {course.name}
-                          </span>
+                      <div className="rounded-xl border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 backdrop-blur-sm shadow-xl transition-all duration-300 hover:border-gray-300 dark:hover:border-white/40 hover:shadow-2xl h-full flex flex-col overflow-hidden cursor-pointer"
+                        onClick={() => handleCourseClick(course)}
+                      >
+                        {/* Image Section - Fixed height */}
+                        <div className="relative h-48 overflow-hidden">
+                          <img
+                            src={course.image || "/images/common/loading.png"}
+                            alt={course.name}
+                            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/images/common/loading.png";
+                            }}
+                          />
+                        </div>
+
+                        {/* Content Section - Compact */}
+                        <div className="p-4 flex flex-col">
+                          {/* Title - Compact */}
+                          <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                            {course.title || course.name}
+                          </h3>
+
+                          {/* Footer - Compact */}
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center justify-between">
+                              <span className="font-mono">
+                                {new Date(course.createdAt).toLocaleDateString("en-GB", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric"
+                                })}
+                              </span>
+                              <span className="text-blue-600 dark:text-blue-400 font-medium">View Course</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ) : (
-                    <div key={idx} className="rounded-xl shadow-lg bg-white dark:bg-gray-800 p-6 flex items-center justify-center min-h-[300px]">
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 40 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: idx * 0.2 }}
+                      viewport={{ once: false, amount: 0.3 }}
+                      className="rounded-xl shadow-lg bg-white dark:bg-gray-800 p-6 flex items-center justify-center"
+                    >
                       <img src="/images/common/loading.png" alt="Loading" width={120} height={120} />
-                    </div>
+                    </motion.div>
                   )
                 )
               )}
