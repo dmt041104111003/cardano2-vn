@@ -158,8 +158,8 @@ export default function CourseModal({ course, isOpen, onClose, onEnroll }: Cours
               className="absolute button"
               style={{
                 position: 'absolute',
-                top: '-20px',
-                right: '-20px',
+                top: '8px',
+                right: '8px',
                 width: '4em',
                 height: '4em',
                 border: 'none',
