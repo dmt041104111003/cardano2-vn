@@ -255,9 +255,27 @@ export function UsersPageClient() {
   //   setCurrentPage(1);
   // }, [searchTerm, filterType]);
 
-  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  const onlineEntries: Array<{ userId: string; lastSeen: string | number }> = Array.isArray(onlineData?.data?.authenticated)
+    ? onlineData!.data!.authenticated as any
+    : [];
+  const onlineMap = new Map<string, number>();
+  onlineEntries.forEach((u: any) => {
+    const ts = typeof u.lastSeen === 'string' ? Date.parse(u.lastSeen) : Number(u.lastSeen) || Date.now();
+    if (u.userId) onlineMap.set(u.userId, ts);
+  });
+
+  const sortedFilteredUsers = [...filteredUsers].sort((a, b) => {
+    const aTs = onlineMap.get(a.id) || (a.address ? onlineMap.get(a.address) : 0) || (a.email ? onlineMap.get(a.email as any) : 0) || 0;
+    const bTs = onlineMap.get(b.id) || (b.address ? onlineMap.get(b.address) : 0) || (b.email ? onlineMap.get(b.email as any) : 0) || 0;
+    if (aTs !== bTs) return bTs - aTs;
+    const aUpd = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+    const bUpd = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+    return bUpd - aUpd;
+  });
+
+  const totalPages = Math.ceil(sortedFilteredUsers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const paginatedUsers = sortedFilteredUsers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const stats = [
     { label: 'Total Users', value: users.length, color: 'default' as const },

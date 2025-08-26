@@ -1,4 +1,4 @@
-import { Edit, Trash2, Shield, User as UserIcon, Copy as CopyIcon, Ban, Unlock } from 'lucide-react';
+import { Edit, Trash2, Shield, User as UserIcon, Ban, Unlock } from 'lucide-react';
 import { User, UserTableProps, shortenAddress, formatDateTime } from '~/constants/users';
 import { WalletAvatar } from '~/components/WalletAvatar';
 import { useToastContext } from "../../toast-provider";
@@ -7,9 +7,11 @@ import Modal from '../common/Modal';
 
 function UserAvatar({ user }: { user: User }) {
   const [imageError, setImageError] = useState(false);
-  
+  const isOnline = (user as any)?.isOnline === true; 
+
+  let avatarEl: React.ReactNode;
   if (user.avatar && !imageError) {
-    return (
+    avatarEl = (
       <img
         src={user.avatar}
         alt={user.name || 'User avatar'}
@@ -17,17 +19,37 @@ function UserAvatar({ user }: { user: User }) {
         onError={() => setImageError(true)}
       />
     );
+  } else if (user.address) {
+    avatarEl = <WalletAvatar address={user.address} size={40} />;
+  } else {
+    avatarEl = (
+      <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+        <span className="text-gray-600 text-sm font-medium">
+          {user.name?.charAt(0) || 'U'}
+        </span>
+      </div>
+    );
   }
-  
-  if (user.address) {
-    return <WalletAvatar address={user.address} size={40} />;
-  }
-  
+
   return (
-    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-      <span className="text-gray-600 text-sm font-medium">
-        {user.name?.charAt(0) || 'U'}
-      </span>
+    <div className="relative h-10 w-10">
+      {avatarEl}
+      {typeof (user as any)?.isOnline !== 'undefined' && (
+        <>
+          {isOnline && (
+            <span
+              className="pointer-events-none absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full animate-ping bg-green-500 opacity-60"
+              aria-hidden
+            />
+          )}
+          <span
+            className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-white dark:ring-gray-900 ${
+              isOnline ? 'bg-green-500' : 'bg-gray-400'
+            }`}
+            title={isOnline ? 'Online' : 'Offline'}
+          />
+        </>
+      )}
     </div>
   );
 }
@@ -91,6 +113,34 @@ export function UserTable({
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
   const [selectedUserToBan, setSelectedUserToBan] = useState<User | null>(null);
   const [banHours, setBanHours] = useState(24);
+  const [onlineMap, setOnlineMap] = useState<Map<string, number>>(new Map());
+
+  useEffect(() => {
+    let stopped = false;
+    const poll = async () => {
+      try {
+        const res = await fetch('/api/admin/online-users', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          const payload = data?.data || data;
+          const entries: Array<{ userId: string; lastSeen: string | number }> = Array.isArray(payload?.authenticated)
+            ? payload.authenticated
+            : [];
+          if (!stopped) {
+            const map = new Map<string, number>();
+            entries.forEach((u: any) => {
+              const ts = typeof u.lastSeen === 'string' ? Date.parse(u.lastSeen) : Number(u.lastSeen) || Date.now();
+              if (u.userId) map.set(u.userId, ts);
+            });
+            setOnlineMap(map);
+          }
+        }
+      } catch {}
+      if (!stopped) setTimeout(poll, 10000);
+    };
+    poll();
+    return () => { stopped = true; };
+  }, []);
 
   const handleDeleteClick = (user: User) => {
     setSelectedUserToDelete(user);
@@ -150,12 +200,27 @@ export function UserTable({
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {users.map((user) => (
+          {[...users]
+            .sort((a, b) => {
+              const aTs = onlineMap.get(a.id) || (a.address ? onlineMap.get(a.address) : 0) || (a.email ? onlineMap.get(a.email as any) : 0) || 0;
+              const bTs = onlineMap.get(b.id) || (b.address ? onlineMap.get(b.address) : 0) || (b.email ? onlineMap.get(b.email as any) : 0) || 0;
+              if (aTs !== bTs) return bTs - aTs;
+              return (b.updatedAt ? new Date(b.updatedAt).getTime() : 0) - (a.updatedAt ? new Date(a.updatedAt).getTime() : 0);
+            })
+            .map((user) => (
             <tr key={user.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
-                    <UserAvatar user={user} />
+                    <UserAvatar
+                      user={{
+                        ...user,
+                        isOnline:
+                          onlineMap.has(user.id) ||
+                          (user.address ? onlineMap.has(user.address) : false) ||
+                          (user.email ? onlineMap.has(user.email as any) : false),
+                      } as any}
+                    />
                   </div>
                   <div className="ml-4">
                     <div className="text-sm font-medium text-gray-900">{user.name}</div>
@@ -166,27 +231,21 @@ export function UserTable({
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center gap-2">
                   {user.provider === 'google' || user.provider === 'github' ? (
-                    <>
-                      <span className="text-sm text-gray-900" title={user.email}>{user.email}</span>
-                      <button
-                        onClick={() => {navigator.clipboard.writeText(user.email || ''); showSuccess('Copied!');}}
-                        className="p-1 hover:bg-gray-100 rounded"
-                        title="Copy email"
-                      >
-                        <CopyIcon className="h-4 w-4 text-gray-400 hover:text-gray-700" />
-                      </button>
-                    </>
+                    <span
+                      className="text-sm text-gray-900 cursor-pointer hover:underline"
+                      title="Click to copy email"
+                      onClick={() => {navigator.clipboard.writeText(user.email || ''); showSuccess('Copied!');}}
+                    >
+                      {user.email}
+                    </span>
                   ) : (
-                    <>
-                      <span className="text-sm text-gray-900 font-mono" title={user.address}>{shortenAddress(user.address, 6)}</span>
-                      <button
-                        onClick={() => {navigator.clipboard.writeText(user.address); showSuccess('Copied!');}}
-                        className="p-1 hover:bg-gray-100 rounded"
-                        title="Copy address"
-                      >
-                        <CopyIcon className="h-4 w-4 text-gray-400 hover:text-gray-700" />
-                      </button>
-                    </>
+                    <span
+                      className="text-sm text-gray-900 font-mono cursor-pointer hover:underline"
+                      title="Click to copy address"
+                      onClick={() => {navigator.clipboard.writeText(user.address); showSuccess('Copied!');}}
+                    >
+                      {shortenAddress(user.address, 6)}
+                    </span>
                   )}
                 </div>
               </td>
