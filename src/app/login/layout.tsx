@@ -29,7 +29,7 @@ export default function LoginLayout({
   return (
     <div className="relative">
       {/* Background Logo */}
-      <div className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 opacity-3 pointer-events-none select-none block">
+      {/* <div className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 opacity-15 pointer-events-none select-none block">
         <img
           src="/images/common/loading.png"
           alt="Cardano2VN Logo"
@@ -37,7 +37,7 @@ export default function LoginLayout({
           draggable={false}
           style={{ objectPosition: 'left center' }}
         />
-      </div>
+      </div> */}
       
       {children}
     </div>
