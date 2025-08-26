@@ -195,30 +195,7 @@ export default function CourseModal({ course, isOpen, onClose, onEnroll }: Cours
                   transform: 'translateX(-50%) rotate(-45deg)'
                 }}
               ></span>
-              <div 
-                className="close"
-                style={{
-                  position: 'absolute',
-                  display: 'flex',
-                  padding: '0.8rem 1.5rem',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transform: 'translateX(-50%)',
-                  top: '-70%',
-                  left: '50%',
-                  width: '3em',
-                  height: '1.7em',
-                  fontSize: '12px',
-                  backgroundColor: 'rgb(19, 22, 24)',
-                  color: 'rgb(187, 229, 236)',
-                  border: 'none',
-                  borderRadius: '3px',
-                  pointerEvents: 'none',
-                  opacity: '0'
-                }}
-              >
-                Close
-              </div>
+
             </motion.button>
           </motion.div>
         </motion.div>
