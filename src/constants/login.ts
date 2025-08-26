@@ -27,7 +27,7 @@ export const NETWORKS: Network[] = [
   { id: "c2vn", name: "C2VN", icon: "🔷", isActive: true },
   { id: "social", name: "Social", icon: "💧", isActive: false },
   { id: "phantom", name: "Phantom", icon: "∞", isActive: false },
-  { id: "metamask", name: "MetaMask", icon: "🔥", isActive: false },
+  { id: "metamask", name: "MetaMask", icon: "🔥", isActive: true },
 ];
 
 export const C2VN_WALLETS: Wallet[] = [
