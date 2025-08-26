@@ -40,10 +40,29 @@ export default function CourseModal({ course, isOpen, onClose, onEnroll }: Cours
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4"
+          initial={{
+              opacity: 0,
+              scaleX: 0,
+              filter: "blur(12px)",
+              transformOrigin: "right",
+          }}
+          animate={{
+              opacity: 1,
+              scaleX: 1,
+              filter: "blur(0px)",
+              transformOrigin: "right",
+          }}
+          exit={{
+              opacity: 0,
+              scaleX: 0,
+              filter: "blur(12px)",
+              transformOrigin: "right",
+          }}
+          transition={{
+              duration: 0.6,
+              ease: [0.25, 1, 0.5, 1],
+          }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={onClose}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
@@ -55,31 +74,15 @@ export default function CourseModal({ course, isOpen, onClose, onEnroll }: Cours
           aria-labelledby="modal-title"
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            initial={{ scale: 0.8, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden"
-            onClick={e => e.stopPropagation()}
+            exit={{ scale: 0.8, opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="relative w-full max-w-4xl max-h-[95vh] overflow-y-auto transparent-scrollbar"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
-              <div className="flex items-center justify-between px-6 pt-6 pb-2 border-b border-gray-200 dark:border-gray-700">
-                <h2 id="modal-title" className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Course Details
-                </h2>
-                <button
-                  onClick={onClose}
-                  className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                  title="Close"
-                  aria-label="Close modal"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)] transparent-scrollbar">
+            <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-600 rounded-[40px] shadow-2xl">
+                            <div className="p-8">
                 <div className="space-y-6">
                   <div className="relative h-64 rounded-xl overflow-hidden">
                     <img
@@ -146,6 +149,77 @@ export default function CourseModal({ course, isOpen, onClose, onEnroll }: Cours
                 </div>
               </div>
             </div>
+            
+            <motion.button
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.3 }}
+              onClick={onClose}
+              className="absolute button"
+              style={{
+                position: 'absolute',
+                top: '-20px',
+                right: '-20px',
+                width: '4em',
+                height: '4em',
+                border: 'none',
+                background: 'rgba(180, 83, 107, 0.11)',
+                borderRadius: '5px',
+                transition: 'background 0.5s',
+                zIndex: 50
+              }}
+            >
+              <span 
+                className="X"
+                style={{
+                  content: "",
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: '2em',
+                  height: '1.5px',
+                  backgroundColor: 'rgb(255, 255, 255)',
+                  transform: 'translateX(-50%) rotate(45deg)'
+                }}
+              ></span>
+              <span 
+                className="Y"
+                style={{
+                  content: "",
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: '2em',
+                  height: '1.5px',
+                  backgroundColor: '#fff',
+                  transform: 'translateX(-50%) rotate(-45deg)'
+                }}
+              ></span>
+              <div 
+                className="close"
+                style={{
+                  position: 'absolute',
+                  display: 'flex',
+                  padding: '0.8rem 1.5rem',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transform: 'translateX(-50%)',
+                  top: '-70%',
+                  left: '50%',
+                  width: '3em',
+                  height: '1.7em',
+                  fontSize: '12px',
+                  backgroundColor: 'rgb(19, 22, 24)',
+                  color: 'rgb(187, 229, 236)',
+                  border: 'none',
+                  borderRadius: '3px',
+                  pointerEvents: 'none',
+                  opacity: '0'
+                }}
+              >
+                Close
+              </div>
+            </motion.button>
           </motion.div>
         </motion.div>
       )}

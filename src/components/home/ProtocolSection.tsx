@@ -6,6 +6,8 @@
 import { useState } from "react";
 import Blog from "~/components/blog";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 type TabType = "latest" | "popular";
 
@@ -65,7 +67,7 @@ export default function ProtocolSection() {
           <div className="mb-8">
             <div className="mb-4 flex items-center gap-4">
               <div className="h-1 w-12 bg-gradient-to-r from-blue-500 to-transparent"></div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white lg:text-4xl">The Cardano2vn Protocol</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white lg:text-4xl">Protocol</h2>
             </div>
             <p className="max-w-3xl text-lg text-gray-700 dark:text-gray-300">Three core components enabling trust for distributed work.</p>
           </div>
@@ -120,45 +122,114 @@ export default function ProtocolSection() {
           <div className="grid max-w-none gap-16 lg:grid-cols-3">
             {isLoading ? (
               [...Array(3)].map((_, idx) => (
-                <div key={idx} className="animate-pulse">
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.3 }}
+                  transition={{ duration: 0.6, delay: idx * 0.2 }}
+                  className="animate-pulse"
+                >
                   <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-48 mb-4"></div>
                   <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                   <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
                   <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-full"></div>
-                </div>
+                </motion.div>
               ))
             ) : (
               displayBlogs.map((post, idx) =>
                 post ? (
-                  <Blog
+                  <motion.div
                     key={post.id}
-                    image={(() => {
-                      const media = post.media?.[0];
-                      if (media && typeof media.url === 'string' && media.url) {
-                        const youtubeId = getYoutubeIdFromUrl(media.url);
-                        if (youtubeId) {
-                          return `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
-                        }
-                        return media.url;
-                      }
-                      return "/images/common/loading.png";
-                    })()}
-                    title={post.title}
-                    author={post.author || "Admin"}
-                    slug={post.slug || post.id}
-                    datetime={new Date(post.createdAt).toLocaleString("en-GB", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    })}
-                    tags={post.tags || []}
-                  />
+                    initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ 
+                      duration: 0.6, 
+                      delay: idx * 0.2,
+                      ease: "easeOut"
+                    }}
+                    viewport={{ once: false, amount: 0.3 }}
+                    whileHover={{ 
+                      y: -8,
+                      transition: { duration: 0.3 }
+                    }}
+                    className="flex flex-col"
+                  >
+                    <div className="rounded-xl border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 backdrop-blur-sm shadow-xl transition-all duration-300 hover:border-gray-300 dark:hover:border-white/40 hover:shadow-2xl h-full flex flex-col overflow-hidden">
+                      <Link className="block flex-1 flex flex-col" href={`/blog/${post.slug || post.id}`}>
+                        {/* Image Section - Fixed height */}
+                        <div className="relative h-48 overflow-hidden">
+                          <img
+                            alt={post.title}
+                            loading="lazy"
+                            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                            src={(() => {
+                              const media = post.media?.[0];
+                              if (media && typeof media.url === 'string' && media.url) {
+                                const youtubeId = getYoutubeIdFromUrl(media.url);
+                                if (youtubeId) {
+                                  return `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+                                }
+                                return media.url;
+                              }
+                              return "/images/common/loading.png";
+                            })()}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/images/common/loading.png";
+                            }}
+                          />
+                        </div>
+
+                        {/* Content Section - Compact */}
+                        <div className="p-4 flex flex-col">
+                          {/* Tags */}
+                          {Array.isArray(post.tags) && post.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              {post.tags.slice(0, 2).map((tag: any) => (
+                                <span
+                                  key={tag.id}
+                                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300"
+                                >
+                                  {tag.name}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Title - Compact */}
+                          <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                            {post.title}
+                          </h3>
+
+                          {/* Footer - Compact */}
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center justify-between">
+                              <span className="font-mono">
+                                {new Date(post.createdAt).toLocaleDateString("en-GB", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric"
+                                })}
+                              </span>
+                              <span className="text-blue-600 dark:text-blue-400 font-medium">Read More</span>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  </motion.div>
                 ) : (
-                  <div key={idx} className="rounded-xl shadow-lg bg-white dark:bg-gray-800 p-6 flex items-center justify-center min-h-[300px]">
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: idx * 0.2 }}
+                    viewport={{ once: false, amount: 0.3 }}
+                    className="rounded-xl shadow-lg bg-white dark:bg-gray-800 p-6 flex items-center justify-center"
+                  >
                     <img src="/images/common/loading.png" alt="Loading" width={120} height={120} />
-                  </div>
+                  </motion.div>
                 )
               )
             )}

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
 
 import Link from "next/link";
 import { ArrowLeft, MessageCircle, Share2, ThumbsUp } from "lucide-react";
@@ -234,7 +235,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
         createdAt: c.createdAt ?? '',
         time: c.time ?? c.createdAt ?? '',
         avatar: c.avatar ?? '',
-        replies: (c.replies ?? []).map(mapComment), // ensure recursive mapping for replies
+        replies: (c.replies ?? []).map(mapComment), 
         parentCommentId: c.parentCommentId,
         parentUserId: c.parentUserId,
         parentAuthor: c.parentAuthor,
@@ -247,7 +248,13 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
   return (
     <main className="relative min-h-screen bg-white dark:bg-gray-950">
       {/* Background Logo */}
-      <div className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 opacity-3 pointer-events-none select-none block">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 0.15, scale: 1 }}
+        viewport={{ once: false, amount: 0.3 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="fixed left-[-200px] top-1/2 -translate-y-1/2 z-0 pointer-events-none select-none block"
+      >
         <img
           src="/images/common/loading.png"
           alt="Cardano2VN Logo"
@@ -255,7 +262,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
           draggable={false}
           style={{ objectPosition: 'left center' }}
         />
-      </div>
+      </motion.div>
       
       <Header />
       <div className="pt-20">
@@ -302,14 +309,18 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
             </h1>
             {Array.isArray(post.tags) && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-4">
-                {post.tags.map((tag: BlogTag | string) => (
-                  <span key={typeof tag === 'string' ? tag : tag.id} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                {post.tags.map((tag: BlogTag | string, index: number) => (
+                  <span 
+                    key={typeof tag === 'string' ? tag : tag.id}
+                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                  >
                     {typeof tag === 'string' ? tag : tag.name}
                   </span>
                 ))}
               </div>
             )}
           </header>
+          
           <div className="mb-12">
             <div className="relative h-64 w-full overflow-hidden rounded-lg sm:h-80 lg:h-96">
               {post.media && post.media.length > 0 ? (
@@ -351,7 +362,10 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
               </div>
             </div>
           </div>
-          <TipTapPreview content={post.content} />
+          
+          <div>
+            <TipTapPreview content={post.content} />
+          </div>
 
           {post.githubRepo && (
             <div className="my-8 p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
@@ -376,15 +390,27 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
           )}
 
           <div className="mt-12 border-t border-gray-200 dark:border-gray-700 pt-8">
-            <div className="mb-6 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="mb-6 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"
+            >
               <ReactionCount 
                 reactions={reactions}
               />
               <div className="flex items-center gap-4">
                 <span>{post.comments?.length || 0} comments</span>
               </div>
-            </div>
-            <div className="flex items-center border-t border-gray-200 dark:border-gray-700 pt-4">
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+              className="flex items-center border-t border-gray-200 dark:border-gray-700 pt-4"
+            >
               <div 
                 className="relative flex flex-1 items-center justify-center"
                 onMouseEnter={() => setShowReactions(true)}
@@ -401,7 +427,13 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                   </span>
                 </button>
                 {showReactions && (
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 z-10 p-1">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 z-10 p-1"
+                  >
                     <div className="flex items-center gap-3 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/50 dark:border-gray-600/50 rounded-full px-6 py-4 shadow-2xl">
                       {[
                         { emoji: "👍", label: "Like", color: "bg-blue-500", type: "LIKE" },
@@ -411,8 +443,13 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                         { emoji: "😢", label: "Sad", color: "bg-yellow-500", type: "SAD" },
                         { emoji: "😠", label: "Angry", color: "bg-red-500", type: "ANGRY" },
                       ].map((reaction, index) => (
-                        <button
+                        <motion.button
                           key={index}
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: index * 0.05, duration: 0.2 }}
+                          whileHover={{ scale: 1.2 }}
+                          whileTap={{ scale: 0.9 }}
                           onClick={async (e) => {
                             e.stopPropagation();
                             await handleReact(reaction.type);
@@ -425,10 +462,10 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                             {reaction.emoji}
                           </span>
                           <div className="absolute inset-0 bg-gray-100/5 dark:bg-gray-700/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-full"></div>
-                        </button>
+                        </motion.button>
                       ))}
                     </div>
-                  </div>
+                  </motion.div>
                 )}
               </div>
               
@@ -446,16 +483,29 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                 <Share2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 <span className="font-medium">Share</span>
               </button>
-            </div>
-            <CommentSection 
-              comments={buildNestedComments(flattenComments(post.comments || []), post.id, post.authorId || '', post.authorWallet)}
-              postId={post.id}
-              onSubmitComment={handleSubmitComment}
-              showAllComments={showAllComments}
-            />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
+              <CommentSection 
+                comments={buildNestedComments(flattenComments(post.comments || []), post.id, post.authorId || '', post.authorWallet)}
+                postId={post.id}
+                onSubmitComment={handleSubmitComment}
+                showAllComments={showAllComments}
+              />
+            </motion.div>
           </div>
 
-          <footer className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <motion.footer 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700"
+          >
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Published on {new Date(post.createdAt).toLocaleString("en-GB", {
@@ -473,7 +523,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                 ← Back to all posts
               </Link>
             </div>
-          </footer>
+          </motion.footer>
         </article>
       </div>
       <ShareModal
