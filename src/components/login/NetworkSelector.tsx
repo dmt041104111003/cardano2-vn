@@ -12,8 +12,8 @@ export default function NetworkSelector({ networks, selectedNetwork, onNetworkSe
             onClick={() => onNetworkSelect(network.id)}
             className={`w-14 h-14 rounded-lg border-2 transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
               selectedNetwork === network.id
-                ? "border-blue-500 bg-blue-100 shadow-sm"
-                : "border-gray-200 hover:border-gray-300 bg-white"
+                ? "border-blue-500 bg-blue-100 shadow-sm dark:border-blue-500 dark:bg-blue-900/20"
+                : "border-gray-200 hover:border-gray-300 bg-white dark:border-white/10 dark:hover:border-white/20 dark:bg-gray-900"
             }`}
           >
             <div className="text-base">

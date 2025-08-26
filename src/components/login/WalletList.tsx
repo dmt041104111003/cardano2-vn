@@ -96,7 +96,7 @@ export default function WalletList({ wallets }: WalletListProps) {
 
   return (
     <div className="flex-1">
-      <div className="space-y-3 h-[280px] overflow-y-auto pr-2">
+      <div className="space-y-3 h-[280px] overflow-y-auto pr-2 transparent-scrollbar">
         {wallets.map((wallet) => {
           const isActive = isActiveWallet(wallet.id);
           
@@ -107,20 +107,20 @@ export default function WalletList({ wallets }: WalletListProps) {
                              disabled={(wallet.id === "eternal" || wallet.id === "lace" || wallet.id === "yoroi" || wallet.id === "metamask") && connectingWalletId === wallet.id || !isActive}
               className={`w-full p-3 rounded-lg border transition-all duration-200 flex items-center gap-3 ${
                 isActive 
-                  ? "border-gray-200 hover:bg-gray-100 hover:border-gray-300 hover:shadow-sm bg-white" 
-                  : "border-gray-100 bg-gray-50 cursor-not-allowed opacity-60"
+                  ? "border-gray-200 hover:bg-gray-100 hover:border-gray-300 hover:shadow-sm bg-white dark:border-white/10 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:border-white/20" 
+                  : "border-gray-100 bg-gray-50 cursor-not-allowed opacity-60 dark:border-white/5 dark:bg-gray-900/40"
                              } ${
                  (wallet.id === "eternal" || wallet.id === "lace" || wallet.id === "yoroi" || wallet.id === "metamask") && connectingWalletId === wallet.id ? "opacity-50 cursor-not-allowed" : ""
                }`}
             >
               <span className={`text-sm font-medium flex-1 ${
-                isActive ? "text-gray-700" : "text-gray-500"
+                isActive ? "text-gray-700 dark:text-gray-200" : "text-gray-500 dark:text-gray-400"
               }`}>
                 {wallet.name}
               </span>
               
               {!isActive && (
-                <span className="text-xs bg-gray-400 text-white px-2 py-1 rounded-full">
+                <span className="text-xs bg-gray-400 text-white px-2 py-1 rounded-full dark:bg-gray-600">
                   BETA
                 </span>
               )}

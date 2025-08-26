@@ -30,7 +30,7 @@ export default function LoginPage() {
   }
 
     return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 flex items-center justify-center p-4">
       {/* Background Logo */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.8 }}
@@ -55,7 +55,7 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-                      className="bg-white rounded-2xl shadow-xl p-3 md:p-4 max-w-md w-full mx-4 md:mx-0"
+                      className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-3 md:p-4 max-w-md w-full mx-4 md:mx-0"
         >
           <LoginCardHeader />
 
