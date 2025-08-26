@@ -345,7 +345,7 @@ export function UserTable({
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="text-sm text-gray-500">User to delete:</p>
               <p className="font-medium text-gray-900">{selectedUserToDelete.name}</p>
-              <p className="text-sm text-gray-500">{selectedUserToDelete.email || selectedUserToDelete.address}</p>
+              <p className="text-sm text-gray-500">{selectedUserToDelete.email || shortenAddress(selectedUserToDelete.address, 6)}</p>
             </div>
           )}
           
@@ -391,7 +391,7 @@ export function UserTable({
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="text-sm text-gray-500">User to ban:</p>
               <p className="font-medium text-gray-900">{selectedUserToBan.name}</p>
-              <p className="text-sm text-gray-500">{selectedUserToBan.email || selectedUserToBan.address}</p>
+              <p className="text-sm text-gray-500">{selectedUserToBan.email || shortenAddress(selectedUserToBan.address, 6)}</p>
             </div>
           )}
           
