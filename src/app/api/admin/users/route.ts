@@ -112,7 +112,10 @@ export const PATCH = withAdmin(async (req, currentUser) => {
     }
   
     if (name !== undefined) {
-      if ((user.wallet && user.wallet === currentUser.wallet) || (user.email && user.email === currentUser.email)) {
+      const isEditingSelf = (user.wallet && user.wallet === currentUser.wallet) || (user.email && user.email === currentUser.email);
+      const isAdmin = currentUser.role.name === 'ADMIN';
+      
+      if (!isEditingSelf && !isAdmin) {
         return NextResponse.json(createErrorResponse('Forbidden', 'FORBIDDEN'), { status: 403 });
       }
       await prisma.user.update({ where: { id: user.id }, data: { name } });
