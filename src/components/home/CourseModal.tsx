@@ -82,7 +82,7 @@ export default function CourseModal({ course, isOpen, onClose, onEnroll }: Cours
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-600 rounded-[40px] shadow-2xl">
-                            <div className="p-8">
+              <div className="p-8">
                 <div className="space-y-6">
                   <div className="relative h-64 rounded-xl overflow-hidden">
                     <img
@@ -96,11 +96,12 @@ export default function CourseModal({ course, isOpen, onClose, onEnroll }: Cours
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                   </div>
-                                     <div>
-                     <CourseModalTitle
-                       title={course.title || course.name}
-                       maxLength={50}
-                     />
+                  
+                  <div>
+                    <CourseModalTitle
+                      title={course.title || course.name}
+                      maxLength={50}
+                    />
                     <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                         {course.name}
@@ -116,17 +117,18 @@ export default function CourseModal({ course, isOpen, onClose, onEnroll }: Cours
                     </div>
                   </div>
 
-                                     {course.description && (
-                     <div>
-                       <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                         Course Description
-                       </h4>
-                       <CourseModalText
-                         text={course.description}
-                         maxLength={200}
-                       />
-                     </div>
-                   )}
+                  {course.description && (
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                        Course Description
+                      </h4>
+                      <CourseModalText
+                        text={course.description}
+                        maxLength={200}
+                      />
+                    </div>
+                  )}
+                  
                   <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
                     <button
                       onClick={onClose}
@@ -134,70 +136,69 @@ export default function CourseModal({ course, isOpen, onClose, onEnroll }: Cours
                     >
                       Close
                     </button>
-                                         <button
-                       onClick={() => {
-                         if (onEnroll && course) {
-                           onEnroll(course.name);
-                         }
-                         onClose();
-                       }}
-                       className="px-6 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
-                     >
-                       Enroll in Course
-                     </button>
+                    <button
+                      onClick={() => {
+                        if (onEnroll && course) {
+                          onEnroll(course.name);
+                        }
+                        onClose();
+                      }}
+                      className="px-6 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+                    >
+                      Enroll in Course
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-            
-            <motion.button
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.3 }}
-              onClick={onClose}
-              className="absolute button"
-              style={{
-                position: 'absolute',
-                top: '8px',
-                right: '8px',
-                width: '4em',
-                height: '4em',
-                border: 'none',
-                background: 'rgba(180, 83, 107, 0.11)',
-                borderRadius: '5px',
-                transition: 'background 0.5s',
-                zIndex: 50
-              }}
-            >
-              <span 
-                className="X"
-                style={{
-                  content: "",
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  width: '2em',
-                  height: '1.5px',
-                  backgroundColor: 'rgb(255, 255, 255)',
-                  transform: 'translateX(-50%) rotate(45deg)'
-                }}
-              ></span>
-              <span 
-                className="Y"
-                style={{
-                  content: "",
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  width: '2em',
-                  height: '1.5px',
-                  backgroundColor: '#fff',
-                  transform: 'translateX(-50%) rotate(-45deg)'
-                }}
-              ></span>
-
-            </motion.button>
           </motion.div>
+          
+          <motion.button
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+            onClick={onClose}
+            className="absolute button"
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              width: '4em',
+              height: '4em',
+              border: 'none',
+              background: 'rgba(180, 83, 107, 0.11)',
+              borderRadius: '5px',
+              transition: 'background 0.5s',
+              zIndex: 50
+            }}
+          >
+            <span 
+              className="X"
+              style={{
+                content: "",
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: '2em',
+                height: '1.5px',
+                backgroundColor: 'rgb(255, 255, 255)',
+                transform: 'translateX(-50%) rotate(45deg)'
+              }}
+            ></span>
+            <span 
+              className="Y"
+              style={{
+                content: "",
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: '2em',
+                height: '1.5px',
+                backgroundColor: '#fff',
+                transform: 'translateX(-50%) rotate(-45deg)'
+              }}
+            ></span>
+          </motion.button>
         </motion.div>
       )}
     </AnimatePresence>,
