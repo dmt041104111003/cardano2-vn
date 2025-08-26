@@ -56,12 +56,6 @@ export function CourseTable({
         <thead className="bg-gray-50 dark:bg-gray-800">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Image
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Name
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Title
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -75,22 +69,6 @@ export function CourseTable({
         <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
           {Array.isArray(courses) && courses.map((course) => (
             <tr key={course.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-              <td className="px-6 py-4">
-                {course.image ? (
-                  <img
-                    src={course.image}
-                    alt={course.name}
-                    className="w-12 h-12 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
-                  />
-                ) : (
-                  <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">No image</span>
-                  </div>
-                )}
-              </td>
-              <td className="px-6 py-4">
-                <div className="text-sm font-medium text-gray-900 dark:text-white">{course.name}</div>
-              </td>
               <td className="px-6 py-4">
                 <TruncatedText text={course.title} maxLength={30} />
               </td>
