@@ -35,6 +35,121 @@ function UserAvatar({ session }: { session: any }) {
   );
 }
 
+function MobileUserInfo({ session, onClose }: { session: any; onClose: () => void }) {
+  const [name, setName] = useState('');
+  const { showSuccess, showInfo } = useToastContext();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('/api/user');        
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData.success && userData.data) {
+            setName(userData.data.name || '');
+          } else {
+            if (session.user?.name) {
+              setName(session.user.name);
+            }
+          }
+        } else {
+          if (session.user?.name) {
+            setName(session.user.name);
+          }
+        }
+      } catch (error) {
+        if (session.user?.name) {
+          setName(session.user.name);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [session.user?.name]);
+
+  return (
+    <>
+      <div className="flex items-center space-x-3 mb-4">
+        <UserAvatar session={session} />
+        <div className="flex-1 min-w-0">
+          <div className="space-y-2">
+            <div 
+              onClick={() => {
+                navigator.clipboard.writeText(name || 'No name set');
+                showSuccess('Copied to clipboard!');
+              }}
+              className="cursor-pointer group"
+              title="Click to copy name"
+            >
+              <p className="text-sm font-medium text-gray-900 dark:text-white truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                {name || 'No name set'}
+              </p>
+            </div>
+            
+            {(session.user as { address?: string })?.address && (
+              <div 
+                onClick={() => {
+                  navigator.clipboard.writeText((session.user as { address?: string }).address!);
+                  showSuccess('Copied to clipboard!');
+                }}
+                className="cursor-pointer group"
+                title="Click to copy address"
+              >
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                  {(session.user as { address?: string }).address && (session.user as { address?: string }).address!.length > 20 
+                    ? `${(session.user as { address?: string }).address!.slice(0, 10)}...${(session.user as { address?: string }).address!.slice(-8)}`
+                    : (session.user as { address?: string }).address
+                  }
+                </p>
+              </div>
+            )}
+            
+            {(session.user as { email?: string })?.email && (
+              <div 
+                onClick={() => {
+                  navigator.clipboard.writeText((session.user as { email?: string }).email!);
+                  showSuccess('Copied to clipboard!');
+                }}
+                className="cursor-pointer group"
+                title="Click to copy email"
+              >
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                  {(session.user as { email?: string }).email && (session.user as { email?: string }).email!.length > 25
+                    ? `${(session.user as { email?: string }).email!.slice(0, 12)}...${(session.user as { email?: string }).email!.slice(-10)}`
+                    : (session.user as { email?: string }).email
+                  }
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <button
+          onClick={() => {
+            showInfo('Edit name feature coming soon');
+          }}
+          className="w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded"
+        >
+          <Edit className="w-4 h-4 mr-3" />
+          Edit Name
+        </button>
+        <button
+          onClick={() => {
+            signOut();
+            onClose();
+          }}
+          className="w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded"
+        >
+          <LogOut className="w-4 h-4 mr-3" />
+          Sign Out
+        </button>
+      </div>
+    </>
+  );
+}
+
 function UserDropdown({ session, onClose, autoEdit = false }: { session: any; onClose: () => void; autoEdit?: boolean }) {
   const [isEditing, setIsEditing] = useState(autoEdit);
   const [name, setName] = useState('');
@@ -512,7 +627,7 @@ export default function Header() {
 
                                                   {session && (
                     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                      <UserDropdown session={session} onClose={closeMenu} />
+                      <MobileUserInfo session={session} onClose={closeMenu} />
                     </div>
                   )}
               </div>
