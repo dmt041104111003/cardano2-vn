@@ -13,7 +13,7 @@ export default function WalletList({ wallets }: WalletListProps) {
   const [connectingWalletId, setConnectingWalletId] = useState<string | null>(null);
 
   const handleWalletClick = async (walletId: string) => {
-    if (walletId === "eternal" || walletId === "lace") {
+    if (walletId === "eternal" || walletId === "lace" || walletId === "yoroi") {
       if (isAuthenticated) {
         await disconnect();
         showSuccess("Logout Successful", "Your Cardano wallet has been disconnected successfully.");
@@ -67,7 +67,7 @@ export default function WalletList({ wallets }: WalletListProps) {
   }, [hasLoggedIn, walletUser, showSuccess]);
 
   const isActiveWallet = (walletId: string) => {
-    return ["eternal", "lace", "nami", "google", "github"].includes(walletId);
+    return ["eternal", "lace", "yoroi", "nami", "google", "github"].includes(walletId);
   };
 
   return (
@@ -80,13 +80,13 @@ export default function WalletList({ wallets }: WalletListProps) {
             <button
               key={wallet.id}
               onClick={() => handleWalletClick(wallet.id)}
-                             disabled={(wallet.id === "eternal" || wallet.id === "lace") && connectingWalletId === wallet.id || !isActive}
+                             disabled={(wallet.id === "eternal" || wallet.id === "lace" || wallet.id === "yoroi") && connectingWalletId === wallet.id || !isActive}
               className={`w-full p-3 rounded-lg border transition-all duration-200 flex items-center gap-3 ${
                 isActive 
                   ? "border-gray-200 hover:bg-gray-100 hover:border-gray-300 hover:shadow-sm bg-white" 
                   : "border-gray-100 bg-gray-50 cursor-not-allowed opacity-60"
                              } ${
-                 (wallet.id === "eternal" || wallet.id === "lace") && connectingWalletId === wallet.id ? "opacity-50 cursor-not-allowed" : ""
+                 (wallet.id === "eternal" || wallet.id === "lace" || wallet.id === "yoroi") && connectingWalletId === wallet.id ? "opacity-50 cursor-not-allowed" : ""
                }`}
             >
               <span className={`text-sm font-medium flex-1 ${
@@ -101,7 +101,7 @@ export default function WalletList({ wallets }: WalletListProps) {
                 </span>
               )}
               
-                             {wallet.id === "eternal" || wallet.id === "nami" || wallet.id === "typhon" || wallet.id === "lace" || wallet.id === "gero" || wallet.id === "nufi" || wallet.id === "priority" ? (
+                             {wallet.id === "eternal" || wallet.id === "nami" || wallet.id === "typhon" || wallet.id === "lace" || wallet.id === "yoroi" || wallet.id === "gero" || wallet.id === "nufi" || wallet.id === "priority" ? (
                 connectingWalletId === wallet.id ? (
                   <div className="w-8 h-8 flex items-center justify-center">
                     <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
