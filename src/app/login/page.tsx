@@ -9,6 +9,7 @@ import LoginCardHeader from "~/components/login/LoginCardHeader";
 import NetworkSelector from "~/components/login/NetworkSelector";
 import WalletList from "~/components/login/WalletList";
 import LoginFooter from "~/components/login/LoginFooter";
+import FloatingWalletHelp from "~/components/ui/FloatingWalletHelp";
 import { NETWORKS, getWalletsByNetwork } from "~/constants/login";
 
 export default function LoginPage() {
@@ -70,6 +71,7 @@ export default function LoginPage() {
 
         <LoginFooter />
       </div>
+      <FloatingWalletHelp />
     </div>
   );
 } 

@@ -2,18 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useCardanoWallet } from "~/hooks/useCardanoWallet";
+import { useMetaMask } from "~/hooks/useMetaMask";
 import { useToastContext } from "~/components/toast-provider";
 import { WalletListProps } from '~/constants/login';
 
 export default function WalletList({ wallets }: WalletListProps) {
   const { connect, disconnect, isConnecting, error, walletUser, isAuthenticated, isWalletInstalled, hasLoggedIn } = useCardanoWallet();
+  const { connect: connectMetaMask, disconnect: disconnectMetaMask, isConnecting: isConnectingMetaMask, error: metaMaskError, walletUser: metaMaskUser, isAuthenticated: isMetaMaskAuthenticated, hasLoggedIn: hasMetaMaskLoggedIn } = useMetaMask();
   const { showError, showSuccess, showInfo } = useToastContext();
   const lastErrorRef = useRef<string>("");
   const lastSuccessRef = useRef<string>("");
   const [connectingWalletId, setConnectingWalletId] = useState<string | null>(null);
 
   const handleWalletClick = async (walletId: string) => {
-    if (walletId === "eternal" || walletId === "lace") {
+    if (walletId === "eternal" || walletId === "lace" || walletId === "yoroi") {
       if (isAuthenticated) {
         await disconnect();
         showSuccess("Logout Successful", "Your Cardano wallet has been disconnected successfully.");
@@ -22,6 +24,19 @@ export default function WalletList({ wallets }: WalletListProps) {
         showInfo("Connecting...", "Please wait while we connect to your Cardano wallet.");
         try {
           await connect(walletId);
+        } finally {
+          setConnectingWalletId(null);
+        }
+      }
+    } else if (walletId === "metamask") {
+      if (isMetaMaskAuthenticated) {
+        await disconnectMetaMask();
+        showSuccess("Logout Successful", "Your MetaMask wallet has been disconnected successfully.");
+      } else {
+        setConnectingWalletId(walletId);
+        showInfo("Connecting...", "Please wait while we connect to your MetaMask wallet.");
+        try {
+          await connectMetaMask();
         } finally {
           setConnectingWalletId(null);
         }
@@ -53,6 +68,13 @@ export default function WalletList({ wallets }: WalletListProps) {
   }, [error, showError]);
 
   useEffect(() => {
+    if (metaMaskError && metaMaskError !== lastErrorRef.current) {
+      lastErrorRef.current = metaMaskError;
+      showError("MetaMask Connection Error", metaMaskError);
+    }
+  }, [metaMaskError, showError]);
+
+  useEffect(() => {
     if (hasLoggedIn && walletUser) {
       const successKey = `connected-${walletUser.address}`;
       if (successKey !== lastSuccessRef.current) {
@@ -66,8 +88,10 @@ export default function WalletList({ wallets }: WalletListProps) {
     }
   }, [hasLoggedIn, walletUser, showSuccess]);
 
+
+
   const isActiveWallet = (walletId: string) => {
-    return ["eternal", "lace", "nami", "google", "github"].includes(walletId);
+    return ["eternal", "lace", "yoroi", "nami", "google", "github", "metamask"].includes(walletId);
   };
 
   return (
@@ -80,13 +104,13 @@ export default function WalletList({ wallets }: WalletListProps) {
             <button
               key={wallet.id}
               onClick={() => handleWalletClick(wallet.id)}
-                             disabled={(wallet.id === "eternal" || wallet.id === "lace") && connectingWalletId === wallet.id || !isActive}
+                             disabled={(wallet.id === "eternal" || wallet.id === "lace" || wallet.id === "yoroi" || wallet.id === "metamask") && connectingWalletId === wallet.id || !isActive}
               className={`w-full p-3 rounded-lg border transition-all duration-200 flex items-center gap-3 ${
                 isActive 
                   ? "border-gray-200 hover:bg-gray-100 hover:border-gray-300 hover:shadow-sm bg-white" 
                   : "border-gray-100 bg-gray-50 cursor-not-allowed opacity-60"
                              } ${
-                 (wallet.id === "eternal" || wallet.id === "lace") && connectingWalletId === wallet.id ? "opacity-50 cursor-not-allowed" : ""
+                 (wallet.id === "eternal" || wallet.id === "lace" || wallet.id === "yoroi" || wallet.id === "metamask") && connectingWalletId === wallet.id ? "opacity-50 cursor-not-allowed" : ""
                }`}
             >
               <span className={`text-sm font-medium flex-1 ${
@@ -101,7 +125,7 @@ export default function WalletList({ wallets }: WalletListProps) {
                 </span>
               )}
               
-                             {wallet.id === "eternal" || wallet.id === "nami" || wallet.id === "typhon" || wallet.id === "lace" || wallet.id === "gero" || wallet.id === "nufi" || wallet.id === "priority" ? (
+                             {wallet.id === "eternal" || wallet.id === "nami" || wallet.id === "typhon" || wallet.id === "lace" || wallet.id === "yoroi" || wallet.id === "gero" || wallet.id === "nufi" || wallet.id === "priority" || wallet.id === "metamask" ? (
                 connectingWalletId === wallet.id ? (
                   <div className="w-8 h-8 flex items-center justify-center">
                     <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>

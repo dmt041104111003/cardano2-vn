@@ -81,7 +81,8 @@ export class CardanoWalletProvider {
   private async checkWalletAvailability(walletName: string): Promise<boolean> {
     const walletMap: { [key: string]: string } = {
       'eternal': 'eternl',
-      'lace': 'lace'
+      'lace': 'lace',
+      'yoroi': 'yoroi'
     };
 
     const actualWalletName = walletMap[walletName] || walletName;
@@ -119,7 +120,8 @@ export class CardanoWalletProvider {
 
 export const WALLET_NAMES = {
   eternal: 'eternl',
-  lace: 'lace'
+  lace: 'lace',
+  yoroi: 'yoroi'
 };
 
 export const cardanoWallet = new CardanoWalletProvider({
