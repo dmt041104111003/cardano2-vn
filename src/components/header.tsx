@@ -46,11 +46,15 @@ function UserDropdown({ session, onClose, autoEdit = false }: { session: any; on
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch('/api/user');
+        const response = await fetch('/api/user');        
         if (response.ok) {
           const userData = await response.json();
           if (userData.success && userData.data) {
             setName(userData.data.name || '');
+          } else {
+            if (session.user?.name) {
+              setName(session.user.name);
+            }
           }
         } else {
           if (session.user?.name) {
