@@ -103,7 +103,7 @@ function UserDropdown({ session, onClose, autoEdit = false }: { session: any; on
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/user/update-name', {
+      const response = await fetch('/api/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ function UserDropdown({ session, onClose, autoEdit = false }: { session: any; on
       if (response.ok) {
         showSuccess('Name updated successfully!');
         setIsEditing(false);
-        window.location.reload();
+        window.dispatchEvent(new CustomEvent('session-update'));
       } else {
         const error = await response.json();
         showError(error.message || 'An error occurred');
@@ -257,13 +257,24 @@ function UserDropdown({ session, onClose, autoEdit = false }: { session: any; on
 }
 
 export default function Header() {
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
   const { isAdmin } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { showSuccess, showInfo } = useToastContext();
+
+  useEffect(() => {
+    const handleSessionUpdate = () => {
+      updateSession();
+    };
+
+    window.addEventListener('session-update', handleSessionUpdate);
+    return () => {
+      window.removeEventListener('session-update', handleSessionUpdate);
+    };
+  }, [updateSession]);
 
   if (pathname.startsWith("/docs")) return null;
 
