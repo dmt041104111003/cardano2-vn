@@ -16,15 +16,7 @@ export const GET = withOptionalAuth(async (req: NextRequest, user) => {
         return NextResponse.json(createErrorResponse("Unauthorized", "UNAUTHORIZED"), { status: 401 });
       }
       
-      dbUser = await prisma.user.findFirst({
-        where: {
-          OR: [
-            { wallet: user.wallet },
-            { email: user.email }
-          ]
-        },
-        include: { role: true }
-      });
+      return NextResponse.json(createSuccessResponse(user));
     } else {
       if (address) {
         dbUser = await prisma.user.findUnique({

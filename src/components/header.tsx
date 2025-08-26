@@ -14,21 +14,8 @@ import { WalletAvatar } from "~/components/WalletAvatar";
 import NotificationBell from "~/components/ui/notification-bell";
 import { useToastContext } from "~/components/toast-provider";
 
-function UserAvatar({ session, onWarningClick }: { session: any; onWarningClick?: () => void }) {
+function UserAvatar({ session }: { session: any }) {
   const [imageError, setImageError] = useState(false);
-
-  const isDefaultName = (name: string | null | undefined) => {
-    if (!name) return true;
-    const defaultNames = [
-      'MetaMask User',
-      'MetaMask User (Milkomeda C1)',
-      'Cardano Wallet User',
-      'No name set'
-    ];
-    return defaultNames.some(defaultName => name.includes(defaultName));
-  };
-
-  const hasDefaultName = isDefaultName(session.user?.name);
 
   const avatarElement = (session.user as { image?: string })?.image && !imageError ? (
     <img
@@ -44,23 +31,6 @@ function UserAvatar({ session, onWarningClick }: { session: any; onWarningClick?
   return (
     <div className="relative group">
       {avatarElement}
-      {hasDefaultName && (
-        <div className="absolute -top-1 -right-1">
-          <div 
-            className="relative w-4 h-4 bg-red-500 border-2 border-white dark:border-gray-900 rounded-full flex items-center justify-center cursor-pointer hover:bg-red-600 transition-colors"
-            title="Default name detected. Click to edit your name."
-            onClick={(e) => {
-              e.stopPropagation();
-              onWarningClick?.();
-            }}
-          >
-                         <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-50 animate-ping scale-150"></span>
-            <svg className="w-2 h-2 text-white relative z-10" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -74,9 +44,27 @@ function UserDropdown({ session, onClose, autoEdit = false }: { session: any; on
   const { showSuccess, showError } = useToastContext();
 
   useEffect(() => {
-    if (session.user?.name) {
-      setName(session.user.name);
-    }
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('/api/user');
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData.success && userData.data) {
+            setName(userData.data.name || '');
+          }
+        } else {
+          if (session.user?.name) {
+            setName(session.user.name);
+          }
+        }
+      } catch (error) {
+        if (session.user?.name) {
+          setName(session.user.name);
+        }
+      }
+    };
+
+    fetchUserData();
   }, [session.user?.name]);
 
   useEffect(() => {
@@ -114,6 +102,16 @@ function UserDropdown({ session, onClose, autoEdit = false }: { session: any; on
       if (response.ok) {
         showSuccess('Name updated successfully!');
         setIsEditing(false);
+        try {
+          const userResponse = await fetch('/api/user');
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            if (userData.success && userData.data) {
+              setName(userData.data.name || '');
+            }
+          }
+        } catch (fetchError) {
+        }
         window.dispatchEvent(new CustomEvent('session-update'));
       } else {
         const error = await response.json();
@@ -126,8 +124,18 @@ function UserDropdown({ session, onClose, autoEdit = false }: { session: any; on
     }
   };
 
-  const handleCancel = () => {
-    setName(session.user?.name || '');
+  const handleCancel = async () => {
+    try {
+      const response = await fetch('/api/user');
+      if (response.ok) {
+        const userData = await response.json();
+        if (userData.success && userData.data) {
+          setName(userData.data.name || '');
+        }
+      } else {
+      }
+    } catch (error) {
+    }
     setIsEditing(false);
   };
 
@@ -186,15 +194,15 @@ function UserDropdown({ session, onClose, autoEdit = false }: { session: any; on
               </div>
                          ) : (
                                <div className="space-y-2">
-                  <div 
-                    onClick={() => handleCopy(session.user?.name || 'No name set', 'name')}
-                    className="cursor-pointer group"
-                    title="Click to copy name"
-                  >
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                      {session.user?.name || 'No name set'}
-                    </p>
-                  </div>
+                                     <div 
+                     onClick={() => handleCopy(name || 'No name set', 'name')}
+                     className="cursor-pointer group"
+                     title="Click to copy name"
+                   >
+                     <p className="text-sm font-medium text-gray-900 dark:text-white truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                       {name || 'No name set'}
+                     </p>
+                   </div>
                   
                   {(session.user as { address?: string })?.address && (
                     <div 
@@ -395,14 +403,7 @@ export default function Header() {
                    className="flex items-center hover:opacity-80 transition-opacity cursor-pointer"
                    title="User menu"
                  >
-                   <UserAvatar 
-                     session={session} 
-                     onWarningClick={() => {
-                       if (!isDropdownOpen) {
-                         toggleDropdown();
-                       }
-                     }}
-                   />
+                                       <UserAvatar session={session} />
                  </button>
 
                  <AnimatePresence>
@@ -508,13 +509,7 @@ export default function Header() {
                                  {session && (
                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
                      <div className="flex items-center space-x-3 mb-4">
-                       <UserAvatar 
-                         session={session} 
-                         onWarningClick={() => {
-                           // For mobile, we can show a toast message or implement edit functionality
-                           showInfo('Tap "Edit Name" to customize your profile');
-                         }}
-                       />
+                                               <UserAvatar session={session} />
                        <div className="flex-1 min-w-0">
                          <div className="space-y-2">
                            <div 
