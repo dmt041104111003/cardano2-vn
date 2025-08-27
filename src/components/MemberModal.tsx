@@ -1,4 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
+// import { StaticImageData } from "next/image";
+import { SimpleRichPreview } from "~/components/ui/simple-rich-editor";
 import { MemberModalProps } from '~/constants/members';
 
 export default function MemberModal({ member, isOpen, onClose }: MemberModalProps) {
@@ -87,14 +89,14 @@ export default function MemberModal({ member, isOpen, onClose }: MemberModalProp
                           {member.role}
                         </motion.div>
                       </div>
-                      <motion.p
+                      <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5, duration: 0.4 }}
                         className="text-gray-600 dark:text-gray-300 leading-relaxed text-base"
                       >
-                        {member.description}
-                      </motion.p>
+                        <SimpleRichPreview content={member.description} />
+                      </motion.div>
                       {member.skills && member.skills.length > 0 && (
                         <motion.div
                           initial={{ opacity: 0, y: 10 }}

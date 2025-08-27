@@ -23,23 +23,38 @@ export const GET = withAdmin(async () => {
 });
 
 export const POST = withAdmin(async (req) => {
-  const { name, role, description, image, email, color, skills, order, tabId, publishStatus } = await req.json();
+  try {
+    const body = await req.json();    
+    const { name, role, description, image, email, color, skills, order, tabId, publishStatus } = body;
 
-  const member = await prisma.member.create({
-    data: {
-      name,
-      role,
-      description,
-      image,
-      email,
-      color: color || "blue",
-      skills: skills || [],
-      publishStatus,
-      order: order || 0,
-      tabId: tabId || null,
-      isActive: true
+    if (!name || !role || !description) {
+      return NextResponse.json(
+        createErrorResponse('Missing required fields: name, role, description', 'VALIDATION_ERROR'),
+        { status: 400 }
+      );
     }
-  });
 
-  return NextResponse.json(createSuccessResponse(member));
+    const member = await prisma.member.create({
+      data: {
+        name,
+        role,
+        description,
+        image: image || "",
+        email: email || null,
+        color: color || "blue",
+        skills: skills || [],
+        publishStatus: publishStatus || "DRAFT",
+        order: order || 0,
+        tabId: tabId || null,
+        isActive: true
+      }
+    });
+
+    return NextResponse.json(createSuccessResponse(member));
+  } catch (error) {
+    return NextResponse.json(
+      createErrorResponse(`Failed to create member: ${error instanceof Error ? error.message : 'Unknown error'}`, 'INTERNAL_ERROR'),
+      { status: 500 }
+    );
+  }
 }); 

@@ -63,6 +63,8 @@ export function useMembersWithTabs() {
 
   const handleSaveMember = async (memberData: any) => {
     try {
+      console.log('Saving member data:', memberData);
+      
       const url = editingMember ? `/api/admin/members/${editingMember.id}` : '/api/admin/members';
       const method = editingMember ? 'PUT' : 'POST';
       
@@ -74,7 +76,12 @@ export function useMembersWithTabs() {
         body: JSON.stringify(memberData),
       });
 
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
+        const result = await response.json();
+        console.log('Save successful:', result);
+        
         setShowEditor(false);
         await fetchMembers();
         showSuccess(
@@ -82,10 +89,13 @@ export function useMembersWithTabs() {
           editingMember ? 'Member has been updated successfully.' : 'Member has been created successfully.'
         );
       } else {
-        showError('Failed to save member');
+        const errorData = await response.json();
+        console.error('Save failed:', errorData);
+        showError(`Failed to save member: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
-      showError('Failed to save member');
+      console.error('Save error:', error);
+      showError(`Failed to save member: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 

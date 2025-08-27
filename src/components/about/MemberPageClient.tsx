@@ -103,7 +103,7 @@ function AboutContactForm({
             />
           </div>
 
-          <div>
+          <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
             <input
               type="email"
@@ -117,7 +117,6 @@ function AboutContactForm({
 
           <input type="hidden" name="event-location" value={formData["event-location"]} />
 
-          {/* Removed wallet address field as requested */}
         </div>
 
         {errors.contact && (

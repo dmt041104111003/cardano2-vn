@@ -57,8 +57,38 @@ export default function MediaSection({ formData, setFormData, handleMediaSelect,
             <div className="mt-4">
               <MediaInput
                 onMediaAdd={(media) => handleMediaSelect(media)}
+                onMediaAddMany={(medias) => {
+                  const urls = medias.map(m => m.url).slice(0, 4);
+                  setFormData(prev => ({
+                    ...prev,
+                    media1Url: urls[0] || '',
+                    media2Url: urls[1] || '',
+                    media3Url: urls[2] || '',
+                    media4Url: urls[3] || ''
+                  }));
+                }}
                 mediaType="image"
+                multiple
               />
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+              {[0,1,2,3].map((index) => {
+                const mediaField = `media${index + 1}Url` as keyof typeof formData;
+                const label = `Media ${index + 1} URL`;
+                return (
+                  <div key={`media-url-${index}`} className="space-y-1">
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">{label}</label>
+                    <input
+                      type="url"
+                      value={formData[mediaField] || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, [mediaField]: e.target.value } as any))}
+                      placeholder="https://..."
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

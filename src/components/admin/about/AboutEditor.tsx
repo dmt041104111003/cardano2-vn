@@ -109,7 +109,6 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             placeholder="About Cardano2vn"
-            required
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -122,7 +121,6 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
             value={formData.subtitle}
             onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
             placeholder="Open source dynamic assets (Token/NFT) generator (CIP68)"
-            required
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -136,7 +134,6 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           placeholder="Enter description..."
           rows={4}
-          required
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
@@ -160,7 +157,6 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
             }
           }}
           placeholder="https://www.youtube.com/watch?v=_GrbIRoT3mU or https://youtu.be/_GrbIRoT3mU"
-          required
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
         {formData.youtubeUrl && !formData.youtubeUrl.includes('youtube.com/embed/') && (
@@ -177,7 +173,6 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
             value={formData.buttonText}
             onChange={(e) => setFormData({ ...formData, buttonText: e.target.value })}
             placeholder="Learn More Cardano2vn"
-            required
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -190,7 +185,6 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
             value={formData.buttonUrl}
             onChange={(e) => setFormData({ ...formData, buttonUrl: e.target.value })}
             placeholder="https://cips.cardano.org/cip/CIP-68"
-            required
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -202,7 +196,6 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
           id="publishStatus"
           value={formData.publishStatus}
           onChange={(e) => setFormData({ ...formData, publishStatus: e.target.value as 'DRAFT' | 'PUBLISHED' })}
-          required
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           title="Select publish status"
         >
@@ -214,10 +207,22 @@ export default function AboutEditor({ onSave, onCancel, isLoading }: AboutEditor
       <div className="flex justify-end space-x-4">
         <button
           type="button"
-          onClick={onCancel}
+          onClick={() => setFormData({
+            id: "",
+            title: "",
+            subtitle: "",
+            description: "",
+            youtubeUrl: "",
+            buttonText: "",
+            buttonUrl: "",
+            publishStatus: "DRAFT",
+            isActive: true,
+            createdAt: "",
+            updatedAt: ""
+          })}
           className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
-          Cancel
+          Clear
         </button>
         <button
           type="submit"
