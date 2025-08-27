@@ -66,18 +66,25 @@ export const PUT = withAdmin(async (req) => {
 });
 
 export const DELETE = withAdmin(async (req) => {
+  console.log('DELETE request received');
   const id = req.nextUrl.pathname.split('/').pop();
+  console.log('Feature card ID to delete:', id);
+  
   if (!id) {
+    console.log('Missing ID error');
     return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
   }
 
   try {
+    console.log('Attempting to delete feature card with ID:', id);
     await prisma.featureCard.delete({
       where: { id }
     });
+    console.log('Feature card deleted successfully');
 
     return NextResponse.json(createSuccessResponse({ success: true }));
   } catch (error) {
+    console.error('Delete error:', error);
     return NextResponse.json(
       createErrorResponse(`Failed to delete feature card: ${error instanceof Error ? error.message : 'Unknown error'}`, 'INTERNAL_ERROR'),
       { status: 500 }

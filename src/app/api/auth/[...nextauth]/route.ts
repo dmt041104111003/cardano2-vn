@@ -85,11 +85,7 @@ export const authOptions = {
               session.user.image = token.image as string;
             }
             
-            if (dbUser && dbUser.name) {
-              session.user.name = dbUser.name;
-            } else {
-              session.user.name = token.name as string;
-            }
+            session.user.name = dbUser?.name || token.name as string;
           } catch (error) {
             session.user.image = token.image as string;
             session.user.name = token.name as string;
@@ -171,7 +167,7 @@ export const authOptions = {
             
           } else {
             
-            if (dbUser.image !== user.image || dbUser.name !== user.name) {
+            if (dbUser.image !== user.image || (dbUser.name !== user.name && !dbUser.name)) {
               let avatar: string | null = user.image || dbUser.image;
               if (user.image && user.image.startsWith('https://lh3.googleusercontent.com') && user.image !== dbUser.image) {
                 try {
@@ -188,7 +184,7 @@ export const authOptions = {
               await prisma.user.update({
                 where: { id: dbUser.id },
                 data: {
-                  name: user.name || dbUser.name,
+                  name: dbUser.name || user.name, // Ưu tiên name từ database, nếu không có thì lấy từ Google
                   image: avatar,
                 }
               });
@@ -268,7 +264,7 @@ export const authOptions = {
               select: { id: true, name: true, image: true, roleId: true, email: true }
             });
           } else {
-            if (dbUser.image !== user.image || dbUser.name !== user.name) {
+            if (dbUser.image !== user.image || (dbUser.name !== user.name && !dbUser.name)) {
               let avatar: string | null = user.image || dbUser.image;
               if (user.image && user.image.startsWith('https://avatars.githubusercontent.com') && user.image !== dbUser.image) {
                 try {
@@ -285,7 +281,7 @@ export const authOptions = {
               await prisma.user.update({
                 where: { id: dbUser.id },
                 data: {
-                  name: user.name || dbUser.name,
+                  name: dbUser.name || user.name, // Ưu tiên name từ database, nếu không có thì lấy từ GitHub
                   image: avatar,
                 }
               });
