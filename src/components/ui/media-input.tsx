@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { MediaInputMedia, MediaInputProps } from '~/constants/media';
 
-export default function MediaInput({ onMediaAdd, mediaType = 'image', multiple = false }: MediaInputProps) {
+export default function MediaInput({ onMediaAdd, onMediaAddMany, mediaType = 'image', multiple = false }: MediaInputProps) {
   const [currentMedia, setCurrentMedia] = useState<MediaInputMedia | null>(null);
   const [activeImageTab, setActiveImageTab] = useState<'upload' | 'url'>('upload');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -21,6 +21,7 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image', multiple =
     const files = e.target.files ? Array.from(e.target.files) : [];
     if (files.length === 0) return;
 
+    const uploaded: MediaInputMedia[] = [];
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);
@@ -36,14 +37,19 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image', multiple =
             url: result.data.media.url, 
             id: result.data.media.url 
           };
+          uploaded.push(media);
           setCurrentMedia(media);
-          if (onMediaAdd) onMediaAdd(media);
+          if (onMediaAdd && !multiple) onMediaAdd(media);
         } else {
           alert(result.error || 'Upload failed');
         }
       } catch (err) {
         alert('Upload error');
       }
+    }
+
+    if (multiple && uploaded.length > 0 && onMediaAddMany) {
+      onMediaAddMany(uploaded);
     }
 
     if (fileInputRef.current) {
