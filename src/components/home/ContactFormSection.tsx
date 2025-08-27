@@ -299,10 +299,11 @@ export default function ContactFormSection() {
             <div className="relative flex flex-col h-full justify-center">
               <div className="relative w-full h-[600px] lg:h-[600px]">
                 <ContactFormImage imageUrl={selectedCourseImage} />
-                {/* Overlay text */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
-                  <ContactFormQuoteBlock />
-                </div>
+                {!selectedCourse && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
+                    <ContactFormQuoteBlock />
+                  </div>
+                )}
               </div>
             </div>
           )}
