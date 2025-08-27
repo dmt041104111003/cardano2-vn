@@ -406,27 +406,15 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
           )}
 
           <div className="mt-12 border-t border-gray-200 dark:border-gray-700 pt-8">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="mb-6 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"
-            >
+            <div className="mb-6 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
               <ReactionCount 
                 reactions={reactions}
               />
               <div className="flex items-center gap-4">
                 <span>{post.comments?.length || 0} comments</span>
               </div>
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              className="flex items-center border-t border-gray-200 dark:border-gray-700 pt-4"
-            >
+            </div>
+            <div className="flex items-center border-t border-gray-200 dark:border-gray-700 pt-4">
               <div 
                 className="relative flex flex-1 items-center justify-center"
                 onMouseEnter={() => setShowReactions(true)}
@@ -506,29 +494,18 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                 <Share2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 <span className="font-medium">Share</span>
               </button>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
+            </div>
+            <div>
               <CommentSection 
                 comments={buildNestedComments(flattenComments(post.comments || []), post.id, post.authorId || '', post.authorWallet)}
                 postId={post.id}
                 onSubmitComment={handleSubmitComment}
                 showAllComments={showAllComments}
               />
-            </motion.div>
+            </div>
           </div>
 
-          <motion.footer 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-            className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700"
-          >
+          <footer className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Published on {new Date(post.createdAt).toLocaleString("en-GB", {
@@ -546,7 +523,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                 ← Back to all posts
               </Link>
             </div>
-          </motion.footer>
+          </footer>
         </article>
       </div>
       <ShareModal
