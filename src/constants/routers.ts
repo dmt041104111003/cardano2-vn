@@ -7,6 +7,7 @@ export const routers = {
   login: "/login",
   docs: "/docs",
   projects: "/project",
+  ourService: "/our-service",
 };
 
 export const adminRouters = [

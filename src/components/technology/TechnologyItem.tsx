@@ -1,33 +1,33 @@
 import Skill from "~/components/skill";
 import Project from "~/components/project";
 import FeatureCards from "./FeatureCards";
-import { Verify, Onboarding, Decentralized } from "~/components/icons";
+// import { Verify, Onboarding, Decentralized } from "~/components/icons";
 import { Technology } from '~/constants/technologies';
 
 interface TechnologyItemProps {
   technology: Technology;
 }
 
-const defaultResults = [
-  {
-    Icon: () => <Verify color="blue" />,
-    title: "Dynamic Asset Creation",
-    description: "Users can create dynamic assets with custom metadata.",
-    color: "green"
-  },
-  {
-    Icon: () => <Onboarding color="blue" />,
-    title: "Asset Management",
-    description: "Manage and update dynamic assets efficiently.",
-    color: "blue"
-  },
-  {
-    Icon: () => <Decentralized color="blue" />,
-    title: "Asset Management",
-    description: "Manage and update dynamic assets efficiently.",
-    color: "purple"
-  }
-];
+// const defaultResults = [
+//   {
+//     Icon: () => <Verify color="blue" />,
+//     title: "Dynamic Asset Creation",
+//     description: "Users can create dynamic assets with custom metadata.",
+//     color: "green"
+//   },
+//   {
+//     Icon: () => <Onboarding color="blue" />,
+//     title: "Asset Management",
+//     description: "Manage and update dynamic assets efficiently.",
+//     color: "blue"
+//   },
+//   {
+//     Icon: () => <Decentralized color="blue" />,
+//     title: "Asset Management",
+//     description: "Manage and update dynamic assets efficiently.",
+//     color: "purple"
+//   }
+// ];
 
 export default function TechnologyItem({ technology }: TechnologyItemProps) {
   return (
@@ -39,7 +39,7 @@ export default function TechnologyItem({ technology }: TechnologyItemProps) {
         description={technology.description} 
         href={technology.href} 
         image={technology.image} 
-        results={defaultResults} 
+        // results={defaultResults} 
       />
       
       {technology.githubRepo && (

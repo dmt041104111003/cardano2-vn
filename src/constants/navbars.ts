@@ -25,13 +25,19 @@ export const navbars = [
   },
   {
     id: 5,
+    target: "",
+    title: "Our Service",
+    href: "/our-service",
+  },
+  {
+    id: 6,
     target: "_blank",
     title: "Lms",
     href: "/lms",
   },
 
   {
-    id: 6,
+    id: 7,
     target: "_blank",
     title: "Tool",
     href: "/tool",
