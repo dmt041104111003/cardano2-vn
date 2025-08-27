@@ -184,7 +184,7 @@ export const authOptions = {
               await prisma.user.update({
                 where: { id: dbUser.id },
                 data: {
-                  name: dbUser.name || user.name, // Ưu tiên name từ database, nếu không có thì lấy từ Google
+                  name: dbUser.name || user.name, 
                   image: avatar,
                 }
               });

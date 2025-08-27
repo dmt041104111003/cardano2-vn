@@ -3,6 +3,7 @@ const { WebSocketServer } = require('ws');
 const CommentHandler = require('./handlers/comment-handler');
 const ReplyHandler = require('./handlers/reply-handler');
 const NotificationHandler = require('./handlers/notification-handler');
+const MentionHandler = require('./handlers/mention-handler');
 const RoomManager = require('./utils/room-manager');
 
 class CommentWebSocketServer {
@@ -25,12 +26,13 @@ class CommentWebSocketServer {
     this.commentHandler = new CommentHandler(this);
     this.replyHandler = new ReplyHandler(this);
     this.notificationHandler = new NotificationHandler(this);
+    this.mentionHandler = new MentionHandler(this);
     this.roomManager = new RoomManager(this);
     
     this.setupWebSocketServer();
     this.startServer(port);
     
-    // Cleanup offline users every 5 minutes
+    
     setInterval(() => {
       this.cleanupOfflineUsers();
     }, 5 * 60 * 1000);
@@ -294,6 +296,9 @@ class CommentWebSocketServer {
         break;
       case 'mark_notification_read':
         await this.notificationHandler.handleMarkAsRead(clientId, message);
+        break;
+      case 'mention_search':
+        await this.mentionHandler.handleMentionSearch(clientId, message);
         break;
       default:
         this.sendError(client.ws, 'Unknown message type');

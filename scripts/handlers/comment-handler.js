@@ -58,43 +58,12 @@ class CommentHandler {
         },
       }).then(async (savedComment) => {
         try {
-          const mentionRegex = /@([a-zA-Z0-9_]+)/g;
-          const mentions = message.content.match(mentionRegex);
-          
-          if (mentions) {
-            for (const mention of mentions) {
-              const username = mention.slice(1);
-              
-              const mentionedUser = await prisma.user.findFirst({
-                where: {
-                  OR: [
-                    { wallet: { contains: username, mode: 'insensitive' } },
-                    { name: { contains: username, mode: 'insensitive' } },
-                  ],
-                },
-              });
-              
-              if (mentionedUser && mentionedUser.id !== message.userId) {
-                const post = await prisma.post.findUnique({
-                  where: { id: message.postId },
-                  select: { slug: true },
-                });
-                
-                await this.createNotification({
-                  userId: mentionedUser.id,
-                  type: 'mention',
-                  title: 'You were mentioned',
-                  message: `${user?.name || 'Someone'} mentioned you in a comment`,
-                  data: {
-                    postId: message.postId,
-                    postSlug: post?.slug,
-                    commentId: savedComment.id,
-                    mentionedBy: message.userId,
-                  },
-                });
-              }
-            }
-          }
+          await this.server.mentionHandler.processMentions(
+            message.content, 
+            message.postId, 
+            savedComment.id, 
+            message.userId
+          );
 
           if (message.parentCommentId && savedComment.parent) {
             const parentUserId = savedComment.parent.userId;
@@ -306,7 +275,11 @@ class CommentHandler {
         where: { id: realCommentId },
         data: { content: message.content },
         include: {
-          user: true,
+          user: {
+            include: {
+              role: true
+            }
+          },
         },
       });
 
