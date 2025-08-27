@@ -49,18 +49,18 @@ export default function LandingContentSection({ content }: LandingContentSection
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center">
-      <h1 className={`mb-6 lg:mb-8 font-bold ${fontSizes.title}`}>
+      <h1 className={`mb-4 lg:mb-6 font-bold ${fontSizes.title}`}>
         <span className="block tracking-tight text-gray-900 dark:text-white">{content.title}</span>
         <span className="block bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300 bg-clip-text tracking-tight text-gray-900 dark:text-transparent drop-shadow-lg">
           {content.subtitle}
         </span>
-        <span className={`mt-2 lg:mt-4 block font-normal text-gray-600 dark:text-gray-300 ${fontSizes.description}`}>
+        <span className={`mt-2 lg:mt-3 block font-normal text-gray-600 dark:text-gray-300 ${fontSizes.description}`}>
           {content.description}
         </span>
       </h1>
       
-      <div className="relative mb-6 lg:mb-8 border-l-2 border-gray-300 dark:border-white/20 pl-4 lg:pl-6">
-        <p className={`mb-3 lg:mb-4 leading-relaxed text-gray-600 dark:text-gray-300 ${fontSizes.mainText}`}>
+      <div className="relative mb-4 lg:mb-6 border-l-2 border-gray-300 dark:border-white/20 pl-4 lg:pl-6">
+        <p className={`mb-2 lg:mb-3 leading-relaxed text-gray-600 dark:text-gray-300 ${fontSizes.mainText}`}>
           {content.mainText}
         </p>
         <p className={`text-gray-500 dark:text-gray-400 ${fontSizes.subText}`}>
@@ -76,7 +76,7 @@ export default function LandingContentSection({ content }: LandingContentSection
           Our Services
         </Link>
         <Link
-          href={routers.projects}
+          href="/project?typeFilter=project"
           className="inline-flex items-center justify-center whitespace-nowrap rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-white/50 px-6 lg:px-8 py-3 lg:py-4 font-semibold text-gray-900 dark:text-white shadow-lg hover:bg-gray-200 dark:hover:bg-gray-700 text-sm lg:text-base xl:text-lg"
         >
           Our Projects

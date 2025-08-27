@@ -3,12 +3,15 @@
 import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { TipTapEditor } from "~/components/ui/tiptap-editor";
 import { Member, Tab, MemberEditorProps, MediaInputProps } from "~/constants/members";
+import { useToastContext } from "~/components/toast-provider";
 
 function MediaInput({ value, onChange, placeholder, accept }: MediaInputProps) {
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('upload');
   const [imageUrl, setImageUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { showError } = useToastContext();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -30,11 +33,11 @@ function MediaInput({ value, onChange, placeholder, accept }: MediaInputProps) {
         onChange(result.data.media.url);
       } else {
         console.error('Upload failed:', result);
-        alert(result.error || 'Upload failed');
+        showError(result.error || 'Upload failed');
       }
     } catch (err) {
       console.error('Upload error:', err);
-      alert('Upload error');
+      showError('Upload error');
     }
   };
 
@@ -53,10 +56,10 @@ function MediaInput({ value, onChange, placeholder, accept }: MediaInputProps) {
       if (response.ok && result.media?.url) {
         onChange(result.media.url);
       } else {
-        alert(result.error || 'Failed to add image URL');
+        showError(result.error || 'Failed to add image URL');
       }
     } catch (err) {
-      alert('Error adding image URL');
+      showError('Error adding image URL');
     }
   };
 
@@ -134,6 +137,7 @@ function MediaInput({ value, onChange, placeholder, accept }: MediaInputProps) {
 }
 
 export default function MemberEditor({ member, onSave, onCancel, isLoading }: MemberEditorProps) {
+  const { showError } = useToastContext();
   const [formData, setFormData] = useState<Member>({
     name: member?.name || "",
     role: member?.role || "",
@@ -163,6 +167,25 @@ export default function MemberEditor({ member, onSave, onCancel, isLoading }: Me
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log('Form data before submit:', formData);
+    
+    if (!formData.name.trim()) {
+      showError('Name is required');
+      return;
+    }
+    
+    if (!formData.role.trim()) {
+      showError('Role is required');
+      return;
+    }
+    
+    if (!formData.description.trim()) {
+      showError('Description is required');
+      return;
+    }
+    
+    console.log('Submitting member data:', formData);
     onSave(formData);
   };
 
@@ -228,14 +251,10 @@ export default function MemberEditor({ member, onSave, onCancel, isLoading }: Me
 
       <div className="space-y-2">
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-        <textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          placeholder="Member description"
-          rows={4}
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        <TipTapEditor
+          content={formData.description}
+          onChange={(content) => setFormData({ ...formData, description: content })}
+          placeholder="Enter member description with rich formatting..."
         />
       </div>
 

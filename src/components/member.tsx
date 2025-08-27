@@ -1,4 +1,5 @@
 import { StaticImageData } from "next/image";
+import { TipTapPreview } from "~/components/ui/tiptap-editor";
 
 export default function Member({
   name,
@@ -41,9 +42,9 @@ export default function Member({
               {role}
             </div>
           </div>
-          <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300 line-clamp-3">
-            {description}
-          </p>
+          <div className="text-sm leading-relaxed text-gray-600 dark:text-gray-300 line-clamp-3">
+            <TipTapPreview content={description} />
+          </div>
           <div className="mt-4 flex items-center gap-3">
             <div className="flex space-x-2">
               <div className="w-8 h-8 rounded-full bg-gray-200/50 dark:bg-gray-700/50 flex items-center justify-center transition-colors hover:bg-gray-300/50 dark:hover:bg-gray-600/50">
