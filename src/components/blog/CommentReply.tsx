@@ -4,6 +4,16 @@ import { useState, useRef } from "react";
 
 import { EMOJIS } from "../../constants/emoji";
 import { Comment, CommentReplyProps, MAX_COMMENT_LENGTH } from '~/constants/comment';
+import MentionAutocomplete from '~/components/ui/mention-autocomplete';
+import MentionDisplay from '~/components/ui/mention-display';
+import { 
+  MentionUser, 
+  hasMentionTrigger, 
+  extractMentionQuery, 
+  insertMention, 
+  calculateMentionPosition,
+  formatMentionsForStorage
+} from '~/lib/mention-utils';
 
 export default function CommentReply({ 
   reply, 
@@ -16,11 +26,75 @@ export default function CommentReply({
 }: CommentReplyProps) {
   const [expandedReply, setExpandedReply] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showMentionDropdown, setShowMentionDropdown] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionPosition, setMentionPosition] = useState({ x: 0, y: 0 });
+  const [cursorPosition, setCursorPosition] = useState(0);
+  const [mentionsInInput, setMentionsInInput] = useState<Array<{ id: string; name: string; displayName: string }>>([]);
   const emojiButtonRef = useRef<HTMLButtonElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const replyInputRef = useRef<HTMLInputElement>(null);
+  
   const handleEmojiClick = (emoji: string) => {
     setReplyText(replyText + emoji);
     setShowEmojiPicker(false);
+  };
+
+  const handleReplyInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const cursorPos = e.target.selectionStart || 0;
+    
+    setReplyText(value);
+    setCursorPosition(cursorPos);
+    
+    if (hasMentionTrigger(value, cursorPos)) {
+      const query = extractMentionQuery(value, cursorPos);
+      if (query !== null) {
+        setMentionQuery(query);
+        
+        if (replyInputRef.current) {
+          const position = calculateMentionPosition(replyInputRef.current, cursorPos, value);
+          setMentionPosition(position);
+        }
+        
+        setShowMentionDropdown(true);
+      }
+    } else {
+      setShowMentionDropdown(false);
+    }
+  };
+
+  const handleMentionSelect = (selectedUser: MentionUser) => {
+    const { newText, newCursorPosition, insertedMention } = insertMention(replyText, cursorPosition, mentionQuery, selectedUser);
+    
+    setReplyText(newText);
+    setMentionsInInput(prev => [...prev, insertedMention]);
+    setShowMentionDropdown(false);
+    setMentionQuery("");
+    
+    setTimeout(() => {
+      if (replyInputRef.current) {
+        replyInputRef.current.focus();
+        replyInputRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+      }
+    }, 0);
+  };
+
+  const handleMentionClose = () => {
+    setShowMentionDropdown(false);
+    setMentionQuery("");
+  };
+
+  const handleSubmitReply = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (replyText.trim()) {
+
+      const storageText = formatMentionsForStorage(replyText, mentionsInInput);
+      onSubmitReply(e, reply.id, user || {});
+      setReplyText("");
+      setMentionsInInput([]);
+      setShowMentionDropdown(false);
+    }
   };
 
   const toggleReplyExpansion = () => {
@@ -31,13 +105,17 @@ export default function CommentReply({
     const shouldTruncate = content.length > MAX_COMMENT_LENGTH;
     
     if (!shouldTruncate) {
-      return <p className="text-gray-200 text-sm leading-relaxed">{content}</p>;
+      return (
+        <p className="text-gray-200 text-sm leading-relaxed">
+          <MentionDisplay content={content} />
+        </p>
+      );
     }
 
     return (
       <div>
         <p className="text-gray-200 text-sm leading-relaxed">
-          {expandedReply ? content : `${content.substring(0, MAX_COMMENT_LENGTH)}...`}
+          <MentionDisplay content={expandedReply ? content : `${content.substring(0, MAX_COMMENT_LENGTH)}...`} />
         </p>
         <button
           onClick={toggleReplyExpansion}
@@ -79,15 +157,15 @@ export default function CommentReply({
                 <span className="font-semibold text-white text-xs">UserID: {reply.userId}</span>
               )}
 
-              {(reply.user?.displayName || reply.author) && (
-                <span
-                  className="font-mono text-blue-300 text-xs bg-blue-900/40 px-2 py-0.5 rounded select-all cursor-pointer hover:text-blue-200"
-                  title="Copy name/address"
-                  onClick={() => {navigator.clipboard.writeText(reply.user?.displayName || reply.author || '')}}
-                >
-                  {shortAddress(reply.user?.displayName || reply.author || '')}
-                </span>
-              )}
+                {(reply.user?.displayName || reply.author) && (
+                 <span
+                   className="font-sans text-blue-600 dark:text-blue-500 text-sm font-medium"
+                   title="Copy name/address"
+                   onClick={() => {navigator.clipboard.writeText(reply.user?.displayName || reply.author || '')}}
+                 >
+                   {reply.user?.displayName || reply.author}
+                 </span>
+               )}
             </div>
             {renderReplyContent(reply.content)}
           </div>
@@ -127,61 +205,71 @@ export default function CommentReply({
                   </svg>
                 </button>
               </div>
-              <div className="flex-1">
-                <form onSubmit={(e) => onSubmitReply(e, reply.id, user || {})} className="relative">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      placeholder="Write a reply..."
-                      className="w-full rounded-xl bg-gray-700/50 border border-gray-600/50 pl-4 pr-10 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 text-sm"
-                    />
-                    <button
-                      ref={emojiButtonRef}
-                      type="button"
-                      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                      className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-yellow-400 transition-colors p-1"
-                      title="Add emoji"
-                      tabIndex={-1}
-                    >
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-7.536 5.879a1 1 0 001.415 0 3 3 0 014.242 0 1 1 0 001.415-1.415 5 5 0 00-7.072 0 1 1 0 000 1.415z" clipRule="evenodd" />
-                      </svg>
-                    </button>
-                    <button 
-                      type="submit"
-                      disabled={!replyText.trim()}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-300 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors p-1"
-                      aria-label="Send reply"
-                    >
-                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                      </svg>
-                    </button>
-                    {/* Đặt popup emoji ở đây để luôn hiển thị dưới icon emoji */}
-                    {showEmojiPicker && (
-                      <div
-                        ref={emojiPickerRef}
-                        className="absolute z-50 right-10 top-full mt-2 bg-gray-800 border border-gray-700 rounded-lg p-2 shadow-lg"
-                      >
-                        <div className="grid grid-cols-8 gap-1">
-                          {EMOJIS.map((emoji: string, index: number) => (
-                            <button
-                              key={index}
-                              onClick={() => handleEmojiClick(emoji)}
-                              className="w-8 h-8 flex items-center justify-center hover:bg-gray-700 rounded transition-colors text-lg"
-                              title={emoji}
-                            >
-                              {emoji}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </form>
-              </div>
+                             <div className="flex-1 relative">
+                 <form onSubmit={handleSubmitReply} className="relative">
+                   <div className="relative">
+                     <input
+                       ref={replyInputRef}
+                       type="text"
+                       value={replyText}
+                       onChange={handleReplyInputChange}
+                       placeholder="Write a reply... Use @ to mention users"
+                       className="w-full rounded-xl bg-gray-700/50 border border-gray-600/50 pl-4 pr-10 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 text-sm"
+                     />
+                     <button
+                       ref={emojiButtonRef}
+                       type="button"
+                       onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                       className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-yellow-400 transition-colors p-1"
+                       title="Add emoji"
+                       tabIndex={-1}
+                     >
+                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-7.536 5.879a1 1 0 001.415 0 3 3 0 014.242 0 1 1 0 001.415-1.415 5 5 0 00-7.072 0 1 1 0 000 1.415z" clipRule="evenodd" />
+                       </svg>
+                     </button>
+                     <button 
+                       type="submit"
+                       disabled={!replyText.trim()}
+                       className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-300 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors p-1"
+                       aria-label="Send reply"
+                     >
+                       <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                         <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                       </svg>
+                     </button>
+
+                     {showEmojiPicker && (
+                       <div
+                         ref={emojiPickerRef}
+                         className="absolute z-50 right-10 top-full mt-2 bg-gray-800 border border-gray-700 rounded-lg p-2 shadow-lg"
+                       >
+                         <div className="grid grid-cols-8 gap-1">
+                           {EMOJIS.map((emoji: string, index: number) => (
+                             <button
+                               key={index}
+                               onClick={() => handleEmojiClick(emoji)}
+                               className="w-8 h-8 flex items-center justify-center hover:bg-gray-700 rounded transition-colors text-lg"
+                               title={emoji}
+                             >
+                               {emoji}
+                             </button>
+                           ))}
+                         </div>
+                       </div>
+                     )}
+                   </div>
+                 </form>
+                 
+                 <MentionAutocomplete
+                   isVisible={showMentionDropdown}
+                   query={mentionQuery}
+                   onSelect={handleMentionSelect}
+                   onClose={handleMentionClose}
+                   position={mentionPosition}
+                   inputWidth={replyInputRef.current?.offsetWidth}
+                 />
+               </div>
             </div>
           </div>
         </div>

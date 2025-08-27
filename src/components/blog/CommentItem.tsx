@@ -9,6 +9,16 @@ import { EMOJIS } from "../../constants/emoji";
 import { useUser } from '~/hooks/useUser';
 import Modal from '../admin/common/Modal';
 import { Comment, CommentItemProps, MAX_COMMENT_LENGTH } from '~/constants/comment';
+import MentionAutocomplete from '~/components/ui/mention-autocomplete';
+import MentionDisplay from '~/components/ui/mention-display';
+import { 
+  MentionUser, 
+  hasMentionTrigger, 
+  extractMentionQuery, 
+  insertMention, 
+  calculateMentionPosition,
+  formatMentionsForStorage
+} from '~/lib/mention-utils';
 
 
 const formatTime = (iso: string) => {
@@ -25,9 +35,61 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
   const [loadingReplies, setLoadingReplies] = useState(false);
   const { showSuccess, showError } = useToastContext();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showMentionDropdown, setShowMentionDropdown] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionPosition, setMentionPosition] = useState({ x: 0, y: 0 });
+  const [cursorPosition, setCursorPosition] = useState(0);
+  const [mentionsInInput, setMentionsInInput] = useState<Array<{ id: string; name: string; displayName: string }>>([]);
+  const replyInputRef = useRef<HTMLInputElement>(null);
+  
   const handleEmojiClick = (emoji: string) => {
     setReplyText((prev) => prev + emoji);
     setShowEmojiPicker(false);
+  };
+
+  const handleReplyInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const cursorPos = e.target.selectionStart || 0;
+    
+    setReplyText(value);
+    setCursorPosition(cursorPos);
+    
+    if (hasMentionTrigger(value, cursorPos)) {
+      const query = extractMentionQuery(value, cursorPos);
+      if (query !== null) {
+        setMentionQuery(query);
+        
+        if (replyInputRef.current) {
+          const position = calculateMentionPosition(replyInputRef.current, cursorPos, value);
+          setMentionPosition(position);
+        }
+        
+        setShowMentionDropdown(true);
+      }
+    } else {
+      setShowMentionDropdown(false);
+    }
+  };
+
+  const handleMentionSelect = (selectedUser: MentionUser) => {
+    const { newText, newCursorPosition, insertedMention } = insertMention(replyText, cursorPosition, mentionQuery, selectedUser);
+    
+    setReplyText(newText);
+    setMentionsInInput(prev => [...prev, insertedMention]);
+    setShowMentionDropdown(false);
+    setMentionQuery("");
+    
+    setTimeout(() => {
+      if (replyInputRef.current) {
+        replyInputRef.current.focus();
+        replyInputRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+      }
+    }, 0);
+  };
+
+  const handleMentionClose = () => {
+    setShowMentionDropdown(false);
+    setMentionQuery("");
   };
 
   const { isAuthenticated, user: currentUser } = useUser();
@@ -83,9 +145,12 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
   const handleSubmitReply = async (e: React.FormEvent, commentId: string) => {
     e.preventDefault();
     if (replyText.trim()) {
-      await onSubmitReply(commentId, replyText, user || {});
+      const storageText = formatMentionsForStorage(replyText, mentionsInInput);
+      await onSubmitReply(commentId, storageText, user || {});
       setReplyText("");
+      setMentionsInInput([]);
       setActiveReplyId(null);
+      setShowMentionDropdown(false);
     }
   };
 
@@ -96,7 +161,6 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
     }
     setActiveReplyId(activeReplyId === comment.id ? null : comment.id);
     if (activeReplyId !== comment.id) {
-
       const displayName = comment.user?.displayName || comment.author || comment.userId;
       if (displayName) {
         setReplyText(`@${displayName} `);
@@ -125,13 +189,17 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
     const shouldTruncate = content.length > MAX_COMMENT_LENGTH;
     
     if (!shouldTruncate) {
-      return <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">{content}</p>;
+      return (
+        <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">
+          <MentionDisplay content={content} />
+        </p>
+      );
     }
 
     return (
       <div>
         <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">
-          {expandedComment ? content : `${content.substring(0, MAX_COMMENT_LENGTH)}...`}
+          <MentionDisplay content={expandedComment ? content : `${content.substring(0, MAX_COMMENT_LENGTH)}...`} />
         </p>
         <button
           onClick={toggleCommentExpansion}
@@ -148,7 +216,7 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
 
   const isHoveredReply = hoveredId === comment.id && !!comment.parentCommentId;
   const isParentHighlight = hoveredId && hoveredId === comment.parentCommentId;
-  // Avatar logic
+
   const avatarUrl =
     (comment.user?.image && (comment.user.image.startsWith('http') || comment.user.image.startsWith('data:image')))
       ? comment.user.image
@@ -239,14 +307,14 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
                   )}
                   {(comment.user?.displayName || comment.author) && (
                     <span
-                      className="font-mono text-blue-700 dark:text-blue-300 text-xs bg-blue-100/40 dark:bg-blue-900/40 px-2 py-0.5 rounded select-all cursor-pointer hover:text-blue-800 dark:hover:text-blue-200"
+                      className="font-sans text-blue-600 dark:text-blue-500 text-sm font-medium"
                       title="Copy name/address"
                       onClick={() => {
                         navigator.clipboard.writeText(comment.user?.displayName || comment.author || '');
                         showSuccess('Copied!');
                       }}
                     >
-                      {shortAddress(comment.user?.displayName || comment.author || '')}
+                      {comment.user?.displayName || comment.author}
                     </span>
                   )}
                   {comment.isPostAuthor && (
@@ -345,14 +413,15 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
                   ) : (
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex-shrink-0"></div>
                   )}
-                  <div className="flex-1">
+                  <div className="flex-1 relative">
                     <form onSubmit={(e) => handleSubmitReply(e, comment.id)} className="relative">
                       <div className="relative">
                         <input
+                          ref={replyInputRef}
                           type="text"
                           value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                          placeholder="Write a reply..."
+                          onChange={handleReplyInputChange}
+                          placeholder="Write a reply... Use @ to mention users"
                           className="w-full rounded-xl bg-gray-200/50 dark:bg-gray-700/50 border border-gray-300/50 dark:border-gray-600/50 pl-4 pr-10 py-2 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-blue-500/50 text-sm"
                           autoFocus
                         />
@@ -400,6 +469,15 @@ export default function CommentItem({ comment, onSubmitReply, onDeleteComment, o
                         )}
                       </div>
                     </form>
+                    
+                    <MentionAutocomplete
+                      isVisible={showMentionDropdown}
+                      query={mentionQuery}
+                      onSelect={handleMentionSelect}
+                      onClose={handleMentionClose}
+                      position={mentionPosition}
+                      inputWidth={replyInputRef.current?.offsetWidth}
+                    />
                   </div>
                 </div>
               </div>
