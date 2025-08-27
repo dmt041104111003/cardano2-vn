@@ -94,13 +94,12 @@ export default function ContactFormSection() {
         if (response.ok) {
           const userData = await response.json();
 
-          if (userData && userData.data && (userData.data.email || userData.data.address)) {
+          if (userData && userData.data && (userData.data.email)) {
             console.log('User data found:', userData.data);
             setFormData(prev => {
               const newData = {
                 ...prev,
-                "your-email": userData.data.email || "",
-                "address-wallet": userData.data.address || ""
+                "your-email": userData.data.email || ""
               };
               console.log('Form data before update:', prev);
               console.log('Form data after update:', newData);
