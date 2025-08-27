@@ -453,6 +453,7 @@ export default function Header() {
     if (href === "/blog") return pathname.startsWith("/blog");
     if (href === "/project") return pathname.startsWith("/project");
     if (href === "/about") return pathname.startsWith("/about");
+    if (href === "/our-service") return pathname.startsWith("/our-service");
     if (href === "/lms") return pathname.startsWith("/lms");
     if (href === "/login") return pathname === "/login";
     return false;
