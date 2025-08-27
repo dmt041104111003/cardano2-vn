@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import Link from "next/link";
 import { ArrowLeft, MessageCircle, Share2, ThumbsUp } from "lucide-react";
@@ -23,6 +23,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
   const [showReactions, setShowReactions] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showAllComments, setShowAllComments] = useState(true);
+  const [isReacting, setIsReacting] = useState(false);
   const proseRef = useRef<HTMLDivElement>(null);
   const { showSuccess, showError } = useToastContext();
 
@@ -70,7 +71,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
     },
     enabled: !!slug
   });
-  const reactions: { [type: string]: number } = reactionsData?.reactions || {};
+  const reactions: { [type: string]: number } = reactionsData?.data?.reactions || {};
 
   const {
     data: currentUserReactionData,
@@ -85,7 +86,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
     },
     enabled: !!slug && isLoggedIn
   });
-  const currentUserReaction: string | null = currentUserReactionData?.currentUserReaction || null;
+  const currentUserReaction: string | null = currentUserReactionData?.data?.currentUserReaction || null;
 
   useEffect(() => {
     if (!proseRef.current) return;
@@ -122,18 +123,33 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
       showError('You need to sign in to react!');
       return;
     }
-    const res = await fetch("/api/blog/react", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ postId: slug, type }),
-    });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      showError(data?.error || "Failed to react. Please login and try again.");
-      return;
+    
+    if (isReacting) return; 
+    
+    setIsReacting(true);
+    
+    try {
+      const res = await fetch("/api/blog/react", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: slug, type }),
+      });
+      
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        showError(data?.error || "Failed to react. Please login and try again.");
+        return;
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      await refetchReactions();
+      await refetchCurrentUserReaction();
+    } catch (error) {
+      showError("Failed to react. Please try again.");
+    } finally {
+      setIsReacting(false);
     }
-    await refetchReactions();
-    await refetchCurrentUserReaction();
   };
 
   const handleSubmitComment = async (commentText: string) => {
@@ -417,7 +433,9 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                 onMouseLeave={() => setShowReactions(false)}
               >
                 <button 
-                  className={`flex items-center justify-center gap-2 py-3 text-gray-600 dark:text-gray-400 transition-colors w-full ${currentUserReaction ? 'text-blue-600 dark:text-blue-400' : 'hover:text-blue-600 dark:hover:text-blue-400'}`}
+                  onClick={() => handleReact('LIKE')}
+                  disabled={isReacting}
+                  className={`flex items-center justify-center gap-2 py-3 text-gray-600 dark:text-gray-400 transition-colors w-full ${currentUserReaction ? 'text-blue-600 dark:text-blue-400' : 'hover:text-blue-600 dark:hover:text-blue-400'} ${isReacting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <span className={`flex items-center justify-center text-2xl ${currentUserReaction ? 'scale-110' : 'hover:scale-110'}`} style={{ minWidth: 28, minHeight: 28 }}>
                     {currentUserReaction ? REACTION_EMOJIS[currentUserReaction] || '👍' : <ThumbsUp className="h-5 w-5" />}
@@ -426,14 +444,15 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                     {currentUserReaction ? currentUserReaction.charAt(0) + currentUserReaction.slice(1).toLowerCase() : 'Like'}
                   </span>
                 </button>
-                {showReactions && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 z-10 p-1"
-                  >
+                <AnimatePresence>
+                  {showReactions && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 z-10 p-1"
+                    >
                     <div className="flex items-center gap-3 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/50 dark:border-gray-600/50 rounded-full px-6 py-4 shadow-2xl">
                       {[
                         { emoji: "👍", label: "Like", color: "bg-blue-500", type: "LIKE" },
@@ -448,14 +467,17 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                           initial={{ scale: 0.8, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           transition={{ delay: index * 0.05, duration: 0.2 }}
-                          whileHover={{ scale: 1.2 }}
-                          whileTap={{ scale: 0.9 }}
+                          whileHover={{ scale: isReacting ? 1 : 1.2 }}
+                          whileTap={{ scale: isReacting ? 1 : 0.9 }}
                           onClick={async (e) => {
                             e.stopPropagation();
-                            await handleReact(reaction.type);
-                            setShowReactions(false);
+                            if (!isReacting) {
+                              await handleReact(reaction.type);
+                              setShowReactions(false);
+                            }
                           }}
-                          className={`w-14 h-14 rounded-full bg-transparent hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-all duration-200 flex items-center justify-center text-gray-900 dark:text-gray-100 text-3xl group relative overflow-hidden ${currentUserReaction === reaction.type ? 'ring-4 ring-blue-400 scale-110' : 'hover:scale-125'}`}
+                          disabled={isReacting}
+                          className={`w-14 h-14 rounded-full bg-transparent hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-all duration-200 flex items-center justify-center text-gray-900 dark:text-gray-100 text-3xl group relative overflow-hidden ${currentUserReaction === reaction.type ? 'ring-4 ring-blue-400 scale-110' : 'hover:scale-125'} ${isReacting ? 'opacity-50 cursor-not-allowed' : ''}`}
                           aria-label={reaction.label}
                         >
                           <span className="group-hover:scale-110 transition-transform duration-200">
@@ -467,6 +489,7 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
                     </div>
                   </motion.div>
                 )}
+                </AnimatePresence>
               </div>
               
               <button 

@@ -45,7 +45,11 @@ export const POST = withAuth(async (req, user) => {
     });
     
     return NextResponse.json(createSuccessResponse({ success: true }));
-  } catch (error) {
+  } catch (error: any) {    
+    if (error.code === 'P2002') {
+      return NextResponse.json(createSuccessResponse({ success: true }));
+    }
+    
     return NextResponse.json(createErrorResponse('Failed to create reaction', 'FAILED_TO_CREATE_REACTION'), { status: 500 });
   }
 });

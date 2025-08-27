@@ -2,7 +2,6 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Link } from '@tiptap/extension-link';
 import { Image } from '@tiptap/extension-image';
 import { Table } from '@tiptap/extension-table';
@@ -20,7 +19,7 @@ import { Tooltip } from './tiptap/extensions/tooltip-extension';
 import { LockMark } from './tiptap/extensions/lock-extension';
 import { TooltipButton } from './tiptap/tooltip-button';
 import { TooltipHandler } from './tiptap/tooltip-handler';
-import { createLowlight, common } from 'lowlight';
+
 import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Modal from '~/components/admin/common/Modal';
 import { useToastContext } from '~/components/toast-provider';
@@ -59,7 +58,8 @@ import { FloatingTableToolbar } from './floating-table-toolbar';
 import { Editor } from '@tiptap/core';
 import { Node, Mark } from 'prosemirror-model';
 
-const lowlight = createLowlight(common);
+
+
 
 interface TipTapEditorProps {
   content: string;
@@ -557,32 +557,30 @@ export function TipTapEditor({ content, onChange, placeholder }: TipTapEditorPro
   }, []);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        bulletList: {
-          HTMLAttributes: {
-            class: 'list-disc list-outside ml-6 mx-auto',
-          },
-        },
-        orderedList: {
-          HTMLAttributes: {
-            class: 'list-decimal list-outside ml-6 mx-auto',
-          },
-        },
-        listItem: {
-          HTMLAttributes: {
-            class: 'mb-1 mx-auto',
-          },
-        },
-      }),
-      HorizontalRule,
-      CodeBlockLowlight.configure({
-        lowlight,
-        defaultLanguage: 'javascript',
-        HTMLAttributes: {
-          class: 'bg-gray-900 text-gray-100 rounded-lg p-4 my-4 font-mono text-sm overflow-x-auto border border-gray-700 shadow-lg mx-auto',
-        },
-      }),
+         extensions: [
+       StarterKit.configure({
+         bulletList: {
+           HTMLAttributes: {
+             class: 'list-disc list-outside ml-6 mx-auto',
+           },
+         },
+         orderedList: {
+           HTMLAttributes: {
+             class: 'list-decimal list-outside ml-6 mx-auto',
+           },
+         },
+         listItem: {
+           HTMLAttributes: {
+             class: 'mb-1 mx-auto',
+           },
+         },
+         codeBlock: {
+           HTMLAttributes: {
+             class: 'bg-gray-900 text-gray-100 rounded-lg p-4 my-4 font-mono text-sm overflow-x-auto border border-gray-700 shadow-lg mx-auto',
+           },
+         },
+       }),
+       HorizontalRule,
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
