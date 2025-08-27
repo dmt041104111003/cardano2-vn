@@ -17,6 +17,11 @@ import AdminTableSkeleton from "~/components/admin/common/AdminTableSkeleton";
 import NotFoundInline from "~/components/ui/not-found-inline";
 import { Technology } from "~/constants/technologies";
 import { useNotifications } from "~/hooks/useNotifications";
+// import { FeatureCard } from "~/constants/feature-cards";
+import { useFeatureCards } from "~/hooks/useFeatureCards";
+import FeatureCardEditor from "~/components/admin/feature-cards/FeatureCardEditor";
+import FeatureCardTable from "~/components/admin/feature-cards/FeatureCardTable";
+import FeatureCardDetailsModal from "~/components/admin/feature-cards/FeatureCardDetailsModal";
 
 export default function TechnologiesPageClient() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,8 +31,9 @@ export default function TechnologiesPageClient() {
   const [editingTechnology, setEditingTechnology] = useState<Technology | null>(null);
 
   const [showTechnologyModal, setShowTechnologyModal] = useState<Technology | null>(null);
-  const [activeTab, setActiveTab] = useState<'technologies' | 'projects'>('technologies');
+  const [activeTab, setActiveTab] = useState<'technologies' | 'projects' | 'feature-cards'>('technologies');
   const { showSuccess, showError } = useToastContext();
+  const featureCardsHook = useFeatureCards();
   
   useNotifications();
 
@@ -70,7 +76,7 @@ export default function TechnologiesPageClient() {
     setShowEditor(true);
   };
 
-  const handleSaveTechnology = async (technologyData: { title: string; name: string; description: string; href: string; image: string; publishStatus: 'DRAFT' | 'PUBLISHED' }) => {
+  const handleSaveTechnology = async (technologyData: { title: string; name: string; description: string; href: string; image: string; githubRepo?: string; publishStatus: 'DRAFT' | 'PUBLISHED'; featureCardIds?: string[] }) => {
     try {
       const url = editingTechnology ? `/api/admin/technologies/${editingTechnology.id}` : '/api/admin/technologies';
       const method = editingTechnology ? 'PUT' : 'POST';
@@ -152,7 +158,16 @@ export default function TechnologiesPageClient() {
           >
             Catalyst ({projects.length})
           </button>
-
+          <button
+            onClick={() => setActiveTab('feature-cards')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'feature-cards'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Feature Cards ({featureCardsHook.featureCards.length})
+          </button>
         </nav>
       </div>
 
@@ -232,8 +247,67 @@ export default function TechnologiesPageClient() {
         </>
       ) : activeTab === 'projects' ? (
         <ProjectsPageClient />
+      ) : activeTab === 'feature-cards' ? (
+        <>
+          <AdminHeader 
+            title="Feature Cards Management" 
+            description="Manage feature cards for the technology section"
+            buttonText="Add Feature Card"
+            onAddClick={featureCardsHook.handleCreateFeatureCard}
+          />
+
+          <AdminStats 
+            stats={[
+              { label: "Total Feature Cards", value: featureCardsHook.featureCards.length },
+              { label: "Draft", value: featureCardsHook.featureCards.filter(fc => fc.publishStatus === 'DRAFT').length },
+              { label: "Published", value: featureCardsHook.featureCards.filter(fc => fc.publishStatus === 'PUBLISHED').length },
+            ]}
+          />
+
+          <AdminFilters
+            searchTerm={featureCardsHook.searchTerm}
+            filterType={featureCardsHook.publishStatusFilter}
+            searchPlaceholder="Search feature cards by title or description..."
+            filterOptions={[
+              { value: "all", label: "All Publish Status" },
+              { value: "DRAFT", label: "Draft" },
+              { value: "PUBLISHED", label: "Published" },
+            ]}
+            onSearchChange={featureCardsHook.setSearchTerm}
+            onFilterChange={(value: string) => featureCardsHook.setPublishStatusFilter(value as 'all' | 'DRAFT' | 'PUBLISHED')}
+          />
+
+          {featureCardsHook.loadingFeatureCards ? (
+            <AdminTableSkeleton columns={6} rows={5} />
+          ) : featureCardsHook.paginatedFeatureCards.length === 0 ? (
+            <NotFoundInline 
+              onClearFilters={() => {
+                featureCardsHook.setSearchTerm('');
+                featureCardsHook.setPublishStatusFilter('all');
+              }}
+            />
+          ) : (
+            <div className="bg-white rounded-lg shadow">
+              <FeatureCardTable
+                featureCards={featureCardsHook.paginatedFeatureCards}
+                onEdit={featureCardsHook.handleEditFeatureCard}
+                onDelete={featureCardsHook.handleDeleteFeatureCard}
+                onViewDetails={featureCardsHook.handleViewFeatureCard}
+              />
+
+              <Pagination
+                currentPage={featureCardsHook.currentPage}
+                totalPages={featureCardsHook.totalPages}
+                totalItems={featureCardsHook.paginatedFeatureCards.length}
+                itemsPerPage={featureCardsHook.ITEMS_PER_PAGE}
+                onPageChange={featureCardsHook.handlePageChange}
+              />
+            </div>
+          )}
+        </>
       ) : null}
 
+      {/* Technology Editor Modal */}
       <Modal
         isOpen={showEditor}
         onClose={() => setShowEditor(false)}
@@ -247,12 +321,34 @@ export default function TechnologiesPageClient() {
         />
       </Modal>
 
-
+      {/* Feature Card Editor Modal */}
+      <Modal
+        isOpen={featureCardsHook.showEditor}
+        onClose={() => {
+          featureCardsHook.setShowEditor(false);
+        }}
+        title={featureCardsHook.editingFeatureCard ? "Edit Feature Card" : "Add New Feature Card"}
+        maxWidth="max-w-2xl"
+      >
+        <FeatureCardEditor
+          featureCard={featureCardsHook.editingFeatureCard || undefined}
+          onSave={featureCardsHook.handleSaveFeatureCard}
+          onCancel={() => {
+            featureCardsHook.setShowEditor(false);
+          }}
+        />
+      </Modal>
 
       <TechnologyDetailsModal
         technology={showTechnologyModal}
         isOpen={!!showTechnologyModal}
         onClose={() => setShowTechnologyModal(null)}
+      />
+
+      <FeatureCardDetailsModal
+        featureCard={featureCardsHook.viewingFeatureCard}
+        isOpen={!!featureCardsHook.viewingFeatureCard}
+        onClose={() => featureCardsHook.setViewingFeatureCard(null)}
       />
     </div>
   );

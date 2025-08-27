@@ -33,10 +33,7 @@ export default function CTASection() {
   });
 
   useEffect(() => {
-    console.log('CTASection - userData:', userData);
-    console.log('CTASection - user role:', userData?.data?.role?.name);
     const adminStatus = userData?.data?.role?.name === "ADMIN";
-    console.log('CTASection - isAdmin:', adminStatus);
     setIsAdmin(adminStatus);
   }, [userData]);
 

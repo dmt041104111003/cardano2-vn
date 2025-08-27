@@ -40,6 +40,9 @@ export function TechnologyTable({ technologies, onEdit, onDelete, onViewDetails 
               Link
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Feature Cards
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Created
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -104,6 +107,17 @@ export function TechnologyTable({ technologies, onEdit, onDelete, onViewDetails 
                 >
                   {technology.href}
                 </a>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {technology.featureCardIds && technology.featureCardIds.length > 0 ? (
+                  <div className="flex flex-wrap gap-1">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {technology.featureCardIds.length} card{technology.featureCardIds.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-gray-400">None</span>
+                )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {technology.createdAt ? new Date(technology.createdAt).toLocaleString('en-GB', {

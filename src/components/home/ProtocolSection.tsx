@@ -69,7 +69,6 @@ export default function ProtocolSection() {
               <div className="h-1 w-12 bg-gradient-to-r from-blue-500 to-transparent"></div>
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white lg:text-4xl">Blog</h2>
             </div>
-            <p className="max-w-3xl text-lg text-gray-700 dark:text-gray-300">This section highlights our latest and hottest blog posts.</p>
           </div>
 
           <div className="border-b border-gray-200 dark:border-gray-700 mb-8">

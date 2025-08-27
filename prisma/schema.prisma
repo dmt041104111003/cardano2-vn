@@ -185,6 +185,7 @@ model Technology {
   href        String
   image       String
   githubRepo  String?
+  featureCardIds String[] @default([])
   publishStatus  ProjectPublishStatus @default(DRAFT)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -362,6 +363,23 @@ model WelcomeModal {
   updatedAt   DateTime @updatedAt
 
   @@index([isActive])
+  @@index([createdAt])
+  @@index([publishStatus])
+}
+
+model FeatureCard {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  iconName    String   // "Learn", "Check", "Verify"
+  publishStatus  ProjectPublishStatus @default(DRAFT)
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
   @@index([createdAt])
   @@index([publishStatus])
 }
