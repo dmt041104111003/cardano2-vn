@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { TipTapEditor } from "~/components/ui/tiptap-editor";
+import { SimpleRichEditor } from "~/components/ui/simple-rich-editor";
 import { Member, Tab, MemberEditorProps, MediaInputProps } from "~/constants/members";
 import { useToastContext } from "~/components/toast-provider";
 
@@ -251,7 +251,7 @@ export default function MemberEditor({ member, onSave, onCancel, isLoading }: Me
 
       <div className="space-y-2">
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-        <TipTapEditor
+        <SimpleRichEditor
           content={formData.description}
           onChange={(content) => setFormData({ ...formData, description: content })}
           placeholder="Enter member description with rich formatting..."

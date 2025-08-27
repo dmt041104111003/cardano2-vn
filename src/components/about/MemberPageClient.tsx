@@ -117,7 +117,6 @@ function AboutContactForm({
 
           <input type="hidden" name="event-location" value={formData["event-location"]} />
 
-          {/* Removed wallet address field as requested */}
         </div>
 
         {errors.contact && (

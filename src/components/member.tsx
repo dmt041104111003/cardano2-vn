@@ -1,5 +1,14 @@
 import { StaticImageData } from "next/image";
-import { TipTapPreview } from "~/components/ui/tiptap-editor";
+
+const createTruncatedDisplay = (htmlContent: string, maxLines: number = 3): string => {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = htmlContent;
+  const plainText = tempDiv.textContent || tempDiv.innerText || '';
+  const lines = plainText.split('\n').filter(line => line.trim());
+  const truncatedLines = lines.slice(0, maxLines);
+  const result = truncatedLines.join('\n');
+  return lines.length > maxLines ? result + '...' : result;
+};
 
 export default function Member({
   name,
@@ -14,6 +23,10 @@ export default function Member({
   description: string;
   onClick?: () => void;
 }) {
+  const truncatedDisplay = typeof window !== 'undefined' 
+    ? createTruncatedDisplay(description, 3)
+    : description.replace(/<[^>]*>/g, '').split('\n').slice(0, 3).join('\n') + '...';
+
   return (
     <div className="group relative cursor-pointer" onClick={onClick}>
       <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-gray-200/20 dark:from-white/20 to-gray-100/10 dark:to-white/10 opacity-0 blur-lg transition-all duration-500 group-hover:opacity-30"></div>
@@ -42,8 +55,10 @@ export default function Member({
               {role}
             </div>
           </div>
-          <div className="text-sm leading-relaxed text-gray-600 dark:text-gray-300 line-clamp-3">
-            <TipTapPreview content={description} />
+          <div className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            <div className="whitespace-pre-line line-clamp-3">
+              {truncatedDisplay}
+            </div>
           </div>
           <div className="mt-4 flex items-center gap-3">
             <div className="flex space-x-2">

@@ -1,5 +1,5 @@
 import Modal from "~/components/admin/common/Modal";
-import { TipTapPreview } from "~/components/ui/tiptap-editor";
+import { SimpleRichPreview } from "~/components/ui/simple-rich-editor";
 import { Member, MemberDetailsModalProps } from "~/constants/members";
 
 export function MemberDetailsModal({ member, isOpen, onClose }: MemberDetailsModalProps) {
@@ -54,7 +54,7 @@ export function MemberDetailsModal({ member, isOpen, onClose }: MemberDetailsMod
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <div className="text-sm text-gray-900 leading-relaxed">
-            <TipTapPreview content={member.description} />
+            <SimpleRichPreview content={member.description} />
           </div>
         </div>
         
