@@ -4,7 +4,7 @@ import Loading from "~/components/ui/Loading";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import LandingSection from "~/components/home/LandingSection";
-import TrustSection from "~/components/home/TrustSection";
+// import TrustSection from "~/components/home/TrustSection";
 import ProtocolSection from "~/components/home/ProtocolSection";
 import CourseSection from "~/components/home/CourseSection";
 // import CardanoSection from "~/components/home/CardanoSection";
@@ -51,7 +51,7 @@ export default function HomePage() {
       <ProtocolSection />
       <VideoSection />
       {/* <PartnerLogosCarousel /> */}
-      <TrustSection />
+      {/* <TrustSection /> */}
    
       {/* <CardanoSection /> */}
       <CTASection />

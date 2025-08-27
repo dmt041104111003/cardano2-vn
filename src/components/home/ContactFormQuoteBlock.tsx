@@ -10,8 +10,8 @@ export default function ContactFormQuoteBlock({ title, description, hasSelectedC
   const [isTitleExpanded, setIsTitleExpanded] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   
-  const defaultTitle = 'Register for an C2VN course';
-  const defaultDescription = `Have questions about Cardano or want to collaborate? We'd love to hear from you. Reach out to our team and let's build the future of blockchain together.`;
+  const defaultTitle = 'Register for a C2VN course';
+  const defaultDescription = `Register now to join our Blockchain training programs and gain practical knowledge for the future of Web3.`;
   
   if (hasSelectedCourse && !title && !description) {
     return null;

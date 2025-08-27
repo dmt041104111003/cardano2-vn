@@ -117,17 +117,7 @@ function AboutContactForm({
 
           <input type="hidden" name="event-location" value={formData["event-location"]} />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Wallet Address</label>
-            <input
-              type="text"
-              name="address-wallet"
-              placeholder="addr1qy..."
-              value={formData["address-wallet"]}
-              onChange={onInputChange}
-              className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
-            />
-          </div>
+          {/* Removed wallet address field as requested */}
         </div>
 
         {errors.contact && (
@@ -304,7 +294,6 @@ export default function MemberPageClient() {
             setFormData((prev) => ({
               ...prev,
               "your-email": userData.user.email || "",
-              "address-wallet": userData.user.address || "",
             }));
           }
         }
@@ -325,9 +314,8 @@ export default function MemberPageClient() {
 
     const hasPhone = formData["your-number"].trim() !== "";
     const hasEmail = formData["your-email"].trim() !== "";
-    const hasWallet = formData["address-wallet"].trim() !== "";
 
-    if (!hasPhone && !hasEmail && !hasWallet) {
+    if (!hasPhone && !hasEmail) {
       newErrors.contact = "Please provide at least one contact method (phone, email, or wallet address)";
     }
 
@@ -349,7 +337,7 @@ export default function MemberPageClient() {
       }));
     }
 
-    if (errors.contact && (name === "your-number" || name === "your-email" || name === "address-wallet")) {
+    if (errors.contact && (name === "your-number" || name === "your-email")) {
       setErrors((prev) => ({
         ...prev,
         contact: undefined,
@@ -671,7 +659,7 @@ export default function MemberPageClient() {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="h-1 w-12 bg-gradient-to-r from-blue-500 to-transparent"
               ></motion.div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white lg:text-4xl">Join Our Team</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white lg:text-4xl">Get in Touch</h2>
               <motion.div 
                 initial={{ width: 0 }}
                 whileInView={{ width: "3rem" }}
@@ -681,8 +669,7 @@ export default function MemberPageClient() {
               ></motion.div>
             </div>
             <p className="max-w-2xl mx-auto text-lg text-gray-700 dark:text-gray-300">
-              Ready to contribute to the Cardano ecosystem? We're always looking for passionate individuals who want to make a difference in the
-              blockchain space.
+              We value your feedback and ideas. Share your thoughts, suggestions, or let us know if you'd like to collaborate with us.
             </p>
           </motion.div>
 

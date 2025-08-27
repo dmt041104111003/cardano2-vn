@@ -141,12 +141,12 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, capt
           
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Wallet Address
+              Telegram ID (optional)
             </label>
             <input
               type="text"
               name="address-wallet"
-              placeholder="addr1qy..."
+              placeholder="@username or phone number"
               value={typedFormData["address-wallet"]}
               onChange={onInputChange}
                              className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm"
@@ -195,7 +195,7 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, capt
            
                        <div className="md:col-span-2">
               <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Email Introduction
+                How did you know about us
               </label>
               <input
                 type="text"
