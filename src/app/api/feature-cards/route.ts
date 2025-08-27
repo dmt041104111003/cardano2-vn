@@ -8,7 +8,6 @@ export const GET = async (request: Request) => {
     const featureCardIds = searchParams.get('ids');
 
     let whereClause: any = { 
-      isActive: true,
       publishStatus: 'PUBLISHED'
     };
 
