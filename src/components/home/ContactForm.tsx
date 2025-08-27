@@ -197,14 +197,38 @@ export function ContactForm({ formData, errors, isSubmitting, captchaValid, capt
               <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 How did you know about us
               </label>
-              <input
-                type="text"
-                name="email-intro"
-                placeholder="How did you hear about us?"
-                value={typedFormData["email-intro"]}
-                onChange={onInputChange}
-                className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm"
-              />
+              {(() => {
+                const introValue = typedFormData["email-intro"]; 
+                const selectValue = introValue === "Facebook" || introValue === "Telegram" ? introValue : "Others";
+                return (
+                  <>
+                    <select
+                      value={selectValue}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        const syntheticEvent = { target: { name: "email-intro", value: v === "Others" ? "" : v } } as any;
+                        onInputChange(syntheticEvent);
+                      }}
+                      className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm mb-2"
+                      aria-label="How did you know about us"
+                    >
+                      <option value="Facebook">Facebook</option>
+                      <option value="Telegram">Telegram</option>
+                      <option value="Others">Others</option>
+                    </select>
+                    {selectValue === "Others" && (
+                      <input
+                        type="text"
+                        name="email-intro"
+                        placeholder="Please specify (e.g., Friend, Twitter, Website)"
+                        value={typedFormData["email-intro"]}
+                        onChange={onInputChange}
+                        className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-sm"
+                      />
+                    )}
+                  </>
+                );
+              })()}
             </div>
           
           {typedErrors.contact && (
