@@ -6,7 +6,6 @@ import { createSuccessResponse, createErrorResponse } from "~/lib/api-response";
 export const GET = withAdmin(async () => {
   try {
     const featureCards = await prisma.featureCard.findMany({
-      where: { isActive: true },
       orderBy: { order: 'asc' },
     });
 
@@ -37,8 +36,7 @@ export const POST = withAdmin(async (req) => {
         description,
         iconName,
         order: order || 0,
-        publishStatus,
-        isActive: true
+        publishStatus
       }
     });
 

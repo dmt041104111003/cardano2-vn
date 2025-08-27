@@ -4,7 +4,6 @@ export interface FeatureCard {
   description: string;
   iconName: string;
   publishStatus: 'DRAFT' | 'PUBLISHED';
-  isActive: boolean;
   order: number;
   createdAt: string;
   updatedAt: string;

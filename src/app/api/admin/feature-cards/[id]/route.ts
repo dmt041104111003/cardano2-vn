@@ -36,7 +36,7 @@ export const PUT = withAdmin(async (req) => {
     }
 
     const body = await req.json();    
-    const { title, description, iconName, order, isActive, publishStatus } = body;
+    const { title, description, iconName, order, publishStatus } = body;
 
     if (!title || !description || !iconName || !publishStatus) {
       return NextResponse.json(
@@ -52,7 +52,6 @@ export const PUT = withAdmin(async (req) => {
         description,
         iconName,
         order: order || 0,
-        isActive: isActive !== undefined ? isActive : true,
         publishStatus: publishStatus || "DRAFT"
       }
     });
@@ -72,10 +71,16 @@ export const DELETE = withAdmin(async (req) => {
     return NextResponse.json(createErrorResponse('Missing ID', 'MISSING_ID'), { status: 400 });
   }
 
-  await prisma.featureCard.update({
-    where: { id },
-    data: { isActive: false }
-  });
+  try {
+    await prisma.featureCard.delete({
+      where: { id }
+    });
 
-  return NextResponse.json(createSuccessResponse({ success: true }));
+    return NextResponse.json(createSuccessResponse({ success: true }));
+  } catch (error) {
+    return NextResponse.json(
+      createErrorResponse(`Failed to delete feature card: ${error instanceof Error ? error.message : 'Unknown error'}`, 'INTERNAL_ERROR'),
+      { status: 500 }
+    );
+  }
 });

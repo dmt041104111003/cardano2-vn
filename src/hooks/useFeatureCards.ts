@@ -87,14 +87,21 @@ export function useFeatureCards() {
 
   const handleDeleteFeatureCard = async (featureCard: FeatureCard) => {
     try {
+      console.log('Deleting feature card:', featureCard.id);
       const response = await fetch(`/api/admin/feature-cards/${featureCard.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
   
+      console.log('Delete response status:', response.status);
+      
       if (response.ok) {
+        const result = await response.json();
+        console.log('Delete successful:', result);
+        
         // Use setTimeout to delay the refetch and prevent immediate auto-update
         setTimeout(async () => {
           await fetchFeatureCards();
@@ -102,10 +109,13 @@ export function useFeatureCards() {
         
         showSuccess('Feature card deleted', 'Feature card has been deleted successfully.');
       } else {
-        showError('Failed to delete feature card');
+        const errorData = await response.json();
+        console.error('Delete failed:', errorData);
+        showError(`Failed to delete feature card: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
-      showError('Failed to delete feature card');
+      console.error('Delete error:', error);
+      showError(`Failed to delete feature card: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
