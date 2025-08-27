@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { MediaInputMedia, MediaInputProps } from '~/constants/media';
 
-export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInputProps) {
+export default function MediaInput({ onMediaAdd, mediaType = 'image', multiple = false }: MediaInputProps) {
   const [currentMedia, setCurrentMedia] = useState<MediaInputMedia | null>(null);
   const [activeImageTab, setActiveImageTab] = useState<'upload' | 'url'>('upload');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -18,34 +18,36 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-    try {
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-      });
-      const result = await response.json();
-      if (response.ok && result.data?.media?.url) {
-        const media: MediaInputMedia = { 
-          type: 'image', 
-          url: result.data.media.url, 
-          id: result.data.media.url 
-        };
-        setCurrentMedia(media);
-        if (onMediaAdd) {
-          onMediaAdd(media);
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    if (files.length === 0) return;
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const response = await fetch('/api/upload-image', {
+          method: 'POST',
+          body: formData,
+        });
+        const result = await response.json();
+        if (response.ok && result.data?.media?.url) {
+          const media: MediaInputMedia = { 
+            type: 'image', 
+            url: result.data.media.url, 
+            id: result.data.media.url 
+          };
+          setCurrentMedia(media);
+          if (onMediaAdd) onMediaAdd(media);
+        } else {
+          alert(result.error || 'Upload failed');
         }
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-      } else {
-        alert(result.error || 'Upload failed');
+      } catch (err) {
+        alert('Upload error');
       }
-    } catch (err) {
-      alert('Upload error');
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -109,6 +111,7 @@ export default function MediaInput({ onMediaAdd, mediaType = 'image' }: MediaInp
               <input
                 type="file"
                 accept="image/*"
+                multiple={multiple}
                 onChange={handleFileChange}
                 ref={fileInputRef}
                 style={{ display: 'none' }}

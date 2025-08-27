@@ -52,4 +52,5 @@ export interface MediaInputMedia {
 export interface MediaInputProps {
   onMediaAdd?: (media: MediaInputMedia) => void;
   mediaType?: 'image' | 'youtube';
+  multiple?: boolean;
 } 

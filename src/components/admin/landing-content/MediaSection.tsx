@@ -58,6 +58,7 @@ export default function MediaSection({ formData, setFormData, handleMediaSelect,
               <MediaInput
                 onMediaAdd={(media) => handleMediaSelect(media)}
                 mediaType="image"
+                multiple
               />
             </div>
           </div>

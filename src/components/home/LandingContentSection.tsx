@@ -39,7 +39,7 @@ export default function LandingContentSection({ content }: LandingContentSection
           Our Services
         </Link>
         <Link
-          href={routers.docs}
+          href={routers.projects}
           className="inline-flex items-center justify-center whitespace-nowrap rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-white/50 px-8 py-4 text-lg font-semibold text-gray-900 dark:text-white shadow-lg hover:bg-gray-200 dark:hover:bg-gray-700"
         >
           Our Projects
