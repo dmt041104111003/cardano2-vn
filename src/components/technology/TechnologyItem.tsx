@@ -2,7 +2,11 @@ import Skill from "~/components/skill";
 import Project from "~/components/project";
 import FeatureCards from "./FeatureCards";
 import { Verify, Onboarding, Decentralized } from "~/components/icons";
-import { TechnologyItemProps } from '~/constants/about';
+import { Technology } from '~/constants/technologies';
+
+interface TechnologyItemProps {
+  technology: Technology;
+}
 
 const defaultResults = [
   {
@@ -29,7 +33,7 @@ export default function TechnologyItem({ technology }: TechnologyItemProps) {
   return (
     <div>
       <Skill title={technology.title} skills={[]} />
-      <FeatureCards />
+      <FeatureCards featureCardIds={technology.featureCardIds} />
       <Project 
         title={technology.name} 
         description={technology.description} 

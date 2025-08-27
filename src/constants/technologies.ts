@@ -8,6 +8,7 @@ export interface Technology {
   image: string;
   githubRepo?: string;
   publishStatus: 'DRAFT' | 'PUBLISHED';
+  featureCardIds?: string[]; // Array of feature card IDs
   createdAt?: string;
   updatedAt?: string;
 }
@@ -22,7 +23,16 @@ export interface TechnologyDetailsModalProps {
 // TechnologyEditor interfaces
 export interface TechnologyEditorProps {
   technology?: Technology;
-  onSave: (data: { title: string; name: string; description: string; href: string; image: string; githubRepo?: string; publishStatus: 'DRAFT' | 'PUBLISHED' }) => void;
+  onSave: (data: { 
+    title: string; 
+    name: string; 
+    description: string; 
+    href: string; 
+    image: string; 
+    githubRepo?: string; 
+    publishStatus: 'DRAFT' | 'PUBLISHED';
+    featureCardIds?: string[];
+  }) => void;
   onCancel: () => void;
 }
 

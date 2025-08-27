@@ -53,6 +53,21 @@ export default function TechnologyDetailsModal({ technology, isOpen, onClose }: 
           </a>
         </div>
         
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Feature Cards</label>
+          {technology.featureCardIds && technology.featureCardIds.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {technology.featureCardIds.map((cardId, index) => (
+                <span key={cardId} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                  Feature Card {index + 1}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">No feature cards assigned</p>
+          )}
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Created At</label>

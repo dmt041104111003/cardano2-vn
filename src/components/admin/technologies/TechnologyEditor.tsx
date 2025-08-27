@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Copy, Check } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import MediaInput from "~/components/ui/media-input";
 import { Technology, TechnologyEditorProps } from "~/constants/technologies";
+import { FeatureCard } from "~/constants/feature-cards";
 
 export default function TechnologyEditor({ technology, onSave, onCancel }: TechnologyEditorProps) {
   const [title, setTitle] = useState(technology?.title || "");
@@ -13,8 +15,24 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
   const [image, setImage] = useState(technology?.image || "");
   const [githubRepo, setGithubRepo] = useState(technology?.githubRepo || "");
   const [publishStatus, setPublishStatus] = useState(technology?.publishStatus || "DRAFT");
+  const [selectedFeatureCardIds, setSelectedFeatureCardIds] = useState<string[]>(technology?.featureCardIds || []);
   const [copied, setCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch available feature cards
+  const {
+    data: featureCardsData,
+    isLoading: loadingFeatureCards,
+  } = useQuery({
+    queryKey: ['admin-feature-cards'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/feature-cards', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch feature cards');
+      return res.json();
+    }
+  });
+
+  const featureCards: FeatureCard[] = featureCardsData?.data || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +53,7 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
         image: image.trim(),
         githubRepo: githubRepo.trim(),
         publishStatus: publishStatus,
+        featureCardIds: selectedFeatureCardIds,
       });
     } catch (error) {
       console.error('Error saving technology:', error);
@@ -192,6 +211,69 @@ export default function TechnologyEditor({ technology, onSave, onCancel }: Techn
         <p className="text-xs text-gray-500 mt-1">
           This will add a GitHub star widget to the technology page
         </p>
+      </div>
+
+      {/* Feature Cards Selection */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Feature Cards (Optional)
+        </label>
+        <p className="text-xs text-gray-500 mb-3">
+          Select feature cards to display with this technology
+        </p>
+        
+        {loadingFeatureCards ? (
+          <div className="p-4 bg-gray-50 rounded-md">
+            <div className="animate-pulse">
+              <div className="h-4 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            </div>
+          </div>
+        ) : featureCards.length === 0 ? (
+          <div className="p-4 bg-gray-50 rounded-md text-center text-gray-500">
+            No feature cards available. Create some feature cards first.
+          </div>
+        ) : (
+          <div className="space-y-2 max-h-60 overflow-y-auto border border-gray-300 rounded-md p-3">
+            {featureCards.map((featureCard) => (
+              <label key={featureCard.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedFeatureCardIds.includes(featureCard.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedFeatureCardIds([...selectedFeatureCardIds, featureCard.id]);
+                    } else {
+                      setSelectedFeatureCardIds(selectedFeatureCardIds.filter(id => id !== featureCard.id));
+                    }
+                  }}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  disabled={isSubmitting}
+                />
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-gray-900">{featureCard.title}</span>
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      featureCard.publishStatus === 'PUBLISHED' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {featureCard.publishStatus}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{featureCard.description}</p>
+                </div>
+              </label>
+            ))}
+          </div>
+        )}
+        
+        {selectedFeatureCardIds.length > 0 && (
+          <div className="mt-2 text-sm text-gray-600">
+            Selected: {selectedFeatureCardIds.length} feature card{selectedFeatureCardIds.length !== 1 ? 's' : ''}
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end space-x-3">

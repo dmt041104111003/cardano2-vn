@@ -29,6 +29,7 @@ export interface Technology {
   href: string;
   image: string;
   githubRepo?: string;
+  featureCardIds?: string[];
 }
 
 export interface TechnologyItemProps {

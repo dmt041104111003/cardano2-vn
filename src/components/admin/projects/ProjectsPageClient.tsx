@@ -199,6 +199,7 @@ export default function ProjectsPageClient() {
         </div>
       )}
 
+      {/* Project Editor Modal */}
       <Modal
         isOpen={showEditor}
         onClose={() => {
@@ -218,8 +219,7 @@ export default function ProjectsPageClient() {
         />
       </Modal>
 
-
-
+      {/* Project Details Modal */}
       <ProjectDetailsModal
         project={showProjectModal}
         isOpen={!!showProjectModal}
