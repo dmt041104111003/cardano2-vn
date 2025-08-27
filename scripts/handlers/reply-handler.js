@@ -117,13 +117,13 @@ class ReplyHandler {
           if (savedReply.parent && savedReply.parent.userId && savedReply.parent.userId !== message.userId) {
             const post = await prisma.post.findUnique({
               where: { id: message.postId },
-              select: { slug: true },
+              select: { slug: true, title: true },
             });
             
             await this.createNotification({
               userId: savedReply.parent.userId,
               type: 'reply',
-              title: 'New reply',
+              title: post?.title || 'New reply',
               message: `${user?.name || 'Someone'} replied to your comment`,
               data: {
                 postId: message.postId,
