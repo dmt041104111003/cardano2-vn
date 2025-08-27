@@ -4,16 +4,16 @@ import { useQuery } from "@tanstack/react-query";
 import { Learn, Check, Verify } from "~/components/icons";
 import { FeatureCard } from '~/constants/feature-cards';
 
-const getIconComponent = (iconName: string, color: string) => {
+const getIconComponent = (iconName: string) => {
   switch (iconName) {
     case "Learn":
-      return <Learn color={color} />;
+      return <Learn color="blue" />;
     case "Check":
-      return <Check color={color} />;
+      return <Check color="blue" />;
     case "Verify":
-      return <Verify color={color} />;
+      return <Verify color="blue" />;
     default:
-      return <Learn color={color} />;
+      return <Learn color="blue" />;
   }
 };
 
@@ -36,12 +36,10 @@ export default function FeatureCards({ featureCardIds }: FeatureCardsProps) {
       if (!res.ok) throw new Error('Failed to fetch feature cards');
       return res.json();
     },
-    enabled: true, // Always fetch, but API will handle empty IDs
+    enabled: true,
   });
 
   const featureCards: FeatureCard[] = featureCardsData?.data || [];
-
-  // Don't render anything if no feature cards are assigned
   if (!featureCardIds || featureCardIds.length === 0) {
     return null;
   }
@@ -74,7 +72,7 @@ export default function FeatureCards({ featureCardIds }: FeatureCardsProps) {
         {featureCards.map((card, cardIndex) => (
           <div key={card.id || cardIndex} className="rounded-lg border border-gray-200 dark:border-white/20 bg-white dark:bg-gray-800/50 p-6">
             <div className="mb-4">
-              {getIconComponent(card.iconName, card.color)}
+              {getIconComponent(card.iconName)}
             </div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{card.title}</h3>
             <p className="text-gray-600 dark:text-gray-300">{card.description}</p>

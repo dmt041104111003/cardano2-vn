@@ -70,7 +70,7 @@ export default function LandingContentSection({ content }: LandingContentSection
       
       <div className="flex flex-col gap-4 lg:gap-6 sm:flex-row">
         <Link
-          href={routers.about}
+          href={routers.ourService}
           className="inline-flex items-center justify-center whitespace-nowrap rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:text-success bg-blue-600 dark:bg-white px-6 lg:px-8 py-3 lg:py-4 font-semibold text-white dark:text-blue-900 shadow-xl hover:bg-blue-700 dark:hover:bg-gray-100 text-base lg:text-lg xl:text-xl"
         >
           Our Services
