@@ -99,8 +99,6 @@ export default function ProjectsPageClient() {
 
   const stats = {
     total: projects.length,
-    proposed: projects.filter(p => p.status === 'PROPOSED').length,
-    approved: projects.filter(p => p.status === 'APPROVED').length,
     inProgress: projects.filter(p => p.status === 'IN_PROGRESS').length,
     completed: projects.filter(p => p.status === 'COMPLETED').length,
     draft: projects.filter(p => p.publishStatus === 'DRAFT').length,
@@ -121,8 +119,6 @@ export default function ProjectsPageClient() {
           { label: "Total Projects", value: stats.total },
           { label: "Draft", value: stats.draft },
           { label: "Published", value: stats.published },
-          { label: "Proposed", value: stats.proposed },
-          { label: "Approved", value: stats.approved },
           { label: "In Progress", value: stats.inProgress },
           { label: "Completed", value: stats.completed },
         ]}
@@ -135,11 +131,8 @@ export default function ProjectsPageClient() {
           searchPlaceholder="Search projects by title or description..."
           filterOptions={[
             { value: "all", label: "All Project Status" },
-            { value: "PROPOSED", label: "Proposed" },
-            { value: "APPROVED", label: "Approved" },
             { value: "IN_PROGRESS", label: "In Progress" },
             { value: "COMPLETED", label: "Completed" },
-            { value: "CANCELLED", label: "Cancelled" },
           ]}
           onSearchChange={setSearchTerm}
           onFilterChange={setStatusFilter}

@@ -100,11 +100,8 @@ export default function Navigation({
               title="Filter by status"
             >
               <option value="all">All Status</option>
-              <option value="PROPOSED">Proposed</option>
-              <option value="APPROVED">Approved</option>
               <option value="IN_PROGRESS">In Progress</option>
               <option value="COMPLETED">Completed</option>
-              <option value="CANCELLED">Cancelled</option>
             </select>
           </div>
         )}

@@ -4,7 +4,7 @@ export interface Project {
   title: string;
   description: string;
   href?: string;
-  status: 'PROPOSED' | 'APPROVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  status: 'IN_PROGRESS' | 'COMPLETED';
   publishStatus: 'DRAFT' | 'PUBLISHED';
   year: number;
   quarterly: string;
