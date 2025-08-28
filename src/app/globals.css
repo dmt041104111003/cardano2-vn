@@ -450,6 +450,7 @@ body > [data-radix-popper-content-wrapper] {
 }
 
 
+<<<<<<< HEAD
 /* Responsive embeds for docs */
 .doc-video {
   position: relative;
@@ -467,3 +468,5 @@ body > [data-radix-popper-content-wrapper] {
   border: 0;
 }
 
+=======
+>>>>>>> version-3

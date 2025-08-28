@@ -13,8 +13,11 @@ interface TokenWithAddress extends Record<string, unknown> {
   address?: string;
 }
 
+<<<<<<< HEAD
 export const runtime = 'nodejs';
 
+=======
+>>>>>>> version-3
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
