@@ -20,8 +20,15 @@ const config: NextConfig = {
         protocol: "https",
         hostname: "i.ytimg.com",
       },
+      {
+        protocol: "https",
+        hostname: "user-images.githubusercontent.com",
+      },
     ],
-    domains: ["res.cloudinary.com"],
+    domains: [
+      "res.cloudinary.com",
+      "user-images.githubusercontent.com",
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,
