@@ -1,0 +1,22 @@
+{
+  "name": "cardano2vn-tools",
+  "version": "1.0.0",
+  "description": "Tools for Cardano2VN website management",
+  "main": "index.js",
+  "scripts": {
+    "upload-images": "node upload-images-to-cloudinary.js",
+    "replace-images": "node replace-images-in-mdx.js"
+  },
+  "dependencies": {
+    "cloudinary": "^1.41.0",
+    "dotenv": "^16.3.1"
+  },
+  "keywords": [
+    "cardano",
+    "cloudinary",
+    "image-upload",
+    "tools"
+  ],
+  "author": "Cardano2VN Team",
+  "license": "MIT"
+}
