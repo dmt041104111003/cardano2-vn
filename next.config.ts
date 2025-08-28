@@ -6,6 +6,18 @@ const withMDX = createMDX();
 
 const config: NextConfig = {
   reactStrictMode: true,
+  webpack: (cfg, { isServer }) => {
+    if (isServer) {
+      const prev = cfg.externals;
+      const externalsArray = Array.isArray(prev) ? prev : [];
+      cfg.externals = [
+        ...externalsArray,
+        { prisma: 'commonjs prisma' },
+        { '@prisma/client': 'commonjs @prisma/client' },
+      ];
+    }
+    return cfg;
+  },
   images: {
     remotePatterns: [
       {
