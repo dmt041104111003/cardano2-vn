@@ -13,7 +13,8 @@
     "upload-all": "node tools/upload-all.js",
     "create-mdx": "node tools/create-mdx.js",
     "fix-mdx-frontmatter": "node tools/fix-mdx-frontmatter.js",
-    "fix-missing-titles": "node tools/fix-missing-titles.js"
+    "fix-missing-titles": "node tools/fix-missing-titles.js",
+    "vercel-build": "prisma generate && next build"
   },
   "dependencies": {
     "@harmoniclabs/cbor": "1.6.0",
