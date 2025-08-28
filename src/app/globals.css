@@ -6,6 +6,7 @@
 @import "fumadocs-ui/css/preset.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant max-xl (max-width: 1280px);
 
 @theme inline {
   --color-background: var(--background);
@@ -449,4 +450,21 @@ body > [data-radix-popper-content-wrapper] {
   display: none;  /* Safari and Chrome */
 }
 
+
+/* Responsive embeds for docs */
+.doc-video {
+  position: relative;
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+}
+
+.doc-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
 
