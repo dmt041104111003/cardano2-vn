@@ -98,6 +98,14 @@ export default function Footer() {
                        <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>Catalyst
                      </Link>
                    </li>
+                   <li>
+                                       <Link
+                       className="group flex items-center text-gray-900 dark:text-white transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400"
+                       href="/privacy"
+                     >
+                       <span className="mr-3 h-px w-2 bg-gray-600 transition-colors duration-200 group-hover:bg-blue-600 dark:group-hover:bg-blue-400"></span>Chính sách
+                     </Link>
+                   </li>
                </ul>
             </div>
 
