@@ -59,11 +59,9 @@ function replaceRandomCloudinaryUrlsInMdxFile(mdxFilePath, cloudinaryUrls) {
     
     console.log(`  ${path.basename(mdxFilePath)} contains ${existingUrls.length} Cloudinary URLs`);
     
-    // Tạo danh sách URLs ngẫu nhiên không trùng lặp cho file này
     const uniqueRandomUrls = [];
     const usedIndices = new Set();
     
-    // Đảm bảo có đủ URLs unique cho file này
     for (let i = 0; i < existingUrls.length; i++) {
       let randomIndex;
       do {
@@ -74,12 +72,10 @@ function replaceRandomCloudinaryUrlsInMdxFile(mdxFilePath, cloudinaryUrls) {
       uniqueRandomUrls.push(cloudinaryUrls[randomIndex]);
     }
     
-    // Thay thế từng URL hiện có bằng URL ngẫu nhiên unique
     for (let i = 0; i < existingUrls.length; i++) {
       const oldUrl = existingUrls[i];
       const newUrl = uniqueRandomUrls[i];
       
-      // Thay thế trong markdown links
       const markdownRegex = new RegExp(`!\\[([^\\]]*)\\]\\(${oldUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)`, 'g');
       if (markdownRegex.test(content)) {
         content = content.replace(markdownRegex, (match, altText) => {
