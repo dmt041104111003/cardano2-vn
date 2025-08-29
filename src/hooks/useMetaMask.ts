@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { metaMaskProvider, MetaMaskUser } from "~/lib/metamask-provider";
+import { NetworkValidator } from "~/lib/network-validator";
 
 export function useMetaMask() {
   const { data: session, status, update } = useSession();
@@ -22,9 +23,14 @@ export function useMetaMask() {
     
     try {
       const user = await metaMaskProvider.connect();
+      
+      const validation = NetworkValidator.validateMetaMaskNetwork(user.chainId || 0);
+      if (!validation.isValid) {
+        throw new Error(validation.error);
+      }
+      
       setWalletUser(user);
 
-      // Sign message for authentication
       const message = `Sign this message to authenticate with Cardano2VN\n\nTimestamp: ${Date.now()}`;
       const signature = await metaMaskProvider.signMessage(message);
       

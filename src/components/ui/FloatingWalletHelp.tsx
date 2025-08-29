@@ -26,7 +26,7 @@ export default function FloatingWalletHelp({ className = "" }: FloatingWalletHel
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.25 }}
         onClick={() => setShowModal(true)}
-        className={`fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 ${className}`}
+        className={`fixed bottom-5 left-5 z-50 inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 ${className}`}
         aria-label="Open wallet help"
       >
         <span>Wallet help</span>

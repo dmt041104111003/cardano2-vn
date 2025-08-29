@@ -5,6 +5,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { cardanoWallet, WALLET_NAMES } from "~/lib/cardano-wallet";
 import { CardanoWalletUser } from "~/constants/wallet";
+import { NetworkValidator } from "~/lib/network-validator";
 
 export function useCardanoWallet() {
   const { data: session, status, update } = useSession();
@@ -28,6 +29,18 @@ export function useCardanoWallet() {
        }
       
       const user = await cardanoWallet.connect(actualWalletName);
+      
+      const wallet = cardanoWallet.getWallet();
+      if (wallet) {
+        try {
+          const networkId = await wallet.getNetworkId();
+          const validation = NetworkValidator.validateCardanoNetwork(networkId, actualWalletName);
+          if (!validation.isValid) {
+            throw new Error(validation.error);
+          }
+        } catch (networkError) {
+        }
+      }
       
       setWalletUser(user);
       const message = `Sign this message to authenticate with Cardano2VN\n\nTimestamp: ${Date.now()}`;
