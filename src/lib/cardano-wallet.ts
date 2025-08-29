@@ -1,5 +1,6 @@
 import { BrowserWallet } from '@meshsdk/core';
 import { CardanoWalletUser, CardanoWalletConfig } from '~/constants/wallet';
+import { NetworkChecker } from './network-checker';
 
 export class CardanoWalletProvider {
   private config: CardanoWalletConfig;
@@ -23,6 +24,11 @@ export class CardanoWalletProvider {
 
       this.wallet = await BrowserWallet.enable(walletName);
       this.currentWalletName = walletName;
+      
+      const networkCheck = await NetworkChecker.checkCardanoNetwork();
+      if (!networkCheck.isMainnet) {
+        throw new Error(networkCheck.error || 'Only Cardano Mainnet is supported');
+      }
       
       const addresses = await this.wallet.getUnusedAddresses();
       const address = addresses[0];

@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { NetworkChecker } from './network-checker';
 
 export interface MetaMaskUser {
   address: string;
@@ -55,31 +56,12 @@ export class MetaMaskProvider {
       const address = accounts[0];
       this.provider = new ethers.BrowserProvider(mmProvider);
       this.signer = await this.provider.getSigner();
-      const network = await this.provider.getNetwork();
-      const chainId = Number(network.chainId);
-      if (chainId !== this.config.chainId) {
-        await mmProvider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: `0x${this.config.chainId.toString(16)}` }],
-        }).catch(async (switchError: any) => {
-          if (switchError?.code === 4902) {
-            await mmProvider.request({
-              method: 'wallet_addEthereumChain',
-              params: [
-                {
-                  chainId: `0x${this.config.chainId.toString(16)}`,
-                  chainName: this.config.chainName,
-                  nativeCurrency: this.config.nativeCurrency,
-                  rpcUrls: [this.config.rpcUrl],
-                  blockExplorerUrls: this.config.blockExplorerUrls,
-                },
-              ],
-            });
-          } else {
-            throw switchError;
-          }
-        });
+      const networkCheck = await NetworkChecker.checkMetaMaskNetwork();
+      if (!networkCheck.isMainnet) {
+        throw new Error(networkCheck.error || 'Only Milkomeda C1 Mainnet is supported');
       }
+
+      const chainId = networkCheck.chainId ? parseInt(networkCheck.chainId, 16) : 2001;
 
       this.user = {
         address,
