@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useNotifications } from "~/hooks/useNotifications";
-import WaveFooterSection from "~/components/home/WaveFooterSection";
+// import WaveFooterSection from "~/components/home/WaveFooterSection";
 
 export default function PrivacyPageClient() {
   useNotifications();
@@ -42,13 +42,7 @@ export default function PrivacyPageClient() {
           </p>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-8 md:p-12"
-        >
+                 <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-8 md:p-12">
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Who we are</h2>
@@ -140,11 +134,11 @@ export default function PrivacyPageClient() {
                 })}
               </p>
             </div>
-          </div>
-        </motion.div>
+                     </div>
+         </div>
       </div>
-      
-      <WaveFooterSection />
+{/*       
+      <WaveFooterSection /> */}
     </main>
   );
 }
